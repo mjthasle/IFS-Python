@@ -2,6 +2,8 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
+Last Updated on May 8, 2023
+
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
 
@@ -14,13 +16,13 @@ def codes(m, n):
         j = n - 1
         expan = []
         while j >= 0:
-            expan += [k//(m**j)]
-            if k//(m**j) != 0:
+            expan.append(k // (m**j))
+            if k // (m**j) != 0:
                 k = k % (m**j)
             j -= 1
         l += 1
-        codes += [expan]
-    return codes
+        codes.append(expan)
+    return np.array(codes)
 
 # Apply the functions in the IFS f in the order of specified by code to the array points
 def compose(f, code, points):
