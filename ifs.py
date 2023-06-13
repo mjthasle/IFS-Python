@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib as mpl
 import numpy as np
-import time
+#import time
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -59,7 +59,7 @@ def plot(ifs, clicks, n = 0, grid = None, xlim = [0,1], ylim = [0,1], facecolor 
     
     m = len(ifs)
     
-    start = time.perf_counter()
+    #start = time.perf_counter()
 
     if multiplot == True:      
         
@@ -74,8 +74,8 @@ def plot(ifs, clicks, n = 0, grid = None, xlim = [0,1], ylim = [0,1], facecolor 
                     
                 ax.add_patch(mpl.patches.Polygon(t.transform(clicks), facecolor = facecolor, edgecolor = edgecolor))
             
-            end = time.perf_counter()
-            print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
+            #end = time.perf_counter()
+            #print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
     else:      
         
         ax = axs[0]
@@ -91,13 +91,15 @@ def plot(ifs, clicks, n = 0, grid = None, xlim = [0,1], ylim = [0,1], facecolor 
         
             ax.add_patch(mpl.patches.Polygon(t.transform(clicks), facecolor = color))
         
-        end = time.perf_counter()
-        print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+        #end = time.perf_counter()
+        #print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
         
-    plt.show()    
+    #plt.show()    
     
-    end = time.perf_counter()
-    print('The whole cell took ' + str(end - start) + ' seconds.')
+    #end = time.perf_counter()
+    #print('The whole cell took ' + str(end - start) + ' seconds.')
+    
+    return fig
 
 
 
