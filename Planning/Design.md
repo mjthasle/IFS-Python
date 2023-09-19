@@ -1,4 +1,4 @@
-# Goals
+# Design
 
 - User has two options:
 
@@ -16,9 +16,12 @@
     - Nice-to-have: graphic user interface (point-and-click to specify the points)
   - Number of iterations
 
-- Attractor will be displayed in the notebook (.ipynb)
+- Web app display:
+  
+  ![interface_floor_plan_draft_1](interface_floor_plan_draft_1.png)
+  
   - Allow for different display options to be toggled on/off, e.g. gridlines, axes, colour
-
+  
 - User can save the image
 
 - Option to add the input date (i.e. IFS functions, starting set, number of iterations) to a library for future use
