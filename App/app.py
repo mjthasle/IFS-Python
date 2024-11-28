@@ -23,4 +23,4 @@ box_options = ["Option 1", "Option 2", "Option 3"]
 
 option_selected = st.selectbox("Which option do you prefer?", box_options)
 
-st.write("Selectbox returns:", option_selected, "of type, type(option_selected))
+st.write("Selectbox returns:", option_selected, "of type, type(option_selected)")

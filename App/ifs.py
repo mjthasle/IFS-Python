@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on May 12, 2023
+Last Updated on Nov 27, 2024
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -30,77 +30,110 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
+# Create an IFS attractor class
+class attractor:
+    def __init__(self, ifs = None, clicks = None, xlim = [0,1], ylim = [0,1]):
+        if ifs == None:
+            self.ifs = []
+        else:
+            self.ifs = ifs
+        self.clicks = clicks
+        self.xlim = xlim 
+        self.ylim = ylim 
 
-# TODO: fix aspect ratio
-# TODO: dummy-proof?
-# TODO: import from ifs.py
-def plot(ifs, clicks, n = 0, grid = None, xlim = [0,1], ylim = [0,1], facecolor = 'k', edgecolor = 'k'):
-    
-    
-    if grid == None:
-        multiplot = False
-        nrows = 1
-        ncols = 1
-    else:   
-        multiplot = True
-        nrows = grid[0]
-        ncols = grid[1]
-    
-    fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
-    
-    if nrows == 1 & ncols == 1:
-        axs = np.array([axs])
-    else:
-        axs = axs.ravel()
-    
-    for ax in axs:
-        ax.set_xlim(xlim)
-        ax.set_ylim(ylim)
-    
-    m = len(ifs)
-    
-    #start = time.perf_counter()
-
-    if multiplot == True:      
+    def plot(self, n=0, grid = None, facecolor = 'k', edgecolor = 'k'):
+        if grid == None:
+            multiplot = False
+            nrows = 1
+            ncols = 1
+        else:   
+            multiplot = True
+            nrows = grid[0]
+            ncols = grid[1]
         
-        for j, ax in enumerate(axs):  
+        fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
+        
+        if nrows == 1 & ncols == 1:
+            axs = np.array([axs])
+        else:
+            axs = axs.ravel()
+        
+        for ax in axs:
+            ax.set_xlim(self.xlim)
+            ax.set_ylim(self.ylim)
+        
+        m = len(self.ifs)
+        
+        #start = time.perf_counter()
+
+        if multiplot == True:      
             
-            for code in codes(m, j):
+            for j, ax in enumerate(axs):  
+                
+                for code in codes(m, j):
+                    
+                    t = mpl.transforms.IdentityTransform()
+                    
+                    for i in code:
+                        t += self.ifs[i]
+                        
+                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor = edgecolor))
+                
+                #end = time.perf_counter()
+                #print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
+        else:      
+            
+            ax = axs[0]
+            t = mpl.transforms.IdentityTransform()
+            
+            for code in codes(m, n):
                 
                 t = mpl.transforms.IdentityTransform()
                 
                 for i in code:
-                    t += ifs[i]
-                    
-                ax.add_patch(mpl.patches.Polygon(t.transform(clicks), facecolor = facecolor, edgecolor = edgecolor))
+                        t += self.ifs[i]
+            
+                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor=edgecolor))
             
             #end = time.perf_counter()
-            #print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
-    else:      
-        
-        ax = axs[0]
-        
-        t = mpl.transforms.IdentityTransform()
-        
-        for code in codes(m, n):
-            
-            t = mpl.transforms.IdentityTransform()
-            
-            for i in code:
-                    t += ifs[i]
-        
-            ax.add_patch(mpl.patches.Polygon(t.transform(clicks), facecolor = color))
-        
+            #print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+
         #end = time.perf_counter()
-        #print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+        #print('The whole cell took ' + str(end - start) + ' seconds.')
         
-    #plt.show()    
-    
-    #end = time.perf_counter()
-    #print('The whole cell took ' + str(end - start) + ' seconds.')
-    
-    return fig
+        return fig
 
 
+# Function to create a Cantor ternary set
+def cantor():
+    K = attractor(clicks=np.array([[0, 0], [1, 0]]),
+        xlim = [-0.5, 1.5], ylim = [-0.5, 0.5])
+    K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
+    K.ifs.append(mpl.transforms.Affine2D().translate(2/3, 0) + mpl.transforms.Affine2D().scale(1/3))
+    return K
 
+# Function to create a Sierpinski gasket
+def gasket():
+    K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
+    K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
+    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + mpl.transforms.Affine2D().scale(0.5))
+    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + mpl.transforms.Affine2D().scale(0.5))
+    return K
+
+# Function to create a fudgeflake
+def fudgeflake():
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], [0.75, 0.9], [0.5, 1]]),
+        xlim = [-1,1], ylim = [-1,1])
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(-1/3, 0))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
+    return K
+
+# Function to create a twindragon
+def twindragon():
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], [0.75, 0.9], [0.5, 1]]),
+        xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + mpl.transforms.Affine2D().translate(-0.5, 0.5) + mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + mpl.transforms.Affine2D().translate(0.5, -0.5) + mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    return K
 
