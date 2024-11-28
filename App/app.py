@@ -1,26 +1,25 @@
 import streamlit as st
-import numpy as np
 import matplotlib.pyplot as plt
+from ifs import *
+plt.rcParams['figure.figsize'] = (5,5)
 
-st.title("Some Streamlit Examples")
+st.title("Make your own an IFS attractor!")
 
-st.header("A Figure")
+st.header("Built-in IFS")
 
-plt.rcParams['figure.figsize'] = (16,10)
+# input options
+box_options = ["Sierpinski Gasket", "Fudgeflake", "Twindragon"]
+option_selected = st.selectbox("Select an IFS attractor to plot", box_options)
+n = st.number_input("Number of iterations: ", value=0, min_value=0, max_value=10, step=1)
 
-x = np.linspace(0, 1, 200)
+# plot successive iterations in a grid
+if option_selected == "Sierpinski Gasket":
+	st.pyplot(gasket().plot(n = n))  
+elif option_selected == "Fudgeflake":
+	st.pyplot(fudgeflake().plot(n = n, facecolor = 'b'))
+elif option_selected == "Twindragon":
+	st.pyplot(twindragon().plot(n = n, facecolor = 'w'))
 
-y = x
+st.header("Random IFS")
 
-fig, ax = plt.subplots()
-ax.plot(x, y)
-
-st.pyplot(fig)
-
-st.header("A Selectbox")
-
-box_options = ["Option 1", "Option 2", "Option 3"]
-
-option_selected = st.selectbox("Which option do you prefer?", box_options)
-
-st.write("Selectbox returns:", option_selected, "of type, type(option_selected)")
+st.write("Under construction.")
