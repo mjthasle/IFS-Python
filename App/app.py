@@ -30,3 +30,7 @@ with col2:
 st.header("Random IFS")
 
 st.write("Under construction.")
+
+st.header("Make your own IFS")
+
+st.write("Under construction.")
