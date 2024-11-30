@@ -41,7 +41,7 @@ class attractor:
         self.xlim = xlim 
         self.ylim = ylim 
 
-    def plot(self, n=0, grid = None, facecolor = 'k', edgecolor = 'k'):
+    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', showaxis = True):
         if grid == None:
             multiplot = False
             nrows = 1
@@ -62,6 +62,10 @@ class attractor:
             ax.set_xlim(self.xlim)
             ax.set_ylim(self.ylim)
             ax.set_aspect("equal")
+
+        if showaxis == False:
+            for ax in axs:
+                ax.set_axis_off()
         
         m = len(self.ifs)
         

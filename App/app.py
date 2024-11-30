@@ -15,11 +15,11 @@ with col1:
 # plot successive iterations in a grid
 with col2:
 	if option_selected == "Sierpinski Gasket":
-		st.pyplot(gasket().plot(n = n))  
+		st.pyplot(gasket().plot(n = n, showaxis = False))  
 	elif option_selected == "Fudgeflake":
-		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b'))
+		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b', showaxis = False))
 	elif option_selected == "Twindragon":
-		st.pyplot(twindragon().plot(n = n, facecolor = 'w'))
+		st.pyplot(twindragon().plot(n = n, facecolor = 'w', showaxis = False))
 
 st.header("Random IFS")
 
