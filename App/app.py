@@ -1,5 +1,6 @@
 import streamlit as st
 from ifs import *
+plt.rcParams.update({'font.size': 22})
 
 st.title("Let's draw IFS attractors!")
 st.header("Built-in IFS")

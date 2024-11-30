@@ -12,7 +12,6 @@ from matplotlib.patches import Polygon
 import matplotlib as mpl
 import numpy as np
 import time
-plt.rcParams.update({'font.size': 22})
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
