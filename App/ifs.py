@@ -52,7 +52,7 @@ class attractor:
             ncols = grid[1]
         
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
-        
+
         if nrows == 1 & ncols == 1:
             axs = np.array([axs])
         else:
@@ -61,6 +61,7 @@ class attractor:
         for ax in axs:
             ax.set_xlim(self.xlim)
             ax.set_ylim(self.ylim)
+            ax.set_aspect("equal")
         
         m = len(self.ifs)
         
@@ -100,7 +101,7 @@ class attractor:
 
         #end = time.perf_counter()
         #print('The whole cell took ' + str(end - start) + ' seconds.')
-        
+
         return fig
 
 
