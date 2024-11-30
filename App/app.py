@@ -17,15 +17,16 @@ with col1:
 		box_options, on_change = reset_n)
 	n = st.number_input("Number of iterations: ", min_value = 0, max_value = 10, 
 		step = 1, key = "n")
+	st.write("IFS:")
 
 # plot the attractor in the right column
 with col2:
 	if option_selected == "Sierpinski Gasket":
-		st.pyplot(gasket().plot(n = n, showaxis = False))  
+		st.pyplot(gasket().plot(n = n, showaxis = True))  
 	elif option_selected == "Fudgeflake":
-		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b', showaxis = False))
+		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b', showaxis = True))
 	elif option_selected == "Twindragon":
-		st.pyplot(twindragon().plot(n = n, facecolor = 'w', showaxis = False))
+		st.pyplot(twindragon().plot(n = n, facecolor = 'w', showaxis = True))
 
 st.header("Random IFS")
 

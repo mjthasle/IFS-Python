@@ -12,6 +12,7 @@ from matplotlib.patches import Polygon
 import matplotlib as mpl
 import numpy as np
 import time
+plt.rcParams.update({'font.size': 22})
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -30,7 +31,7 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
-# Create an IFS attractor class
+# Create an IFS attractor class with a method for plotting
 class attractor:
     def __init__(self, ifs = None, clicks = None, xlim = [0,1], ylim = [0,1]):
         if ifs == None:
@@ -63,6 +64,9 @@ class attractor:
             ax.set_xlim(self.xlim)
             ax.set_ylim(self.ylim)
             ax.set_aspect("equal")
+            old_ticks = ax.get_yticks()
+            new_ticks = [y for y in old_ticks if y != 0]
+            ax.set_yticks(new_ticks)
 
         if showaxis == False:
             for ax in axs:
