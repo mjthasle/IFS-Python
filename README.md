@@ -1,3 +1,6 @@
 # IFS-Python
 
-A tool for generating fractal images using iterated function systems in python.
+A streamlit app for generating fractal images using iterated function systems.  
+
+
+
