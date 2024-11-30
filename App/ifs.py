@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib as mpl
 import numpy as np
-#import time
+import time
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -41,7 +41,8 @@ class attractor:
         self.xlim = xlim 
         self.ylim = ylim 
 
-    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', showaxis = True):
+    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', 
+        showaxis = True, timeit = False):
         if grid == None:
             multiplot = False
             nrows = 1
@@ -69,7 +70,7 @@ class attractor:
         
         m = len(self.ifs)
         
-        #start = time.perf_counter()
+        start = time.perf_counter()
 
         if multiplot == True:      
             
@@ -84,8 +85,10 @@ class attractor:
                         
                     ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor = edgecolor))
                 
-                #end = time.perf_counter()
-                #print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
+                end = time.perf_counter()
+
+                if timeit:
+                    print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
         else:      
             
             ax = axs[0]
@@ -100,11 +103,15 @@ class attractor:
             
                 ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor=edgecolor))
             
-            #end = time.perf_counter()
-            #print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+            end = time.perf_counter()
 
-        #end = time.perf_counter()
-        #print('The whole cell took ' + str(end - start) + ' seconds.')
+            if timeit:
+                print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+
+        end = time.perf_counter()
+        
+        if timeit:
+            print('The whole cell took ' + str(end - start) + ' seconds.')
 
         return fig
 
