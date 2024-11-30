@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Nov 27, 2024
+Last Updated on Nov 30, 2024
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -83,12 +83,14 @@ class attractor:
                     for i in code:
                         t += self.ifs[i]
                         
-                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor = edgecolor))
+                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+                        facecolor = facecolor, edgecolor = edgecolor))
                 
                 end = time.perf_counter()
 
                 if timeit:
-                    print('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.') 
+                    print('Iteration ' + str(j) + ' took ' + str(end - start) + 
+                        ' seconds.') 
         else:      
             
             ax = axs[0]
@@ -101,12 +103,14 @@ class attractor:
                 for i in code:
                         t += self.ifs[i]
             
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), facecolor = facecolor, edgecolor=edgecolor))
+                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+                    facecolor = facecolor, edgecolor = edgecolor))
             
             end = time.perf_counter()
 
             if timeit:
-                print('Iteration ' + str(n) + ' took ' + str(end - start) + ' seconds.')
+                print('Iteration ' + str(n) + ' took ' + str(end - start) + 
+                    ' seconds.')
 
         end = time.perf_counter()
         
@@ -121,31 +125,46 @@ def cantor():
     K = attractor(clicks=np.array([[0, 0], [1, 0]]),
         xlim = [-0.5, 1.5], ylim = [-0.5, 0.5])
     K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-    K.ifs.append(mpl.transforms.Affine2D().translate(2/3, 0) + mpl.transforms.Affine2D().scale(1/3))
+    K.ifs.append(mpl.transforms.Affine2D().translate(2/3, 0) + 
+        mpl.transforms.Affine2D().scale(1/3))
     return K
 
 # Function to create a Sierpinski gasket
 def gasket():
     K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
     K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
-    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + mpl.transforms.Affine2D().scale(0.5))
-    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + mpl.transforms.Affine2D().scale(0.5))
+    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + 
+        mpl.transforms.Affine2D().scale(0.5))
+    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + 
+        mpl.transforms.Affine2D().scale(0.5))
     return K
 
 # Function to create a fudgeflake
 def fudgeflake():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], [0.75, 0.9], [0.5, 1]]),
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
+        [0.75, 0.9], [0.5, 1]]),
         xlim = [-1,1], ylim = [-1,1])
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(-1/3, 0))
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+        mpl.transforms.Affine2D().translate(-1/3, 0))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+        mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+        mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
     return K
 
 # Function to create a twindragon
 def twindragon():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], [0.75, 0.9], [0.5, 1]]),
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
+        [0.75, 0.9], [0.5, 1]]),
         xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + mpl.transforms.Affine2D().translate(-0.5, 0.5) + mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + mpl.transforms.Affine2D().translate(0.5, -0.5) + mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
+        mpl.transforms.Affine2D().translate(-0.5, 0.5) + 
+        mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
+        mpl.transforms.Affine2D().translate(0.5, -0.5) + 
+        mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
     return K
 
