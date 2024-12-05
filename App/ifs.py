@@ -32,17 +32,32 @@ def codes(m, n):
 
 # Create an IFS attractor class with a method for plotting
 class attractor:
-    def __init__(self, ifs = None, clicks = None, xlim = [0,1], ylim = [0,1]):
+
+    instances = []
+
+    def __init__(self, ifs = None, funstrings=None, namestring=None, 
+        clicks = None, xlim = [0,1], ylim = [0,1]):
+
+        self.instances.append(namestring)
+
         if ifs == None:
             self.ifs = []
         else:
             self.ifs = ifs
+
+        if funstrings == None:
+            self.funstrings = []
+        else:
+            self.funstrings = funstrings
+
         self.clicks = clicks
+        self.namestring = namestring
         self.xlim = xlim 
         self.ylim = ylim 
 
     def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', 
         showaxis = True, timeit = False):
+
         if grid == None:
             multiplot = False
             nrows = 1
@@ -64,7 +79,7 @@ class attractor:
             ax.set_ylim(self.ylim)
             ax.set_aspect("equal")
             old_ticks = ax.get_yticks()
-            new_ticks = [y for y in old_ticks if y != 0]
+            new_ticks = old_ticks[1:]
             ax.set_yticks(new_ticks)
 
         if showaxis == False:
@@ -122,40 +137,88 @@ class attractor:
 
         return fig
 
-
-# Function to create a Cantor ternary set
+# Function to create a Cantor ternary set (TODO: fix this plot)
 def cantor():
-    K = attractor(clicks=np.array([[0, 0], [1, 0]]),
-        xlim = [-0.5, 1.5], ylim = [-0.5, 0.5])
+    K = attractor(clicks=np.array([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]]),
+        xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
+
     K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-    K.ifs.append(mpl.transforms.Affine2D().translate(2/3, 0) + 
+    K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
+
+    K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) + 
         mpl.transforms.Affine2D().scale(1/3))
+    K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
+
+    K.namestring = "Cantor Ternary Set"
     return K
 
 # Function to create a Sierpinski gasket
 def gasket():
     K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
+
     K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
+    K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
+
     K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + 
         mpl.transforms.Affine2D().scale(0.5))
+    K.funstrings.append(r'''f_2(x) = \frac{1}{2}x + 
+        \begin{bmatrix}  
+        \frac{1}{2} \\ 0 
+        \end{bmatrix}''')
+
     K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + 
         mpl.transforms.Affine2D().scale(0.5))
+    K.funstrings.append(r'''f_3(x) = \frac{1}{2}x + 
+        \begin{bmatrix} 
+        \frac{1}{4} \\ 
+        \frac{\sqrt{3}}{4} 
+        \end{bmatrix}''')
+
+    K.namestring = "Sierpinski Gasket"
     return K
 
 # Function to create a fudgeflake
 def fudgeflake():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1,1], ylim = [-1,1])
+
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
         mpl.transforms.Affine2D().translate(-1/3, 0))
+    K.funstrings.append(r'''f_1(x) = 
+        \begin{bmatrix} 
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+        \frac{\sqrt{3}}{6} & \frac{1}{2}
+        \end{bmatrix}x''')
+
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
         mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
+    K.funstrings.append(r'''f_2(x) = 
+        \begin{bmatrix} 
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+        \frac{\sqrt{3}}{6} & \frac{1}{2}
+        \end{bmatrix}x +
+        \begin{bmatrix}
+        \frac{1}{2} \\
+        \frac{\sqrt{3}}{6}
+        \end{bmatrix}''')
+
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
         mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
+    K.funstrings.append(r'''f_3(x) = 
+        \begin{bmatrix} 
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+        \frac{\sqrt{3}}{6} & \frac{1}{2}
+        \end{bmatrix}x +
+        \begin{bmatrix}
+        \frac{1}{2} \\
+        -\frac{\sqrt{3}}{6}
+        \end{bmatrix}''')
+
+    K.namestring = "Fudgeflake"
     return K
 
 # Function to create a twindragon
@@ -163,11 +226,35 @@ def twindragon():
     K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
+
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
         mpl.transforms.Affine2D().translate(-0.5, 0.5) + 
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    K.funstrings.append(r'''f_1(x) = 
+        \begin{bmatrix} 
+        \frac{1}{2} & -\frac{1}{2} \\ 
+        \frac{1}{2} & \frac{1}{2}
+        \end{bmatrix}x''')
+
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
         mpl.transforms.Affine2D().translate(0.5, -0.5) + 
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+    K.funstrings.append(r'''f_2(x) = 
+        \begin{bmatrix} 
+        \frac{1}{2} & -\frac{1}{2} \\ 
+        \frac{1}{2} & \frac{1}{2}
+        \end{bmatrix}x +
+        \begin{bmatrix}
+        \frac{1}{2} \\
+        \frac{-1}{2}
+        \end{bmatrix}''')
+
+    K.namestring = "Twindragon"
     return K
+
+def get_attractors():
+    attractors = [cantor(), gasket(), fudgeflake(), twindragon()]
+    return attractors
+
+
 
