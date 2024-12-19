@@ -59,11 +59,14 @@ class attractor:
         self.xlim = xlim
         self.ylim = ylim
 
-    def add_funstring(self, eq, addspace = True):
+    def add_fun(self, fun):
+        self.ifs.append(fun)
+
+    def add_funstring(self, funstring, addspace = True):
         if addspace:
-            funstring = texeq(eq)
-        else: funstring = eq
-        self.funstrings.append(funstring)
+            eq = texeq(funstring)
+        else: eq = funstring
+        self.funstrings.append(eq)
 
     def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False):
@@ -149,15 +152,15 @@ class attractor:
 
         return fig
 
-# Function to create a Cantor ternary set (TODO: fix this plot)
+# Function to create a Cantor ternary set
 def cantor():
     K = attractor(clicks=np.array([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]]),
         xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
 
-    K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
+    K.add_fun(mpl.transforms.Affine2D().scale(1/3))
     K.add_funstring(r'''f_1 = \frac{1}{3}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
+    K.add_fun(mpl.transforms.Affine2D().translate(2, 0) +
         mpl.transforms.Affine2D().scale(1/3))
     K.add_funstring(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
 
@@ -168,10 +171,10 @@ def cantor():
 def gasket():
     K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
 
-    K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
+    K.add_fun(mpl.transforms.Affine2D().scale(0.5))
     K.add_funstring(r'''f_1(x) = \frac{1}{2}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) +
+    K.add_fun(mpl.transforms.Affine2D().translate(1, 0) +
         mpl.transforms.Affine2D().scale(0.5))
     K.add_funstring(r'''f_2(x) = \frac{1}{2}x +
         \begin{bmatrix}
@@ -182,7 +185,7 @@ def gasket():
     #      \frac{1}{2} \\ 0
     #      \end{bmatrix}'''))
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
+    K.add_fun(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
         mpl.transforms.Affine2D().scale(0.5))
     K.add_funstring(r'''f_3(x) = \frac{1}{2}x +
         \begin{bmatrix}
@@ -199,7 +202,7 @@ def fudgeflake():
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1,1], ylim = [-1,1])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+    K.add_fun(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(-1/3, 0))
     K.add_funstring(r'''f_1(x) =
@@ -208,7 +211,7 @@ def fudgeflake():
         \frac{\sqrt{3}}{6} & \frac{1}{2}
         \end{bmatrix}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+    K.add_fun(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
     K.add_funstring(r'''f_2(x) =
@@ -221,7 +224,7 @@ def fudgeflake():
         \frac{\sqrt{3}}{6}
         \end{bmatrix}''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+    K.add_fun(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
     K.add_funstring(r'''f_3(x) =
@@ -243,7 +246,7 @@ def twindragon():
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
+    K.add_fun(mpl.transforms.Affine2D().rotate(np.pi/4) +
         mpl.transforms.Affine2D().translate(-0.5, 0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
     K.add_funstring(r'''f_1(x) =
@@ -252,7 +255,7 @@ def twindragon():
         \frac{1}{2} & \frac{1}{2}
         \end{bmatrix}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
+    K.add_fun(mpl.transforms.Affine2D().rotate(np.pi/4) +
         mpl.transforms.Affine2D().translate(0.5, -0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
     K.add_funstring(r'''f_2(x) =
