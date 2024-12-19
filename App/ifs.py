@@ -30,6 +30,10 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
+# Function to fix array spacing for latex equations
+def texeq(eq, arrayspace=0.5, units="ex"):
+    return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
+
 # Create an IFS attractor class with a method for plotting
 class attractor:
 
@@ -54,6 +58,12 @@ class attractor:
         self.namestring = namestring
         self.xlim = xlim
         self.ylim = ylim
+
+    def add_funstring(self, eq, addspace = True):
+        if addspace:
+            funstring = texeq(eq)
+        else: funstring = eq
+        self.funstrings.append(funstring)
 
     def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False):
@@ -145,11 +155,11 @@ def cantor():
         xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
 
     K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-    K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
+    K.add_funstring(r'''f_1 = \frac{1}{3}x''')
 
     K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
         mpl.transforms.Affine2D().scale(1/3))
-    K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
+    K.add_funstring(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
 
     K.namestring = "Cantor Ternary Set"
     return K
@@ -159,18 +169,22 @@ def gasket():
     K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
 
     K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
+    K.add_funstring(r'''f_1(x) = \frac{1}{2}x''')
 
     K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) +
         mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_2(x) = \frac{1}{2}x +
+    K.add_funstring(r'''f_2(x) = \frac{1}{2}x +
         \begin{bmatrix}
         \frac{1}{2} \\ 0
         \end{bmatrix}''')
+    # K.add_funstring(texeq(r'''f_2(x) = \frac{1}{2}x +
+    #      \begin{bmatrix}
+    #      \frac{1}{2} \\ 0
+    #      \end{bmatrix}'''))
 
     K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
         mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_3(x) = \frac{1}{2}x +
+    K.add_funstring(r'''f_3(x) = \frac{1}{2}x +
         \begin{bmatrix}
         \frac{1}{4} \\
         \frac{\sqrt{3}}{4}
@@ -188,7 +202,7 @@ def fudgeflake():
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(-1/3, 0))
-    K.funstrings.append(r'''f_1(x) =
+    K.add_funstring(r'''f_1(x) =
         \begin{bmatrix}
         \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
@@ -197,7 +211,7 @@ def fudgeflake():
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_2(x) =
+    K.add_funstring(r'''f_2(x) =
         \begin{bmatrix}
         \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
@@ -210,7 +224,7 @@ def fudgeflake():
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_3(x) =
+    K.add_funstring(r'''f_3(x) =
         \begin{bmatrix}
         \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
@@ -232,7 +246,7 @@ def twindragon():
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
         mpl.transforms.Affine2D().translate(-0.5, 0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_1(x) =
+    K.add_funstring(r'''f_1(x) =
         \begin{bmatrix}
         \frac{1}{2} & -\frac{1}{2} \\
         \frac{1}{2} & \frac{1}{2}
@@ -241,7 +255,7 @@ def twindragon():
     K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
         mpl.transforms.Affine2D().translate(0.5, -0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_2(x) =
+    K.add_funstring(r'''f_2(x) =
         \begin{bmatrix}
         \frac{1}{2} & -\frac{1}{2} \\
         \frac{1}{2} & \frac{1}{2}

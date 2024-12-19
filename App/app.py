@@ -24,6 +24,7 @@ box_options = [a.namestring for a in attractors]
 def reset_n():
 	st.session_state.n = 0
 
+
 # built-in IFS settings in the left column
 with col1:
 	option_selected = st.selectbox("Select an IFS attractor to plot",
