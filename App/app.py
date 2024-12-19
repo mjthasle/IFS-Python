@@ -17,9 +17,9 @@ def reset_n():
 
 # built-in IFS settings in the left column
 with col1:
-	option_selected = st.selectbox("Select an IFS attractor to plot", 
+	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
-	n = st.number_input("Number of iterations: ", min_value = 0, max_value = 10,
+	n = st.number_input("Number of iterations: ", min_value = 0, max_value = 8,
 		step = 1, key = "n")
 	for a in attractors:
 		if a.namestring == option_selected:
@@ -30,9 +30,9 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	if option_selected == "Cantor Ternary Set":
-		st.pyplot(cantor().plot(n = n, showaxis = True))  
+		st.pyplot(cantor().plot(n = n, showaxis = True))
 	elif option_selected == "Sierpinski Gasket":
-		st.pyplot(gasket().plot(n = n, showaxis = True))  
+		st.pyplot(gasket().plot(n = n, showaxis = True))
 	elif option_selected == "Fudgeflake":
 		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b', showaxis = True))
 	elif option_selected == "Twindragon":

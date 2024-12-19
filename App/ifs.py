@@ -35,7 +35,7 @@ class attractor:
 
     instances = []
 
-    def __init__(self, ifs = None, funstrings=None, namestring=None, 
+    def __init__(self, ifs = None, funstrings=None, namestring=None,
         clicks = None, xlim = [0,1], ylim = [0,1]):
 
         self.instances.append(namestring)
@@ -52,28 +52,30 @@ class attractor:
 
         self.clicks = clicks
         self.namestring = namestring
-        self.xlim = xlim 
-        self.ylim = ylim 
+        self.xlim = xlim
+        self.ylim = ylim
 
-    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', 
+    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False):
 
         if grid == None:
             multiplot = False
             nrows = 1
             ncols = 1
-        else:   
+            assert n <= 10, "Max 10 iterations reached"
+        else:
             multiplot = True
             nrows = grid[0]
             ncols = grid[1]
-        
+            assert nrows*ncols <= 10, "Max 10 iterations reached"
+
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
         if nrows == 1 & ncols == 1:
             axs = np.array([axs])
         else:
             axs = axs.ravel()
-        
+
         for ax in axs:
             ax.set_xlim(self.xlim)
             ax.set_ylim(self.ylim)
@@ -85,53 +87,53 @@ class attractor:
         if showaxis == False:
             for ax in axs:
                 ax.set_axis_off()
-        
+
         m = len(self.ifs)
-        
+
         start = time.perf_counter()
 
-        if multiplot == True:      
-            
-            for j, ax in enumerate(axs):  
-                
+        if multiplot == True:
+
+            for j, ax in enumerate(axs):
+
                 for code in codes(m, j):
-                    
+
                     t = mpl.transforms.IdentityTransform()
-                    
+
                     for i in code:
                         t += self.ifs[i]
-                        
-                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+
+                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
                         facecolor = facecolor, edgecolor = edgecolor))
-                
+
                 end = time.perf_counter()
 
                 if timeit:
-                    print('Iteration ' + str(j) + ' took ' + str(end - start) + 
-                        ' seconds.') 
-        else:      
-            
+                    print('Iteration ' + str(j) + ' took ' + str(end - start) +
+                        ' seconds.')
+        else:
+
             ax = axs[0]
             t = mpl.transforms.IdentityTransform()
-            
+
             for code in codes(m, n):
-                
+
                 t = mpl.transforms.IdentityTransform()
-                
+
                 for i in code:
                         t += self.ifs[i]
-            
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+
+                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
                     facecolor = facecolor, edgecolor = edgecolor))
-            
+
             end = time.perf_counter()
 
             if timeit:
-                print('Iteration ' + str(n) + ' took ' + str(end - start) + 
+                print('Iteration ' + str(n) + ' took ' + str(end - start) +
                     ' seconds.')
 
         end = time.perf_counter()
-        
+
         if timeit:
             print('The whole cell took ' + str(end - start) + ' seconds.')
 
@@ -145,7 +147,7 @@ def cantor():
     K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
     K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) + 
+    K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
         mpl.transforms.Affine2D().scale(1/3))
     K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
 
@@ -159,19 +161,19 @@ def gasket():
     K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
     K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + 
+    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) +
         mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_2(x) = \frac{1}{2}x + 
-        \begin{bmatrix}  
-        \frac{1}{2} \\ 0 
+    K.funstrings.append(r'''f_2(x) = \frac{1}{2}x +
+        \begin{bmatrix}
+        \frac{1}{2} \\ 0
         \end{bmatrix}''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + 
+    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
         mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_3(x) = \frac{1}{2}x + 
-        \begin{bmatrix} 
-        \frac{1}{4} \\ 
-        \frac{\sqrt{3}}{4} 
+    K.funstrings.append(r'''f_3(x) = \frac{1}{2}x +
+        \begin{bmatrix}
+        \frac{1}{4} \\
+        \frac{\sqrt{3}}{4}
         \end{bmatrix}''')
 
     K.namestring = "Sierpinski Gasket"
@@ -183,21 +185,21 @@ def fudgeflake():
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1,1], ylim = [-1,1])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(-1/3, 0))
-    K.funstrings.append(r'''f_1(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+    K.funstrings.append(r'''f_1(x) =
+        \begin{bmatrix}
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
         \end{bmatrix}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_2(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+    K.funstrings.append(r'''f_2(x) =
+        \begin{bmatrix}
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
         \end{bmatrix}x +
         \begin{bmatrix}
@@ -205,12 +207,12 @@ def fudgeflake():
         \frac{\sqrt{3}}{6}
         \end{bmatrix}''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
+        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
         mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_3(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+    K.funstrings.append(r'''f_3(x) =
+        \begin{bmatrix}
+        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
         \frac{\sqrt{3}}{6} & \frac{1}{2}
         \end{bmatrix}x +
         \begin{bmatrix}
@@ -223,25 +225,25 @@ def fudgeflake():
 
 # Function to create a twindragon
 def twindragon():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
+    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
         [0.75, 0.9], [0.5, 1]]),
         xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
-        mpl.transforms.Affine2D().translate(-0.5, 0.5) + 
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
+        mpl.transforms.Affine2D().translate(-0.5, 0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_1(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{1}{2} \\ 
+    K.funstrings.append(r'''f_1(x) =
+        \begin{bmatrix}
+        \frac{1}{2} & -\frac{1}{2} \\
         \frac{1}{2} & \frac{1}{2}
         \end{bmatrix}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
-        mpl.transforms.Affine2D().translate(0.5, -0.5) + 
+    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
+        mpl.transforms.Affine2D().translate(0.5, -0.5) +
         mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_2(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{1}{2} \\ 
+    K.funstrings.append(r'''f_2(x) =
+        \begin{bmatrix}
+        \frac{1}{2} & -\frac{1}{2} \\
         \frac{1}{2} & \frac{1}{2}
         \end{bmatrix}x +
         \begin{bmatrix}
@@ -255,6 +257,3 @@ def twindragon():
 def get_attractors():
     attractors = [cantor(), gasket(), fudgeflake(), twindragon()]
     return attractors
-
-
-
