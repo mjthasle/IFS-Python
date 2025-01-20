@@ -137,124 +137,123 @@ class attractor:
 
         return fig
 
-# Function to create a Cantor ternary set (TODO: fix this plot)
-def cantor():
-    K = attractor(clicks=np.array([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]]),
-        xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
+class IFSCatalogue:
 
-    K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-    K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
+    # Function to create a Cantor ternary set (TODO: fix this plot)
+    def cantor():
+        K = attractor(clicks=np.array([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]]),
+            xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) + 
-        mpl.transforms.Affine2D().scale(1/3))
-    K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
+        K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
+        K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
 
-    K.namestring = "Cantor Ternary Set"
-    return K
+        K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) + 
+            mpl.transforms.Affine2D().scale(1/3))
+        K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
 
-# Function to create a Sierpinski gasket
-def gasket():
-    K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
+        K.namestring = "Cantor Ternary Set"
+        return K
 
-    K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
+    # Function to create a Sierpinski gasket
+    def gasket():
+        K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + 
-        mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_2(x) = \frac{1}{2}x + 
-        \begin{bmatrix}  
-        \frac{1}{2} \\ 0 
-        \end{bmatrix}''')
+        K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
+        K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + 
-        mpl.transforms.Affine2D().scale(0.5))
-    K.funstrings.append(r'''f_3(x) = \frac{1}{2}x + 
-        \begin{bmatrix} 
-        \frac{1}{4} \\ 
-        \frac{\sqrt{3}}{4} 
-        \end{bmatrix}''')
+        K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) + 
+            mpl.transforms.Affine2D().scale(0.5))
+        K.funstrings.append(r'''f_2(x) = \frac{1}{2}x + 
+            \begin{bmatrix}  
+            \frac{1}{2} \\ 0 
+            \end{bmatrix}''')
 
-    K.namestring = "Sierpinski Gasket"
-    return K
+        K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) + 
+            mpl.transforms.Affine2D().scale(0.5))
+        K.funstrings.append(r'''f_3(x) = \frac{1}{2}x + 
+            \begin{bmatrix} 
+            \frac{1}{4} \\ 
+            \frac{\sqrt{3}}{4} 
+            \end{bmatrix}''')
 
-# Function to create a fudgeflake
-def fudgeflake():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
-        [0.75, 0.9], [0.5, 1]]),
-        xlim = [-1,1], ylim = [-1,1])
+        K.namestring = "Sierpinski Gasket"
+        return K
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
-        mpl.transforms.Affine2D().translate(-1/3, 0))
-    K.funstrings.append(r'''f_1(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
-        \frac{\sqrt{3}}{6} & \frac{1}{2}
-        \end{bmatrix}x''')
+    # Function to create a fudgeflake
+    def fudgeflake():
+        K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
+            [0.75, 0.9], [0.5, 1]]),
+            xlim = [-1,1], ylim = [-1,1])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
-        mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_2(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
-        \frac{\sqrt{3}}{6} & \frac{1}{2}
-        \end{bmatrix}x +
-        \begin{bmatrix}
-        \frac{1}{2} \\
-        \frac{\sqrt{3}}{6}
-        \end{bmatrix}''')
+        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+            mpl.transforms.Affine2D().translate(-1/3, 0))
+        K.funstrings.append(r'''f_1(x) = 
+            \begin{bmatrix} 
+            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+            \frac{\sqrt{3}}{6} & \frac{1}{2}
+            \end{bmatrix}x''')
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
-        mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
-    K.funstrings.append(r'''f_3(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
-        \frac{\sqrt{3}}{6} & \frac{1}{2}
-        \end{bmatrix}x +
-        \begin{bmatrix}
-        \frac{1}{2} \\
-        -\frac{\sqrt{3}}{6}
-        \end{bmatrix}''')
+        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+            mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
+        K.funstrings.append(r'''f_2(x) = 
+            \begin{bmatrix} 
+            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+            \frac{\sqrt{3}}{6} & \frac{1}{2}
+            \end{bmatrix}x +
+            \begin{bmatrix}
+            \frac{1}{2} \\
+            \frac{\sqrt{3}}{6}
+            \end{bmatrix}''')
 
-    K.namestring = "Fudgeflake"
-    return K
+        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) + 
+            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) + 
+            mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
+        K.funstrings.append(r'''f_3(x) = 
+            \begin{bmatrix} 
+            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\ 
+            \frac{\sqrt{3}}{6} & \frac{1}{2}
+            \end{bmatrix}x +
+            \begin{bmatrix}
+            \frac{1}{2} \\
+            -\frac{\sqrt{3}}{6}
+            \end{bmatrix}''')
 
-# Function to create a twindragon
-def twindragon():
-    K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
-        [0.75, 0.9], [0.5, 1]]),
-        xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
+        K.namestring = "Fudgeflake"
+        return K
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
-        mpl.transforms.Affine2D().translate(-0.5, 0.5) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_1(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{1}{2} \\ 
-        \frac{1}{2} & \frac{1}{2}
-        \end{bmatrix}x''')
+    # Function to create a twindragon
+    def twindragon():
+        K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2], 
+            [0.75, 0.9], [0.5, 1]]),
+            xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
 
-    K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
-        mpl.transforms.Affine2D().translate(0.5, -0.5) + 
-        mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-    K.funstrings.append(r'''f_2(x) = 
-        \begin{bmatrix} 
-        \frac{1}{2} & -\frac{1}{2} \\ 
-        \frac{1}{2} & \frac{1}{2}
-        \end{bmatrix}x +
-        \begin{bmatrix}
-        \frac{1}{2} \\
-        \frac{-1}{2}
-        \end{bmatrix}''')
+        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
+            mpl.transforms.Affine2D().translate(-0.5, 0.5) + 
+            mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+        K.funstrings.append(r'''f_1(x) = 
+            \begin{bmatrix} 
+            \frac{1}{2} & -\frac{1}{2} \\ 
+            \frac{1}{2} & \frac{1}{2}
+            \end{bmatrix}x''')
 
-    K.namestring = "Twindragon"
-    return K
+        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) + 
+            mpl.transforms.Affine2D().translate(0.5, -0.5) + 
+            mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+        K.funstrings.append(r'''f_2(x) = 
+            \begin{bmatrix} 
+            \frac{1}{2} & -\frac{1}{2} \\ 
+            \frac{1}{2} & \frac{1}{2}
+            \end{bmatrix}x +
+            \begin{bmatrix}
+            \frac{1}{2} \\
+            \frac{-1}{2}
+            \end{bmatrix}''')
+
+        K.namestring = "Twindragon"
+        return K
 
 def get_attractors():
-    attractors = [cantor(), gasket(), fudgeflake(), twindragon()]
+    attractors = [method for method in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) and not method.startswith("__")]
     return attractors
-
-
-
