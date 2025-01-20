@@ -30,13 +30,13 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	if option_selected == "Cantor Ternary Set":
-		st.pyplot(cantor().plot(n = n, showaxis = True))  
+		st.pyplot(IFSCatalogue.cantor().plot(n = n, showaxis = True))  
 	elif option_selected == "Sierpinski Gasket":
-		st.pyplot(gasket().plot(n = n, showaxis = True))  
+		st.pyplot(IFSCatalogue.gasket().plot(n = n, showaxis = True))  
 	elif option_selected == "Fudgeflake":
-		st.pyplot(fudgeflake().plot(n = n, facecolor = 'b', showaxis = True))
+		st.pyplot(IFSCatalogue.fudgeflake().plot(n = n, facecolor = 'b', showaxis = True))
 	elif option_selected == "Twindragon":
-		st.pyplot(twindragon().plot(n = n, facecolor = 'w', showaxis = True))
+		st.pyplot(IFSCatalogue.twindragon().plot(n = n, facecolor = 'w', showaxis = True))
 
 st.header("Random IFS")
 

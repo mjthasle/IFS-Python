@@ -270,5 +270,5 @@ class IFSCatalogue:
         return K
 
 def get_attractors():
-    attractors = [method for method in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) and not method.startswith("__")]
+    attractors = [getattr(IFSCatalogue, method)() for method in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) and not method.startswith("__")]
     return attractors
