@@ -42,14 +42,24 @@ with col1:
 with col2:
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			st.pyplot(cantor().plot(grid = (3,3)))
+			start = time.perf_counter()
+			st.pyplot(cantor().plot(grid = (1,2)))
+			end = time.perf_counter()
 		elif option_selected == "Sierpinski Gasket":
 			#st.pyplot(gasket().plot(grid = (3,3)))
-			gasket().multiplot(grid = (1,2))
+			start = time.perf_counter()
+			gasket().multiplot(grid = (1,2), timeit = True)
+			end = time.perf_counter()
 		elif option_selected == "Fudgeflake":
-			st.pyplot(fudgeflake().plot(grid = (3,3), facecolor = 'b'))
+			start = time.perf_counter()
+			st.pyplot(fudgeflake().plot(grid = (1,2), facecolor = 'b'))
+			end = time.perf_counter()
 		elif option_selected == "Twindragon":
-			st.pyplot(twindragon().plot(grid = (3,3), facecolor = 'w'))
+			start = time.perf_counter()
+			st.pyplot(twindragon().plot(grid = (1,2), facecolor = 'w'))
+			end = time.perf_counter()
+		st.write('Total multiplot time: ' + str(end - start) + ' seconds.')
+
 	else:
 		if option_selected == "Cantor Ternary Set":
 			st.pyplot(cantor().plot(n = n))
@@ -59,12 +69,3 @@ with col2:
 			st.pyplot(fudgeflake().plot(n = n, facecolor = 'b'))
 		elif option_selected == "Twindragon":
 			st.pyplot(twindragon().plot(n = n, facecolor = 'w'))
-
-
-st.header("Random IFS")
-
-st.write("Under construction.")
-
-st.header("Make your own IFS")
-
-st.write("Under construction.")

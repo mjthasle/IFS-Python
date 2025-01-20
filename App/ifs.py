@@ -13,6 +13,8 @@ import streamlit as st
 import matplotlib as mpl
 import numpy as np
 import time
+import PIL.Image
+PIL.Image.MAX_IMAGE_PIXELS = None
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -157,6 +159,8 @@ class attractor:
     def multiplot(self, grid = (1,1), facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False, saveit = False):
 
+        start = time.perf_counter()
+
         nrows = grid[0]
         ncols = grid[1]
         assert nrows*ncols <= 10, "Max 10 iterations reached"
@@ -180,11 +184,19 @@ class attractor:
             for ax in axs:
                 ax.set_axis_off()
 
+        end = time.perf_counter()
+
+        st.write("Initial set up time: " + str(end - start) + " seconds")
+
+        start = time.perf_counter()
+        the_plot = st.pyplot(plt)
+        end = time.perf_counter()
+
+        st.write("Initial plot axes took " + str(end - start) + " seconds")
+
         m = len(self.ifs)
 
         start = time.perf_counter()
-
-        the_plot = st.pyplot(plt)
 
         for j, ax in enumerate(axs):
 
@@ -203,7 +215,7 @@ class attractor:
                 end = time.perf_counter()
 
                 if timeit:
-                    print('Iteration ' + str(j) + ' took ' + str(end - start) +
+                    st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
                         ' seconds.')
 
 
