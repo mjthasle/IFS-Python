@@ -196,27 +196,29 @@ class attractor:
 
         m = len(self.ifs)
 
-        start = time.perf_counter()
+
 
         for j, ax in enumerate(axs):
 
-                for code in codes(m, j):
+            start = time.perf_counter()
 
-                    t = mpl.transforms.IdentityTransform()
+            for code in codes(m, j):
 
-                    for i in code:
-                        t += self.ifs[i]
+                t = mpl.transforms.IdentityTransform()
 
-                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
-                        facecolor = facecolor, edgecolor = edgecolor))
+                for i in code:
+                    t += self.ifs[i]
 
-                the_plot.pyplot(plt)
+                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+                    facecolor = facecolor, edgecolor = edgecolor))
 
-                end = time.perf_counter()
+            the_plot.pyplot(plt)
 
-                if timeit:
-                    st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
-                        ' seconds.')
+            end = time.perf_counter()
+
+            if timeit:
+                st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
+                    ' seconds.')
 
 
 # Function to create a Cantor ternary set
