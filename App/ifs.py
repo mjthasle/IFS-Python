@@ -9,6 +9,7 @@ Last Updated on Nov 30, 2024
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
+import streamlit as st
 import matplotlib as mpl
 import numpy as np
 import time
@@ -151,6 +152,60 @@ class attractor:
             print('The whole cell took ' + str(end - start) + ' seconds.')
 
         return fig
+
+    # Function to show multiplots in steamlit one-by-one
+    def multiplot(self, grid = (1,1), facecolor = 'k', edgecolor = 'k',
+        showaxis = True, timeit = False, saveit = False):
+
+        nrows = grid[0]
+        ncols = grid[1]
+        assert nrows*ncols <= 10, "Max 10 iterations reached"
+
+        fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
+
+        if nrows == 1 & ncols == 1:
+            axs = np.array([axs])
+        else:
+            axs = axs.ravel()
+
+        for ax in axs:
+            ax.set_xlim(self.xlim)
+            ax.set_ylim(self.ylim)
+            ax.set_aspect("equal")
+            old_ticks = ax.get_yticks()
+            new_ticks = old_ticks[1:]
+            ax.set_yticks(new_ticks)
+
+        if showaxis == False:
+            for ax in axs:
+                ax.set_axis_off()
+
+        m = len(self.ifs)
+
+        start = time.perf_counter()
+
+        the_plot = st.pyplot(plt)
+
+        for j, ax in enumerate(axs):
+
+                for code in codes(m, j):
+
+                    t = mpl.transforms.IdentityTransform()
+
+                    for i in code:
+                        t += self.ifs[i]
+
+                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+                        facecolor = facecolor, edgecolor = edgecolor))
+
+                the_plot.pyplot(plt)
+
+                end = time.perf_counter()
+
+                if timeit:
+                    print('Iteration ' + str(j) + ' took ' + str(end - start) +
+                        ' seconds.')
+
 
 # Function to create a Cantor ternary set
 def cantor():
