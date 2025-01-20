@@ -30,12 +30,16 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
+# Function to fix array spacing for latex equations
+def texeq(eq, arrayspace=0.5, units="ex"):
+    return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
+
 # Create an IFS attractor class with a method for plotting
 class attractor:
 
     instances = []
 
-    def __init__(self, ifs = None, funstrings=None, namestring=None, 
+    def __init__(self, ifs = None, funstrings=None, namestring=None,
         clicks = None, xlim = [0,1], ylim = [0,1]):
 
         self.instances.append(namestring)
@@ -52,28 +56,39 @@ class attractor:
 
         self.clicks = clicks
         self.namestring = namestring
-        self.xlim = xlim 
-        self.ylim = ylim 
+        self.xlim = xlim
+        self.ylim = ylim
 
-    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k', 
+    def add_fun(self, fun):
+        self.ifs.append(fun)
+
+    def add_funstring(self, funstring, addspace = True):
+        if addspace:
+            eq = texeq(funstring)
+        else: eq = funstring
+        self.funstrings.append(eq)
+
+    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False):
 
         if grid == None:
             multiplot = False
             nrows = 1
             ncols = 1
-        else:   
+            assert n <= 10, "Max 10 iterations reached"
+        else:
             multiplot = True
             nrows = grid[0]
             ncols = grid[1]
-        
+            assert nrows*ncols <= 10, "Max 10 iterations reached"
+
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
         if nrows == 1 & ncols == 1:
             axs = np.array([axs])
         else:
             axs = axs.ravel()
-        
+
         for ax in axs:
             ax.set_xlim(self.xlim)
             ax.set_ylim(self.ylim)
@@ -85,53 +100,53 @@ class attractor:
         if showaxis == False:
             for ax in axs:
                 ax.set_axis_off()
-        
+
         m = len(self.ifs)
-        
+
         start = time.perf_counter()
 
-        if multiplot == True:      
-            
-            for j, ax in enumerate(axs):  
-                
+        if multiplot == True:
+
+            for j, ax in enumerate(axs):
+
                 for code in codes(m, j):
-                    
+
                     t = mpl.transforms.IdentityTransform()
-                    
+
                     for i in code:
                         t += self.ifs[i]
-                        
-                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+
+                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
                         facecolor = facecolor, edgecolor = edgecolor))
-                
+
                 end = time.perf_counter()
 
                 if timeit:
-                    print('Iteration ' + str(j) + ' took ' + str(end - start) + 
-                        ' seconds.') 
-        else:      
-            
+                    print('Iteration ' + str(j) + ' took ' + str(end - start) +
+                        ' seconds.')
+        else:
+
             ax = axs[0]
             t = mpl.transforms.IdentityTransform()
-            
+
             for code in codes(m, n):
-                
+
                 t = mpl.transforms.IdentityTransform()
-                
+
                 for i in code:
                         t += self.ifs[i]
-            
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks), 
+
+                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
                     facecolor = facecolor, edgecolor = edgecolor))
-            
+
             end = time.perf_counter()
 
             if timeit:
-                print('Iteration ' + str(n) + ' took ' + str(end - start) + 
+                print('Iteration ' + str(n) + ' took ' + str(end - start) +
                     ' seconds.')
 
         end = time.perf_counter()
-        
+
         if timeit:
             print('The whole cell took ' + str(end - start) + ' seconds.')
 
