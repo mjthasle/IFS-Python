@@ -1,7 +1,6 @@
 import streamlit as st
 from ifs import *
 st.set_page_config(layout="wide")
-plt.rcParams.update({'font.size': 35})
 
 st.title("Let's draw IFS attractors!")
 st.header("Built-in IFS")
@@ -10,8 +9,10 @@ multiplot = st.toggle("Multiplot")
 
 if multiplot:
 	plt.rcParams['figure.figsize'] = (80, 80)
+	plt.rcParams.update({'font.size': 35})
 else:
 	plt.rcParams['figure.figsize'] = (16, 16)
+	plt.rcParams.update({'font.size': 12})
 
 
 col1, col2 = st.columns(2, gap = "large")
