@@ -1,10 +1,20 @@
 import streamlit as st
 from ifs import *
-plt.rcParams.update({'font.size': 35})
-plt.rcParams['figure.figsize'] = (16, 16)
+
+st.set_page_config(layout="wide")
 
 st.title("Let's draw IFS attractors!")
 st.header("Built-in IFS")
+
+multiplot = st.toggle("Multiplot")
+
+if multiplot:
+	plt.rcParams['figure.figsize'] = (80, 80)
+	plt.rcParams.update({'font.size': 35})
+else:
+	plt.rcParams['figure.figsize'] = (16, 16)
+	plt.rcParams.update({'font.size': 12})
+
 col1, col2 = st.columns(2, gap = "large")
 
 # built-in IFS options
@@ -17,7 +27,7 @@ def reset_n():
 
 # built-in IFS settings in the left column
 with col1:
-	option_selected = st.selectbox("Select an IFS attractor to plot", 
+	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
 	n = st.number_input("Number of iterations: ", min_value = 0, max_value = 10,
 		step = 1, key = "n")
@@ -30,9 +40,9 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	if option_selected == "Cantor Ternary Set":
-		st.pyplot(IFSCatalogue.cantor().plot(n = n, showaxis = True))  
+		st.pyplot(IFSCatalogue.cantor().plot(n = n, showaxis = True))
 	elif option_selected == "Sierpinski Gasket":
-		st.pyplot(IFSCatalogue.gasket().plot(n = n, showaxis = True))  
+		st.pyplot(IFSCatalogue.gasket().plot(n = n, showaxis = True))
 	elif option_selected == "Fudgeflake":
 		st.pyplot(IFSCatalogue.fudgeflake().plot(n = n, facecolor = 'b', showaxis = True))
 	elif option_selected == "Twindragon":
