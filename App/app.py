@@ -6,14 +6,14 @@ st.set_page_config(layout="wide")
 st.title("Let's draw IFS attractors!")
 st.header("Built-in IFS")
 
-multiplot = st.toggle("Multiplot")
+multiplot = st.toggle("Multiplot", value=True)
 
 if multiplot:
-	plt.rcParams['figure.figsize'] = (80, 80)
-	plt.rcParams.update({'font.size': 35})
+	plt.rcParams.update({'font.size': 4})
+	plt.rcParams['figure.figsize'] = (8,8)
 else:
-	plt.rcParams['figure.figsize'] = (16, 16)
-	plt.rcParams.update({'font.size': 12})
+	plt.rcParams.update({'font.size': 10})
+	#plt.rcParams['figure.figsize'] = (16, 16)
 
 col1, col2 = st.columns(2, gap = "large")
 
@@ -29,8 +29,11 @@ def reset_n():
 with col1:
 	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
-	n = st.number_input("Number of iterations: ", min_value = 0, max_value = 10,
-		step = 1, key = "n")
+
+	if not multiplot:
+		n = st.number_input("Number of iterations: ", min_value = 0,
+			max_value = 10, step = 1, key = "n")
+
 	for a in attractors:
 		if a.namestring == option_selected:
 			funstrings = a.funstrings
@@ -41,13 +44,13 @@ with col1:
 with col2:
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			st.pyplot(IFSCatalogue.cantor().plot(grid = (3,2)))
+			IFSCatalogue.cantor().multiplot(grid = (3,2))
 		elif option_selected == "Sierpinski Gasket":
-			st.pyplot(IFSCatalogue.gasket().plot(grid = (3,2)))
+			IFSCatalogue.gasket().multiplot(grid = (3,2))
 		elif option_selected == "Fudgeflake":
-			st.pyplot(IFSCatalogue.fudgeflake().plot(grid = (3,2), facecolor = 'b'))
+			IFSCatalogue.fudgeflake().multiplot(grid = (3,3), facecolor = 'b')
 		elif option_selected == "Twindragon":
-			st.pyplot(IFSCatalogue.twindragon().plot(grid = (3,2), facecolor = 'w'))
+			IFSCatalogue.twindragon().multiplot(grid = (4,3), facecolor = 'w')
 	else:
 		if option_selected == "Cantor Ternary Set":
 			st.pyplot(IFSCatalogue.cantor().plot(n = n))
