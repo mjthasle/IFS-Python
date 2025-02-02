@@ -78,12 +78,12 @@ class attractor:
             multiplot = False
             nrows = 1
             ncols = 1
-            assert n <= 10, "Max 10 iterations reached"
+            assert n <= 15, "Max 15 iterations reached"
         else:
             multiplot = True
             nrows = grid[0]
             ncols = grid[1]
-            assert nrows*ncols <= 10, "Max 10 iterations reached"
+            assert nrows*ncols <= 15, "Max 15 iterations reached"
 
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
@@ -163,7 +163,7 @@ class attractor:
 
         nrows = grid[0]
         ncols = grid[1]
-        assert nrows*ncols <= 10, "Max 10 iterations reached"
+        assert nrows*ncols <= 15, "Max 15 iterations reached"
 
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
@@ -186,13 +186,15 @@ class attractor:
 
         end = time.perf_counter()
 
-        st.write("Initial set up time: " + str(end - start) + " seconds")
+        if timeit:
+            st.write("Initial set up time: " + str(end - start) + " seconds")
 
         start = time.perf_counter()
-        the_plot = st.pyplot(plt)
+        the_plot = st.pyplot(fig)
         end = time.perf_counter()
 
-        st.write("Initial plot axes took " + str(end - start) + " seconds")
+        if timeit:
+            st.write("Initial plot axes took " + str(end - start) + " seconds")
 
         m = len(self.ifs)
 
@@ -212,7 +214,7 @@ class attractor:
                 ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
                     facecolor = facecolor, edgecolor = edgecolor))
 
-            the_plot.pyplot(plt)
+            the_plot.pyplot(fig)
 
             end = time.perf_counter()
 

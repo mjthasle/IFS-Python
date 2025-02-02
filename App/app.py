@@ -1,17 +1,18 @@
 import streamlit as st
 from ifs import *
 st.set_page_config(layout="wide")
-plt.rcParams.update({'font.size': 35})
 
 st.title("Let's draw IFS attractors!")
 st.header("Built-in IFS")
 
-multiplot = st.toggle("Multiplot")
+multiplot = st.toggle("Multiplot", value=True)
 
 if multiplot:
-	plt.rcParams['figure.figsize'] = (80, 80)
+	plt.rcParams.update({'font.size': 4})
+	plt.rcParams['figure.figsize'] = (8,8)
 else:
-	plt.rcParams['figure.figsize'] = (16, 16)
+	plt.rcParams.update({'font.size': 10})
+	#plt.rcParams['figure.figsize'] = (16, 16)
 
 
 col1, col2 = st.columns(2, gap = "large")
@@ -30,7 +31,7 @@ with col1:
 	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
 	if multiplot == False:
-		n = st.number_input("Number of iterations: ", min_value = 0, max_value = 8,
+		n = st.number_input("Number of iterations: ", min_value = 0, max_value = 15,
 			step = 1, key = "n")
 	for a in attractors:
 		if a.namestring == option_selected:
@@ -42,13 +43,13 @@ with col1:
 with col2:
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			st.pyplot(cantor().plot(grid = (3,3)))
+			cantor().multiplot(grid = (3,2))
 		elif option_selected == "Sierpinski Gasket":
-			st.pyplot(gasket().plot(grid = (3,3)))
+			gasket().multiplot(grid = (3,2))
 		elif option_selected == "Fudgeflake":
-			st.pyplot(fudgeflake().plot(grid = (3,3), facecolor = 'b'))
+			fudgeflake().multiplot(grid = (3,3), facecolor = 'b')
 		elif option_selected == "Twindragon":
-			st.pyplot(twindragon().plot(grid = (3,3), facecolor = 'w'))
+			twindragon().multiplot(grid = (4,3), facecolor = 'w')
 	else:
 		if option_selected == "Cantor Ternary Set":
 			st.pyplot(cantor().plot(n = n))
