@@ -1,5 +1,13 @@
+import os
+import json
 import streamlit as st
 from ifs import *
+
+file_path = os.path.join(os.getcwd(), "config.json")
+with open(file_path, 'r', encoding = 'utf8') as json_file:
+    config = json.load(json_file)
+
+max_iterations = config["max_iterations"]
 
 st.set_page_config(layout="wide")
 
@@ -31,7 +39,7 @@ with col1:
 
 	if not multiplot:
 		n = st.number_input("Number of iterations: ", min_value = 0,
-			max_value = 10, step = 1, key = "n")
+			max_value = max_iterations, step = 1, key = "n")
 
 	for a in attractors:
 		if a.namestring == option_selected:

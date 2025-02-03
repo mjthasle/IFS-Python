@@ -2,11 +2,13 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Nov 30, 2024
+Last Updated on Feb 3, 2024
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
 
+import os
+import json
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import streamlit as st
@@ -15,6 +17,12 @@ import numpy as np
 import time
 import PIL.Image
 PIL.Image.MAX_IMAGE_PIXELS = None
+
+file_path = os.path.join(os.getcwd(), "config.json")
+with open(file_path, 'r', encoding = 'utf8') as json_file:
+    config = json.load(json_file)
+
+max_iterations = config["max_iterations"]
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -71,12 +79,12 @@ class attractor:
         else: eq = funstring
         self.funstrings.append(eq)
 
-    def plot(self, n = 0, facecolor = 'k', edgecolor = 'k',
+    def plot(self, n = 0, facecolor = 'k', edgecolor = None,
         showaxis = True, timeit = False):
 
         nrows = 1
         ncols = 1
-        assert n <= 15, "Max 15 iterations reached"
+        assert n <= max_iterations, "Max 15 iterations reached"
 
         fig, axs = plt.subplots(nrows = 1, ncols = 1)
         axs = np.array([axs])
