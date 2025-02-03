@@ -41,24 +41,27 @@ with col1:
 
 # plot the attractor in the right column
 with col2:
+	matches = [a for a in attractors if a.namestring == option_selected]
+	assert(len(matches) == 1, "More than one attractor has this name!")
+	a = matches[0]
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			IFSCatalogue.cantor().multiplot(grid = (3,2))
+			a.multiplot(grid = (3,2))
 		elif option_selected == "Sierpinski Gasket":
-			IFSCatalogue.gasket().multiplot(grid = (3,2))
+			a.multiplot(grid = (3,2))
 		elif option_selected == "Fudgeflake":
-			IFSCatalogue.fudgeflake().multiplot(grid = (3,3), facecolor = 'b')
+			a.multiplot(grid = (3,3), facecolor = 'b')
 		elif option_selected == "Twindragon":
-			IFSCatalogue.twindragon().multiplot(grid = (4,3), facecolor = 'w')
+			a.multiplot(grid = (4,3), facecolor = 'w')
 	else:
 		if option_selected == "Cantor Ternary Set":
-			st.pyplot(IFSCatalogue.cantor().plot(n = n))
+			st.pyplot(a.plot(n = n))
 		elif option_selected == "Sierpinski Gasket":
-			st.pyplot(IFSCatalogue.gasket().plot(n = n))
+			st.pyplot(a.plot(n = n))
 		elif option_selected == "Fudgeflake":
-			st.pyplot(IFSCatalogue.fudgeflake().plot(n = n, facecolor = 'b'))
+			st.pyplot(a.plot(n = n, facecolor = 'b'))
 		elif option_selected == "Twindragon":
-			st.pyplot(IFSCatalogue.twindragon().plot(n = n, facecolor = 'w'))
+			st.pyplot(a.plot(n = n, facecolor = 'w'))
 
 st.header("Random IFS")
 
