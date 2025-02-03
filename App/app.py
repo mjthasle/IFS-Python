@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 18 18:49:59 2023
+
+Last Updated on Feb 3, 2025
+
+@author: Mitch Haslehurst, Emily Rose Korfanty
+"""
+
 import os
 import json
 import streamlit as st
