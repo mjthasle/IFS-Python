@@ -71,26 +71,15 @@ class attractor:
         else: eq = funstring
         self.funstrings.append(eq)
 
-    def plot(self, n = 0, grid = None, facecolor = 'k', edgecolor = 'k',
+    def plot(self, n = 0, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False):
 
-        if grid == None:
-            multiplot = False
-            nrows = 1
-            ncols = 1
-            assert n <= 15, "Max 15 iterations reached"
-        else:
-            multiplot = True
-            nrows = grid[0]
-            ncols = grid[1]
-            assert nrows*ncols <= 15, "Max 15 iterations reached"
+        nrows = 1
+        ncols = 1
+        assert n <= 15, "Max 15 iterations reached"
 
-        fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
-
-        if nrows == 1 & ncols == 1:
-            axs = np.array([axs])
-        else:
-            axs = axs.ravel()
+        fig, axs = plt.subplots(nrows = 1, ncols = 1)
+        axs = np.array([axs])
 
         for ax in axs:
             ax.set_xlim(self.xlim)
@@ -105,53 +94,30 @@ class attractor:
                 ax.set_axis_off()
 
         m = len(self.ifs)
-
         start = time.perf_counter()
+        ax = axs[0]
+        t = mpl.transforms.IdentityTransform()
 
-        if multiplot == True:
+        for code in codes(m, n):
 
-            for j, ax in enumerate(axs):
-
-                for code in codes(m, j):
-
-                    t = mpl.transforms.IdentityTransform()
-
-                    for i in code:
-                        t += self.ifs[i]
-
-                    ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
-                        facecolor = facecolor, edgecolor = edgecolor))
-
-                end = time.perf_counter()
-
-                if timeit:
-                    print('Iteration ' + str(j) + ' took ' + str(end - start) +
-                        ' seconds.')
-        else:
-
-            ax = axs[0]
             t = mpl.transforms.IdentityTransform()
 
-            for code in codes(m, n):
+            for i in code:
+                    t += self.ifs[i]
 
-                t = mpl.transforms.IdentityTransform()
-
-                for i in code:
-                        t += self.ifs[i]
-
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
-                    facecolor = facecolor, edgecolor = edgecolor))
-
-            end = time.perf_counter()
-
-            if timeit:
-                print('Iteration ' + str(n) + ' took ' + str(end - start) +
-                    ' seconds.')
+            ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+                facecolor = facecolor, edgecolor = edgecolor))
 
         end = time.perf_counter()
 
         if timeit:
-            print('The whole cell took ' + str(end - start) + ' seconds.')
+            print('Iteration ' + str(n) + ' took ' + str(end - start) +
+                ' seconds.')
+
+        end = time.perf_counter()
+
+        if timeit:
+            print('The whole process took ' + str(end - start) + ' seconds.')
 
         return fig
 
