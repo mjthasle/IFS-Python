@@ -19,7 +19,6 @@ col1, col2 = st.columns(2, gap = "large")
 
 # built-in IFS options
 attractors = get_attractors()
-box_options = ["Sierpinski Gasket", "Fudgeflake", "Twindragon"]
 box_options = [a.namestring for a in attractors]
 
 def reset_n():
