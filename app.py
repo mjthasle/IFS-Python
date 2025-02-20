@@ -66,20 +66,6 @@ with col1:
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	if multiplot:
-		if option_selected == "Cantor Ternary Set":
-			a.multiplot(facecolor = colour_selected)
-		elif option_selected == "Sierpinski Gasket":
-			a.multiplot(facecolor = colour_selected)
-		elif option_selected == "Fudgeflake":
-			a.multiplot(facecolor = colour_selected)
-		elif option_selected == "Twindragon":
-			a.multiplot(facecolor = colour_selected)
+		a.multiplot(facecolor = colour_selected)
 	else:
-		if option_selected == "Cantor Ternary Set":
-			st.pyplot(a.plot(n = n, facecolor = colour_selected))
-		elif option_selected == "Sierpinski Gasket":
-			st.pyplot(a.plot(n = n, facecolor = colour_selected))
-		elif option_selected == "Fudgeflake":
-			st.pyplot(a.plot(n = n, facecolor = colour_selected))
-		elif option_selected == "Twindragon":
-			st.pyplot(a.plot(n = n, facecolor = colour_selected))
+		a.plot(n = n, facecolor = colour_selected)

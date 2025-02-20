@@ -94,7 +94,7 @@ class attractor:
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
-    def plot(self, n = 0, facecolor = 'k', edgecolor = None,
+    def plot(self, n = 0, facecolor = 'k',
         showaxis = True, timeit = False):
 
         nrows = 1
@@ -119,7 +119,7 @@ class attractor:
                     t += self.ifs[i]
 
             ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
-                facecolor = facecolor, edgecolor = edgecolor))
+                facecolor = facecolor))
 
         end = time.perf_counter()
 
@@ -132,7 +132,7 @@ class attractor:
         if timeit:
             print('The whole process took ' + str(end - start) + ' seconds.')
 
-        return fig
+        st.pyplot(fig)
 
 
      # Function to show multiplots in steamlit one-by-one
