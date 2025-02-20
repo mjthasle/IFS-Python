@@ -4,9 +4,9 @@ A streamlit app for generating fractal images using  2D affine iterated function
 
 **What is an affine IFS?**
 Generally speaking, an [iterated function system (IFS)](https://en.wikipedia.org/wiki/Iterated_function_system) is a collection of *contractive* functions.  In two dimensions, an **affine IFS** is a collection of functions of the form
-$$
-f(x) = Ax + b \,,
-$$
+
+$f(x) = Ax + b$,
+
 where $A$ is a 2-by-2 matrix, and $b$ is a constant vector.  In this case, *contractive* means that the length of the vector $f(x)$ is always less than the length of $x$.
 
 **App Details:**
