@@ -201,11 +201,13 @@ class IFSCatalogue:
         K = attractor(namestring = "Cantor Ternary Set")
 
         K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-        K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
+        K.funstrings.append(r'''f_1(x) = \frac{1}{3}x''')
 
         K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
             mpl.transforms.Affine2D().scale(1/3))
-        K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
+        K.funstrings.append(r'''f_2(x) = \frac{1}{3}x + \begin{bmatrix}
+            \frac{2}{3} \\ 0
+            \end{bmatrix}''')
 
         return K
 
@@ -233,6 +235,19 @@ class IFSCatalogue:
 
         return K
 
+    def carpet():
+        K = attractor(namestring = "Sierpinski Carpet")
+
+        for i in range(9):
+            if i != 4:
+                K.ifs.append(mpl.transforms.Affine2D().translate(i // 3, i % 3) + mpl.transforms.Affine2D().scale(1/3))
+        K.funstrings.append(r'''f_{i,j}(x) = \frac{1}{3}\left(x+\begin{bmatrix}
+            i \\
+            j
+            \end{bmatrix}\right)\text{ for }(i,j)\in\{0,1,2\}^2-\{(1,1)\}''')
+
+        return K
+    
     # Function to create a fudgeflake
     def fudgeflake():
         K = attractor(namestring = "Fudgeflake")
