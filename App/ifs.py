@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Feb 3, 2025
+Last Updated on Feb 19, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -21,8 +21,6 @@ PIL.Image.MAX_IMAGE_PIXELS = None
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
     config = json.load(json_file)
-
-max_iterations = config["max_iterations"]
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -50,8 +48,8 @@ class attractor:
 
     instances = []
 
-    def __init__(self, ifs = None, funstrings=None, namestring=None,
-        clicks = None, xlim = [0,1], ylim = [0,1]):
+    def __init__(self, namestring, ifs = None, funstrings = None, max_iterations = 10,
+        clicks = None, xlim = [0,1], ylim = [0,1], grid = (1,1)):
 
         self.instances.append(namestring)
 
@@ -66,9 +64,18 @@ class attractor:
             self.funstrings = funstrings
 
         self.clicks = clicks
-        self.namestring = namestring
+        self.grid = grid
         self.xlim = xlim
         self.ylim = ylim
+        self.max_iterations = max_iterations
+        self.namestring = namestring
+
+        if(self.namestring in list(config.keys())):
+            self.grid = config[self.namestring]['grid']
+            self.clicks = config[self.namestring]['clicks']
+            self.xlim = config[self.namestring]['xlim']
+            self.ylim = config[self.namestring]['ylim']
+            self.max_iterations = config[self.namestring]['max_iterations']
 
     def add_fun(self, fun):
         self.ifs.append(fun)
@@ -79,31 +86,29 @@ class attractor:
         else: eq = funstring
         self.funstrings.append(eq)
 
+    def format_ax(self, ax):
+        ax.set_xlim(self.xlim)
+        ax.set_ylim(self.ylim)
+        ax.set_aspect("equal")
+        old_ticks = ax.get_yticks()
+        new_ticks = old_ticks[1:]
+        ax.set_yticks(new_ticks)
+
     def plot(self, n = 0, facecolor = 'k', edgecolor = None,
         showaxis = True, timeit = False):
 
         nrows = 1
         ncols = 1
-        assert n <= max_iterations, "Max 15 iterations reached"
+        assert n <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
 
-        fig, axs = plt.subplots(nrows = 1, ncols = 1)
-        axs = np.array([axs])
-
-        for ax in axs:
-            ax.set_xlim(self.xlim)
-            ax.set_ylim(self.ylim)
-            ax.set_aspect("equal")
-            old_ticks = ax.get_yticks()
-            new_ticks = old_ticks[1:]
-            ax.set_yticks(new_ticks)
+        fig, ax = plt.subplots(nrows = 1, ncols = 1)
+        self.format_ax(ax)
 
         if showaxis == False:
-            for ax in axs:
-                ax.set_axis_off()
+            ax.set_axis_off()
 
         m = len(self.ifs)
         start = time.perf_counter()
-        ax = axs[0]
         t = mpl.transforms.IdentityTransform()
 
         for code in codes(m, n):
@@ -131,14 +136,14 @@ class attractor:
 
 
      # Function to show multiplots in steamlit one-by-one
-    def multiplot(self, grid = (1,1), facecolor = 'k', edgecolor = 'k',
+    def multiplot(self, facecolor = 'k', edgecolor = 'k',
         showaxis = True, timeit = False, saveit = False):
 
         start = time.perf_counter()
 
-        nrows = grid[0]
-        ncols = grid[1]
-        assert nrows*ncols <= 15, "Max 15 iterations reached"
+        nrows = self.grid[0]
+        ncols = self.grid[1]
+        assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
 
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
@@ -148,12 +153,7 @@ class attractor:
             axs = axs.ravel()
 
         for ax in axs:
-            ax.set_xlim(self.xlim)
-            ax.set_ylim(self.ylim)
-            ax.set_aspect("equal")
-            old_ticks = ax.get_yticks()
-            new_ticks = old_ticks[1:]
-            ax.set_yticks(new_ticks)
+            self.format_ax(ax)
 
         if showaxis == False:
             for ax in axs:
@@ -198,8 +198,7 @@ class attractor:
 class IFSCatalogue:
     # Function to create a Cantor ternary set (TODO: fix this plot)
     def cantor():
-        K = attractor(clicks=np.array([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]]),
-            xlim = [-0.25, 1.25], ylim = [-0.5, 0.5])
+        K = attractor(namestring = "Cantor Ternary Set")
 
         K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
         K.funstrings.append(r'''f_1 = \frac{1}{3}x''')
@@ -208,12 +207,11 @@ class IFSCatalogue:
             mpl.transforms.Affine2D().scale(1/3))
         K.funstrings.append(r'''f_2 = \frac{1}{3}x + \frac{2}{3}''')
 
-        K.namestring = "Cantor Ternary Set"
         return K
 
     # Function to create a Sierpinski gasket
     def gasket():
-        K = attractor(clicks=np.array([[0, 0], [1, 0], [0.5, np.sqrt(3)/2]]))
+        K = attractor(namestring = "Sierpinski Gasket")
 
         K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
         K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
@@ -233,14 +231,11 @@ class IFSCatalogue:
             \frac{\sqrt{3}}{4}
             \end{bmatrix}''')
 
-        K.namestring = "Sierpinski Gasket"
         return K
 
     # Function to create a fudgeflake
     def fudgeflake():
-        K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
-            [0.75, 0.9], [0.5, 1]]),
-            xlim = [-1,1], ylim = [-1,1])
+        K = attractor(namestring = "Fudgeflake")
 
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
@@ -277,14 +272,11 @@ class IFSCatalogue:
             -\frac{\sqrt{3}}{6}
             \end{bmatrix}''')
 
-        K.namestring = "Fudgeflake"
         return K
 
     # Function to create a twindragon
     def twindragon():
-        K = attractor(clicks=np.array([[0.2, 0.2], [1, 1], [0.75, 0.9], [0.2, 0.2],
-            [0.75, 0.9], [0.5, 1]]),
-            xlim = [-1.5,1.5], ylim = [-1.5, 1.5])
+        K = attractor(namestring = "Twindragon")
 
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
             mpl.transforms.Affine2D().translate(-0.5, 0.5) +
@@ -308,9 +300,14 @@ class IFSCatalogue:
             \frac{-1}{2}
             \end{bmatrix}''')
 
-        K.namestring = "Twindragon"
         return K
 
 def get_attractors():
     attractors = [getattr(IFSCatalogue, method)() for method in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) and not method.startswith("__")]
     return attractors
+
+def get_selected_attractor(option_selected, attractors):
+    matches = [a for a in attractors if a.namestring == option_selected]
+    assert len(matches) == 1, "More than one attractor has this name!"
+    a = matches[0]
+    return a

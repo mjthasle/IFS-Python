@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on Feb 3, 2025
+Last Updated on Feb 19, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -16,21 +16,21 @@ file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
     config = json.load(json_file)
 
-max_iterations = config["max_iterations"]
-
 st.set_page_config(layout="wide")
 
 st.title("Let's draw IFS attractors!")
-st.header("Built-in IFS")
+
+st.write("Use the drop-down menu to select a built-in iterated function system (IFS).  The plots show the result of iterating the IFS starting from a polygon.  No matter what polygon you start with, the results approximate the IFS attractor as the number of iterations increases!")
+
+st.write("Turn off the toggle below to view a single iteration.")
 
 multiplot = st.toggle("Multiplot", value=True)
 
 if multiplot:
-	plt.rcParams.update({'font.size': 4})
-	plt.rcParams['figure.figsize'] = (8,8)
+	plt.rcParams.update({'font.size': config['multiplot_font']})
+	plt.rcParams['figure.figsize'] = config['multiplot_size']
 else:
-	plt.rcParams.update({'font.size': 10})
-	#plt.rcParams['figure.figsize'] = (16, 16)
+	plt.rcParams.update({'font.size': config['singleplot_font']})
 
 col1, col2 = st.columns(2, gap = "large")
 
@@ -46,6 +46,9 @@ with col1:
 	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
 
+	a = get_selected_attractor(option_selected, attractors)
+	max_iterations = a.max_iterations
+
 	if not multiplot:
 		n = st.number_input("Number of iterations: ", min_value = 0,
 			max_value = max_iterations, step = 1, key = "n")
@@ -58,18 +61,16 @@ with col1:
 
 # plot the attractor in the right column
 with col2:
-	matches = [a for a in attractors if a.namestring == option_selected]
-	assert(len(matches) == 1, "More than one attractor has this name!")
-	a = matches[0]
+	a = get_selected_attractor(option_selected, attractors)
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			a.multiplot(grid = (3,2))
+			a.multiplot()
 		elif option_selected == "Sierpinski Gasket":
-			a.multiplot(grid = (3,2))
+			a.multiplot()
 		elif option_selected == "Fudgeflake":
-			a.multiplot(grid = (3,3), facecolor = 'b')
+			a.multiplot(facecolor = 'b')
 		elif option_selected == "Twindragon":
-			a.multiplot(grid = (4,3), facecolor = 'w')
+			a.multiplot(facecolor = 'w')
 	else:
 		if option_selected == "Cantor Ternary Set":
 			st.pyplot(a.plot(n = n))
@@ -79,11 +80,3 @@ with col2:
 			st.pyplot(a.plot(n = n, facecolor = 'b'))
 		elif option_selected == "Twindragon":
 			st.pyplot(a.plot(n = n, facecolor = 'w'))
-
-st.header("Random IFS")
-
-st.write("Under construction.")
-
-st.header("Make your own IFS")
-
-st.write("Under construction.")

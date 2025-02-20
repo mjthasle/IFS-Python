@@ -1,3 +1,37 @@
 {
-    "max_iterations": 10
+    "multiplot_size": [8,8],
+    "multiplot_font": 4,
+    "singleplot_font": 10,
+    "Cantor Ternary Set":
+        {
+            "max_iterations": 8,
+            "grid": [3,2],
+            "clicks": [[0,-0.5], [1,-0.5], [1,0.5], [0,0.5]],
+            "xlim": [-0.25,1.25],
+            "ylim": [-0.5,0.5]
+        },
+    "Sierpinski Gasket":
+        {
+            "max_iterations": 8,
+            "grid": [3,2],
+            "clicks": [[0,0], [1,0], [0.5,0.8660254037844386]],
+            "xlim": [0,1],
+            "ylim": [0,1]
+        },
+    "Fudgeflake":
+        {
+            "max_iterations": 9,
+            "grid": [3,3],
+            "clicks": [[0.2,0.2], [1,1], [0.75,0.9], [0.2,0.2], [0.75,0.9], [0.5,1]],
+            "xlim": [-1,1],
+            "ylim": [-1,1]
+        },
+    "Twindragon":
+        {
+            "max_iterations": 14,
+            "grid": [4,3],
+            "clicks": [[0.2,0.2], [1,1], [0.75,0.9], [0.2,0.2], [0.75,0.9], [0.5,1]],
+            "xlim": [-1.5,1.5],
+            "ylim": [-1.5,1.5]
+        }
 }
