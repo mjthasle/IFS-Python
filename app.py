@@ -17,7 +17,7 @@ st.write("Use the drop-down menu to select a built-in iterated function system (
 
 st.write("Turn off the toggle below to view a single iteration.")
 
-multiplot = st.toggle("Multiplot", value=True)
+multiplot = st.toggle("Multiplot", value = False)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -30,16 +30,16 @@ col1, col2 = st.columns(2, gap = "large")
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
-colour_options = ['Blue', 'Black', 'Red', 'Green']
+colour_options = ['Black', 'Blue', 'Red', 'Green', 'Orange', 'Purple', 'Brown', 'Pink', 'Gray', 'Olive', 'Cyan']
 
 def reset_n():
 	st.session_state.n = 0
 
 # built-in IFS settings in the left column
 with col1:
-	option_selected = st.selectbox("Select an IFS attractor to plot",
+	option_selected = st.selectbox("Select an attractor to plot",
 		box_options, on_change = reset_n)
-	colour_selected = st.selectbox("Select a colour for the initial set",
+	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
 
 	a = get_selected_attractor(option_selected, attractors)

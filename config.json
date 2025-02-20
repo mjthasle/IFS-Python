@@ -18,6 +18,14 @@
             "xlim": [0,1],
             "ylim": [0,1]
         },
+    "Sierpinski Carpet":
+        {
+            "max_iterations": 5,
+            "grid": [2,2],
+            "clicks": [[0,0], [1,0], [1,1], [0,1]],
+            "xlim": [0,1],
+            "ylim": [0,1]
+        },
     "Fudgeflake":
         {
             "max_iterations": 9,
