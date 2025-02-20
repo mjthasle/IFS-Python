@@ -136,7 +136,7 @@ class attractor:
 
 
      # Function to show multiplots in steamlit one-by-one
-    def multiplot(self, facecolor = 'k', edgecolor = 'k',
+    def multiplot(self, facecolor = 'k',
         showaxis = True, timeit = False, saveit = False):
 
         start = time.perf_counter()
@@ -185,7 +185,7 @@ class attractor:
                     t += self.ifs[i]
 
                 ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
-                    facecolor = facecolor, edgecolor = edgecolor))
+                    facecolor = facecolor))
 
             the_plot.pyplot(fig)
 
