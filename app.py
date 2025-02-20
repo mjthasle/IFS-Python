@@ -7,14 +7,7 @@ Last Updated on Feb 19, 2025
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
 
-import os
-import json
-import streamlit as st
 from ifs import *
-
-file_path = os.path.join(os.getcwd(), "config.json")
-with open(file_path, 'r', encoding = 'utf8') as json_file:
-    config = json.load(json_file)
 
 st.set_page_config(layout="wide")
 
