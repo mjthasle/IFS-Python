@@ -37,6 +37,7 @@ col1, col2 = st.columns(2, gap = "large")
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
+colour_options = ['Blue', 'Black', 'Red', 'Green']
 
 def reset_n():
 	st.session_state.n = 0
@@ -45,6 +46,8 @@ def reset_n():
 with col1:
 	option_selected = st.selectbox("Select an IFS attractor to plot",
 		box_options, on_change = reset_n)
+	colour_selected = st.selectbox("Select a colour for the initial set",
+								colour_options)
 
 	a = get_selected_attractor(option_selected, attractors)
 	max_iterations = a.max_iterations
@@ -64,19 +67,19 @@ with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	if multiplot:
 		if option_selected == "Cantor Ternary Set":
-			a.multiplot()
+			a.multiplot(facecolor = colour_selected)
 		elif option_selected == "Sierpinski Gasket":
-			a.multiplot()
+			a.multiplot(facecolor = colour_selected)
 		elif option_selected == "Fudgeflake":
-			a.multiplot(facecolor = 'b')
+			a.multiplot(facecolor = colour_selected)
 		elif option_selected == "Twindragon":
-			a.multiplot(facecolor = 'w')
+			a.multiplot(facecolor = colour_selected)
 	else:
 		if option_selected == "Cantor Ternary Set":
-			st.pyplot(a.plot(n = n))
+			st.pyplot(a.plot(n = n, facecolor = colour_selected))
 		elif option_selected == "Sierpinski Gasket":
-			st.pyplot(a.plot(n = n))
+			st.pyplot(a.plot(n = n, facecolor = colour_selected))
 		elif option_selected == "Fudgeflake":
-			st.pyplot(a.plot(n = n, facecolor = 'b'))
+			st.pyplot(a.plot(n = n, facecolor = colour_selected))
 		elif option_selected == "Twindragon":
-			st.pyplot(a.plot(n = n, facecolor = 'w'))
+			st.pyplot(a.plot(n = n, facecolor = colour_selected))
