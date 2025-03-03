@@ -16,8 +16,6 @@ import streamlit as st
 import matplotlib as mpl
 import numpy as np
 import time
-import PIL.Image
-PIL.Image.MAX_IMAGE_PIXELS = None
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
