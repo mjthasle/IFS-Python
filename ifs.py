@@ -62,16 +62,16 @@ class attractor:
         else:
             self.ifs = ifs
 
-        if(self.namestring in list(config.keys())):
-            # check if required properties are available
-            self.grid = config[self.namestring]['grid']
-            self.clicks = config[self.namestring]['clicks']
-            self.xlim = config[self.namestring]['xlim']
-            self.ylim = config[self.namestring]['ylim']
-            self.max_iterations = config[self.namestring]['max_iterations']
-            self.funstrings = fix_tex(config[self.namestring]['funstrings'])
-        else:
-            print("Attractor data missing from config.json!")
+        assert self.namestring in list(config['built_in_ifs'].keys()), "Attractor missing"
+
+        assert list(config['built_in_ifs'].keys()) != config['required_fields'], "Incorrect fields in attractor data"
+
+        self.grid = config['built_in_ifs'][self.namestring]['grid']
+        self.clicks = config['built_in_ifs'][self.namestring]['clicks']
+        self.xlim = config['built_in_ifs'][self.namestring]['xlim']
+        self.ylim = config['built_in_ifs'][self.namestring]['ylim']
+        self.max_iterations = config['built_in_ifs'][self.namestring]['max_iterations']
+        self.funstrings = fix_tex(config['built_in_ifs'][self.namestring]['funstrings'])
 
     def add_fun(self, fun):
         self.ifs.append(fun)
@@ -85,7 +85,7 @@ class attractor:
         ax.set_yticks(new_ticks)
 
     def plot(self, n = 0, facecolor = 'k',
-        showaxis = True, timeit = False):
+        showaxis = True, showgridlines = False, timeit = False):
 
         nrows = 1
         ncols = 1
@@ -96,6 +96,9 @@ class attractor:
 
         if showaxis == False:
             ax.set_axis_off()
+        
+        if showgridlines:
+            ax.grid(alpha = 0.5)
 
         m = len(self.ifs)
         start = time.perf_counter()
@@ -127,7 +130,7 @@ class attractor:
 
      # Function to show multiplots in steamlit one-by-one
     def multiplot(self, facecolor = 'k',
-        showaxis = True, timeit = False, saveit = False):
+        showaxis = True, showgridlines = False, timeit = False, saveit = False):
 
         start = time.perf_counter()
 
@@ -148,6 +151,10 @@ class attractor:
         if showaxis == False:
             for ax in axs:
                 ax.set_axis_off()
+        
+        if showgridlines:
+            for ax in axs:
+                ax.grid(alpha = 0.5)
 
         end = time.perf_counter()
 

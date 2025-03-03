@@ -11,13 +11,16 @@ from ifs import *
 
 st.set_page_config(layout="wide")
 
-st.title("Let's draw IFS attractors!")
+st.title("IFS Python")
 
-st.write("Use the drop-down menu to select a built-in iterated function system (IFS).  The plots show the result of iterating the IFS starting from a polygon.  No matter what polygon you start with, the results approximate the IFS attractor as the number of iterations increases!")
+st.write("This app uses Python to generate fractal images from two-dimensional affine iterated function systems.")
 
-st.write("Turn off the toggle below to view a single iteration.")
+st.write("Use the drop-down menu to select a built-in iterated function system (IFS).  The plots show the result of iterating the IFS starting from a polygon. No matter what polygon you start with, the results approximate the IFS attractor as the number of iterations increases!")
 
-multiplot = st.toggle("Multiplot", value = False)
+st.write("Use the Multiplot toggle to change between views of individual iterations and multiple iterations on the same canvas.")
+
+multiplot = st.toggle("Multiplot", value = True)
+gridlines = st.toggle("Show grid", value = True)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -59,6 +62,6 @@ with col1:
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	if multiplot:
-		a.multiplot(facecolor = colour_selected)
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected)
 	else:
-		a.plot(n = n, facecolor = colour_selected)
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected)
