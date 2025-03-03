@@ -17,11 +17,12 @@ For each built-in IFS, the system is iteratively applied to an initial polygon. 
 
 - Cantor Ternary Set
 - Fudgeflake
+- Sierpinski Carpet
 - Sierpinski Gasket
 - Twindragon.
 
 **Coming soon:**
 
-- Select your own polygon colour
+- Use colours to show fractal self-similarity
 - Generate a random IFS
 - Build your own IFS
