@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on Feb 20, 2025
+Last Updated on March 3, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -11,13 +11,23 @@ from ifs import *
 
 st.set_page_config(layout="wide")
 
-st.title("Let's draw IFS attractors!")
+st.title("IFS Python")
 
-st.write("Use the drop-down menu to select a built-in iterated function system (IFS).  The plots show the result of iterating the IFS starting from a polygon.  No matter what polygon you start with, the results approximate the IFS attractor as the number of iterations increases!")
+st.write("Created by Mitch Haslehurst, PhD and Emily Korfanty")
 
-st.write("Turn off the toggle below to view a single iteration.")
+st.write("This app uses Python to generate fractal images from two-dimensional \
+	affine iterated function systems.")
 
-multiplot = st.toggle("Multiplot", value = False)
+st.write("Use the drop-down menu to select a built-in iterated function system \
+	(IFS).  The plots show the result of iterating the IFS starting from a \
+	polygon. No matter what polygon you start with, the results approximate \
+	the IFS attractor as the number of iterations increases!")
+
+st.write("Use the Multiplot toggle to change between views of individual \
+	iterations and multiple iterations on the same canvas.")
+
+multiplot = st.toggle("Multiplot", value = True)
+gridlines = st.toggle("Show grid", value = True)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -30,7 +40,7 @@ col1, col2 = st.columns(2, gap = "large")
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
-colour_options = ['Black', 'Blue', 'Red', 'Green', 'Orange', 'Purple', 'Brown', 'Pink', 'Gray', 'Olive', 'Cyan']
+colour_options = config['colour_options']
 
 def reset_n():
 	st.session_state.n = 0
@@ -59,6 +69,6 @@ with col1:
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	if multiplot:
-		a.multiplot(facecolor = colour_selected)
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected)
 	else:
-		a.plot(n = n, facecolor = colour_selected)
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected)
