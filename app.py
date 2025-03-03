@@ -30,7 +30,7 @@ col1, col2 = st.columns(2, gap = "large")
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
-colour_options = ['Black', 'Blue', 'Red', 'Green', 'Orange', 'Purple', 'Brown', 'Pink', 'Gray', 'Olive', 'Cyan']
+colour_options = config['colour_options']
 
 def reset_n():
 	st.session_state.n = 0
