@@ -13,11 +13,18 @@ st.set_page_config(layout="wide")
 
 st.title("IFS Python")
 
-st.write("This app uses Python to generate fractal images from two-dimensional affine iterated function systems.")
+st.write("Created by Mitch Haslehurst, PhD and Emily Korfanty")
 
-st.write("Use the drop-down menu to select a built-in iterated function system (IFS).  The plots show the result of iterating the IFS starting from a polygon. No matter what polygon you start with, the results approximate the IFS attractor as the number of iterations increases!")
+st.write("This app uses Python to generate fractal images from two-dimensional \
+	affine iterated function systems.")
 
-st.write("Use the Multiplot toggle to change between views of individual iterations and multiple iterations on the same canvas.")
+st.write("Use the drop-down menu to select a built-in iterated function system \
+	(IFS).  The plots show the result of iterating the IFS starting from a \
+	polygon. No matter what polygon you start with, the results approximate \
+	the IFS attractor as the number of iterations increases!")
+
+st.write("Use the Multiplot toggle to change between views of individual \
+	iterations and multiple iterations on the same canvas.")
 
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)

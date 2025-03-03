@@ -11,6 +11,7 @@ import os
 import json
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
+from matplotlib.transforms import Affine2D, IdentityTransform
 import streamlit as st
 import matplotlib as mpl
 import numpy as np
@@ -62,16 +63,20 @@ class attractor:
         else:
             self.ifs = ifs
 
-        assert self.namestring in list(config['built_in_ifs'].keys()), "Attractor missing"
+        built_in_ifs = config['built_in_ifs']
+        built_in_ifs_keys = list(built_in_ifs.keys())
 
-        assert list(config['built_in_ifs'].keys()) != config['required_fields'], "Incorrect fields in attractor data"
+        assert self.namestring in built_in_ifs_keys, "Attractor missing"
 
-        self.grid = config['built_in_ifs'][self.namestring]['grid']
-        self.clicks = config['built_in_ifs'][self.namestring]['clicks']
-        self.xlim = config['built_in_ifs'][self.namestring]['xlim']
-        self.ylim = config['built_in_ifs'][self.namestring]['ylim']
-        self.max_iterations = config['built_in_ifs'][self.namestring]['max_iterations']
-        self.funstrings = fix_tex(config['built_in_ifs'][self.namestring]['funstrings'])
+        assert built_in_ifs_keys != config['required_fields'], "Incorrect \
+            fields in attractor data"
+
+        self.grid = built_in_ifs[self.namestring]['grid']
+        self.clicks = built_in_ifs[self.namestring]['clicks']
+        self.xlim = built_in_ifs[self.namestring]['xlim']
+        self.ylim = built_in_ifs[self.namestring]['ylim']
+        self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
+        self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
 
     def add_fun(self, fun):
         self.ifs.append(fun)
@@ -89,29 +94,30 @@ class attractor:
 
         nrows = 1
         ncols = 1
-        assert n <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
+        assert n <= self.max_iterations, f"Max {self.max_iterations} \
+            iterations reached"
 
         fig, ax = plt.subplots(nrows = 1, ncols = 1)
         self.format_ax(ax)
 
         if showaxis == False:
             ax.set_axis_off()
-        
+
         if showgridlines:
             ax.grid(alpha = 0.5)
 
         m = len(self.ifs)
         start = time.perf_counter()
-        t = mpl.transforms.IdentityTransform()
+        t = IdentityTransform()
 
         for code in codes(m, n):
 
-            t = mpl.transforms.IdentityTransform()
+            t = IdentityTransform()
 
             for i in code:
                     t += self.ifs[i]
 
-            ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+            ax.add_patch(Polygon(t.transform(self.clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
@@ -136,7 +142,8 @@ class attractor:
 
         nrows = self.grid[0]
         ncols = self.grid[1]
-        assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
+        assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} \
+            iterations reached"
 
         fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
 
@@ -151,7 +158,7 @@ class attractor:
         if showaxis == False:
             for ax in axs:
                 ax.set_axis_off()
-        
+
         if showgridlines:
             for ax in axs:
                 ax.grid(alpha = 0.5)
@@ -197,10 +204,9 @@ class IFSCatalogue:
     def cantor():
         K = attractor(namestring = "Cantor Ternary Set")
 
-        K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
+        K.ifs.append(Affine2D().scale(1/3))
 
-        K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
-            mpl.transforms.Affine2D().scale(1/3))
+        K.ifs.append(Affine2D().translate(2, 0) + Affine2D().scale(1/3))
 
         return K
 
@@ -208,13 +214,12 @@ class IFSCatalogue:
     def gasket():
         K = attractor(namestring = "Sierpinski Gasket")
 
-        K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
+        K.ifs.append(Affine2D().scale(0.5))
 
-        K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) +
-            mpl.transforms.Affine2D().scale(0.5))
+        K.ifs.append(Affine2D().translate(1, 0) + Affine2D().scale(0.5))
 
-        K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
-            mpl.transforms.Affine2D().scale(0.5))
+        K.ifs.append(Affine2D().translate(0.5, np.sqrt(3)/2) +
+            Affine2D().scale(0.5))
 
         return K
 
@@ -223,7 +228,8 @@ class IFSCatalogue:
 
         for i in range(9):
             if i != 4:
-                K.ifs.append(mpl.transforms.Affine2D().translate(i // 3, i % 3) + mpl.transforms.Affine2D().scale(1/3))
+                K.ifs.append(Affine2D().translate(i // 3, i % 3)
+                    + Affine2D().scale(1/3))
 
         return K
 
@@ -231,17 +237,17 @@ class IFSCatalogue:
     def fudgeflake():
         K = attractor(namestring = "Fudgeflake")
 
-        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
-            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
-            mpl.transforms.Affine2D().translate(-1/3, 0))
+        K.ifs.append(Affine2D().rotate(np.pi/6) +
+            Affine2D().scale(1/np.sqrt(3)) +
+            Affine2D().translate(-1/3, 0))
 
-        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
-            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
-            mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
+        K.ifs.append(Affine2D().rotate(np.pi/6) +
+            Affine2D().scale(1/np.sqrt(3)) +
+            Affine2D().translate(0.5*(1/3),(np.sqrt(3)/2)*(1/3)))
 
-        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
-            mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
-            mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
+        K.ifs.append(Affine2D().rotate(np.pi/6) +
+            Affine2D().scale(1/np.sqrt(3)) +
+            Affine2D().translate(0.5*(1/3),-(np.sqrt(3)/2)*(1/3)))
 
         return K
 
@@ -249,18 +255,20 @@ class IFSCatalogue:
     def twindragon():
         K = attractor(namestring = "Twindragon")
 
-        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
-            mpl.transforms.Affine2D().translate(-0.5, 0.5) +
-            mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+        K.ifs.append(Affine2D().rotate(np.pi/4) +
+            Affine2D().translate(-0.5, 0.5) +
+            Affine2D().scale(1/np.sqrt(2)))
 
-        K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
-            mpl.transforms.Affine2D().translate(0.5, -0.5) +
-            mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
+        K.ifs.append(Affine2D().rotate(np.pi/4) +
+            Affine2D().translate(0.5, -0.5) +
+            Affine2D().scale(1/np.sqrt(2)))
 
         return K
 
 def get_attractors():
-    attractors = [getattr(IFSCatalogue, method)() for method in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) and not method.startswith("__")]
+    attractors = [getattr(IFSCatalogue, method)() for method \
+        in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) \
+        and not method.startswith("__")]
     return attractors
 
 def get_selected_attractor(option_selected, attractors):
