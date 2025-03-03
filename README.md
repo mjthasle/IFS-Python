@@ -1,6 +1,6 @@
 # IFS-Python
 
-A streamlit app for generating fractal images using  2D affine iterated function systems.
+A streamlit app for generating fractal images using two-dimensional affine iterated function systems.
 
 **App URL**:
 [https://ifs-python.streamlit.app/](https://ifs-python.streamlit.app/)
@@ -8,7 +8,7 @@ A streamlit app for generating fractal images using  2D affine iterated function
 
 **What is an affine IFS?**
 
-Generally speaking, an [iterated function system (IFS)](https://en.wikipedia.org/wiki/Iterated_function_system) is a collection of *contractive* functions.  In two dimensions, an **affine IFS** is a collection of functions of the form $f(x) = Ax + b$, where $A$ is a 2-by-2 matrix, and $b$ is a constant vector.  In this case, *contractive* means that the length of the vector $f(x)$ is always less than the length of $x$.
+Generally speaking, an [iterated function system (IFS)](https://en.wikipedia.org/wiki/Iterated_function_system) is a collection of *contractive* functions.  An **affine IFS** in $\mathbb R^n$ is a collection of functions of the form $f(x) = Ax + b$, where $A$ is a n-by-n matrix, and $b$ is a constant vector in $\mathbb R^n$.  In this case, *contractive* means that the length of the vector $f(x)$ is always less than the length of $x$.
 
 
 **App Details:**
@@ -17,11 +17,12 @@ For each built-in IFS, the system is iteratively applied to an initial polygon. 
 
 - Cantor Ternary Set
 - Fudgeflake
+- Sierpinski Carpet
 - Sierpinski Gasket
 - Twindragon.
 
 **Coming soon:**
 
-- Select your own polygon colour
+- Use colours to show fractal self-similarity
 - Generate a random IFS
 - Build your own IFS
