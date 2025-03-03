@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Feb 20, 2025
+Last Updated on March 3, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -39,52 +39,42 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
-# Function to fix array spacing for latex equations
+# Functions to fix array spacing for latex equations
 def texeq(eq, arrayspace=0.5, units="ex"):
     return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
+
+def fix_tex(oldstrings):
+    return [texeq(s) for s in oldstrings]
 
 # Create an IFS attractor class with a method for plotting
 class attractor:
 
     instances = []
 
-    def __init__(self, namestring, ifs = None, funstrings = None, max_iterations = 10,
-        clicks = None, xlim = [0,1], ylim = [0,1], grid = (1,1)):
+    def __init__(self, namestring, ifs = None):
 
         self.instances.append(namestring)
+
+        self.namestring = namestring
 
         if ifs == None:
             self.ifs = []
         else:
             self.ifs = ifs
 
-        if funstrings == None:
-            self.funstrings = []
-        else:
-            self.funstrings = funstrings
-
-        self.clicks = clicks
-        self.grid = grid
-        self.xlim = xlim
-        self.ylim = ylim
-        self.max_iterations = max_iterations
-        self.namestring = namestring
-
         if(self.namestring in list(config.keys())):
+            # check if required properties are available
             self.grid = config[self.namestring]['grid']
             self.clicks = config[self.namestring]['clicks']
             self.xlim = config[self.namestring]['xlim']
             self.ylim = config[self.namestring]['ylim']
             self.max_iterations = config[self.namestring]['max_iterations']
+            self.funstrings = fix_tex(config[self.namestring]['funstrings'])
+        else:
+            print("Attractor data missing from config.json!")
 
     def add_fun(self, fun):
         self.ifs.append(fun)
-
-    def add_funstring(self, funstring, addspace = True):
-        if addspace:
-            eq = texeq(funstring)
-        else: eq = funstring
-        self.funstrings.append(eq)
 
     def format_ax(self, ax):
         ax.set_xlim(self.xlim)
@@ -201,13 +191,9 @@ class IFSCatalogue:
         K = attractor(namestring = "Cantor Ternary Set")
 
         K.ifs.append(mpl.transforms.Affine2D().scale(1/3))
-        K.funstrings.append(r'''f_1(x) = \frac{1}{3}x''')
 
         K.ifs.append(mpl.transforms.Affine2D().translate(2, 0) +
             mpl.transforms.Affine2D().scale(1/3))
-        K.funstrings.append(r'''f_2(x) = \frac{1}{3}x + \begin{bmatrix}
-            \frac{2}{3} \\ 0
-            \end{bmatrix}''')
 
         return K
 
@@ -216,22 +202,12 @@ class IFSCatalogue:
         K = attractor(namestring = "Sierpinski Gasket")
 
         K.ifs.append(mpl.transforms.Affine2D().scale(0.5))
-        K.funstrings.append(r'''f_1(x) = \frac{1}{2}x''')
 
         K.ifs.append(mpl.transforms.Affine2D().translate(1, 0) +
             mpl.transforms.Affine2D().scale(0.5))
-        K.funstrings.append(r'''f_2(x) = \frac{1}{2}x +
-            \begin{bmatrix}
-            \frac{1}{2} \\ 0
-            \end{bmatrix}''')
 
         K.ifs.append(mpl.transforms.Affine2D().translate(0.5, np.sqrt(3)/2) +
             mpl.transforms.Affine2D().scale(0.5))
-        K.funstrings.append(r'''f_3(x) = \frac{1}{2}x +
-            \begin{bmatrix}
-            \frac{1}{4} \\
-            \frac{\sqrt{3}}{4}
-            \end{bmatrix}''')
 
         return K
 
@@ -241,13 +217,9 @@ class IFSCatalogue:
         for i in range(9):
             if i != 4:
                 K.ifs.append(mpl.transforms.Affine2D().translate(i // 3, i % 3) + mpl.transforms.Affine2D().scale(1/3))
-        K.funstrings.append(r'''f_{i,j}(x) = \frac{1}{3}\left(x+\begin{bmatrix}
-            i \\
-            j
-            \end{bmatrix}\right)\text{ for }(i,j)\in\{0,1,2\}^2-\{(1,1)\}''')
 
         return K
-    
+
     # Function to create a fudgeflake
     def fudgeflake():
         K = attractor(namestring = "Fudgeflake")
@@ -255,37 +227,14 @@ class IFSCatalogue:
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
             mpl.transforms.Affine2D().translate(-1/3, 0))
-        K.funstrings.append(r'''f_1(x) =
-            \begin{bmatrix}
-            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
-            \frac{\sqrt{3}}{6} & \frac{1}{2}
-            \end{bmatrix}x''')
 
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
             mpl.transforms.Affine2D().translate(0.5*(1/3), (np.sqrt(3)/2)*(1/3)))
-        K.funstrings.append(r'''f_2(x) =
-            \begin{bmatrix}
-            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
-            \frac{\sqrt{3}}{6} & \frac{1}{2}
-            \end{bmatrix}x +
-            \begin{bmatrix}
-            \frac{1}{2} \\
-            \frac{\sqrt{3}}{6}
-            \end{bmatrix}''')
 
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/6) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(3)) +
             mpl.transforms.Affine2D().translate(0.5*(1/3), -(np.sqrt(3)/2)*(1/3)))
-        K.funstrings.append(r'''f_3(x) =
-            \begin{bmatrix}
-            \frac{1}{2} & -\frac{\sqrt{3}}{6} \\
-            \frac{\sqrt{3}}{6} & \frac{1}{2}
-            \end{bmatrix}x +
-            \begin{bmatrix}
-            \frac{1}{2} \\
-            -\frac{\sqrt{3}}{6}
-            \end{bmatrix}''')
 
         return K
 
@@ -296,24 +245,10 @@ class IFSCatalogue:
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
             mpl.transforms.Affine2D().translate(-0.5, 0.5) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-        K.funstrings.append(r'''f_1(x) =
-            \begin{bmatrix}
-            \frac{1}{2} & -\frac{1}{2} \\
-            \frac{1}{2} & \frac{1}{2}
-            \end{bmatrix}x''')
 
         K.ifs.append(mpl.transforms.Affine2D().rotate(np.pi/4) +
             mpl.transforms.Affine2D().translate(0.5, -0.5) +
             mpl.transforms.Affine2D().scale(1/np.sqrt(2)))
-        K.funstrings.append(r'''f_2(x) =
-            \begin{bmatrix}
-            \frac{1}{2} & -\frac{1}{2} \\
-            \frac{1}{2} & \frac{1}{2}
-            \end{bmatrix}x +
-            \begin{bmatrix}
-            \frac{1}{2} \\
-            \frac{-1}{2}
-            \end{bmatrix}''')
 
         return K
 
