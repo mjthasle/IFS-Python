@@ -2,7 +2,7 @@
     "multiplot_size": [8,8],
     "multiplot_font": 4,
     "singleplot_font": 10,
-    "colour_options": ["Black", "Blue", "Red", "Green", "Orange", "Purple", "Brown", "Pink", "Gray", "Olive", "Cyan"]
+    "colour_options": ["Black", "Blue", "Red", "Green", "Orange", "Purple", "Brown", "Pink", "Gray", "Olive", "Cyan"],
     "Cantor Ternary Set":
         {
             "max_iterations": 8,
