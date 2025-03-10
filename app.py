@@ -41,6 +41,7 @@ col1, col2 = st.columns(2, gap = "large")
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
 colour_options = config['colour_options']
+initial_set_options = config['initial_sets']
 
 def reset_n():
 	st.session_state.n = 0
@@ -51,6 +52,8 @@ with col1:
 		box_options, on_change = reset_n)
 	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
+	initial_set_selected = st.selectbox("Select an initial set",
+									 initial_set_options.keys(), on_change = reset_n)
 
 	a = get_selected_attractor(option_selected, attractors)
 	max_iterations = a.max_iterations
@@ -68,7 +71,8 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
+	clicks = initial_set_options[initial_set_selected]
 	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = colour_selected)
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected, clicks = clicks)
 	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected)
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected, clicks = clicks)
