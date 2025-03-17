@@ -43,17 +43,18 @@ box_options = [a.namestring for a in attractors]
 colour_options = config['colour_options']
 initial_set_options = config['initial_sets']
 
-def reset_n():
-	st.session_state.n = 0
-
 # built-in IFS settings in the left column
 with col1:
 	option_selected = st.selectbox("Select an attractor to plot",
 		box_options, on_change = reset_n)
+
 	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
+
 	initial_set_selected = st.selectbox("Select an initial set",
-									 initial_set_options.keys(), on_change = reset_n)
+								initial_set_options.keys(),
+								on_change = reset_n,
+								index = get_default_index(option_selected))
 
 	a = get_selected_attractor(option_selected, attractors)
 	max_iterations = a.max_iterations
@@ -73,6 +74,8 @@ with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	clicks = initial_set_options[initial_set_selected]
 	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = colour_selected, clicks = clicks)
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
+			clicks = clicks)
 	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected, clicks = clicks)
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
+			clicks = clicks)

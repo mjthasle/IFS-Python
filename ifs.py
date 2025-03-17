@@ -273,4 +273,20 @@ def get_selected_attractor(option_selected, attractors):
     matches = [a for a in attractors if a.namestring == option_selected]
     assert len(matches) == 1, "More than one attractor has this name!"
     a = matches[0]
+
     return a
+
+def get_initial_set(option_selected):
+    attractors = get_attractors()
+    a = get_selected_attractor(option_selected, attractors)
+    initial_set = config["built_in_ifs"][a.namestring]["initial_set"]
+    return initial_set
+
+def get_default_index(option_selected):
+    initial_set = get_initial_set(option_selected)
+    options = list(config['initial_sets'])
+    default_index = options.index(initial_set)
+    return default_index
+
+def reset_n():
+    st.session_state.n = 0

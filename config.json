@@ -1,5 +1,5 @@
 {
-    "required_fields": ["max_iterations", "grid", "clicks", "xlim", "ylim", "funstrings"],
+    "required_fields": ["max_iterations", "grid", "clicks", "xlim", "ylim", "funstrings", "initial_set"],
     "multiplot_size": [8,8],
     "multiplot_font": 4,
     "singleplot_font": 10,
@@ -21,7 +21,8 @@
             "funstrings": [
                 "f_1(x) = \\frac{1}{3}x",
                 "f_2(x) = \\frac{1}{3}x+\\begin{bmatrix} \\frac{2}{3} \\\\ 0 \\end{bmatrix}"
-            ]
+            ],
+            "initial_set": "Unit Square"
         },
     "Sierpinski Gasket":
         {
@@ -34,7 +35,8 @@
                 "f_1(x)=\\frac{1}{2}x",
                 "f_2(x)=\\frac{1}{2}x+\\begin{bmatrix} \\frac{1}{2} \\\\ 0 \\end{bmatrix}",
                 "f_3(x)=\\frac{1}{2}x+\\begin{bmatrix} \\frac{1}{4} \\\\ \\frac{\\sqrt{3}}{4} \\end{bmatrix}"
-            ]
+            ],
+            "initial_set": "Equilateral Triangle"
         },
     "Sierpinski Carpet":
         {
@@ -45,7 +47,8 @@
             "ylim": [0,1],
             "funstrings": [
                 "f_{i,j}(x)=\\frac{1}{3}\\left(x+\\begin{bmatrix} i \\\\ j \\end{bmatrix}\\right)\\text{ for }(i,j) \\in \\{0,1,2\\}^2-\\{(1,1)\\}"
-            ]
+            ],
+            "initial_set": "Right Triangle"
         },
     "Fudgeflake":
         {
@@ -58,7 +61,8 @@
                 "f_1(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{\\sqrt{3}}{6} \\\\ \\frac{\\sqrt{3}}{6} & \\frac{1}{2} \\end{bmatrix}x",
                 "f_2(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{\\sqrt{3}}{6} \\\\ \\frac{\\sqrt{3}}{6} & \\frac{1}{2} \\end{bmatrix}x+\\begin{bmatrix} \\frac{1}{2} \\\\ \\frac{\\sqrt{3}}{6} \\end{bmatrix}",
                 "f_3(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{\\sqrt{3}}{6} \\\\ \\frac{\\sqrt{3}}{6} & \\frac{1}{2} \\end{bmatrix}x+\\begin{bmatrix} \\frac{1}{2} \\\\ -\\frac{\\sqrt{3}}{6} \\end{bmatrix}"
-            ]
+            ],
+            "initial_set": "Paper Airplane"
         },
     "Twindragon":
         {
@@ -70,7 +74,8 @@
             "funstrings": [
                 "f_1(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{1}{2} \\\\ \\frac{1}{2} & \\frac{1}{2} \\end{bmatrix}x",
                 "f_2(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{1}{2} \\\\ \\frac{1}{2} & \\frac{1}{2} \\end{bmatrix}x + \\begin{bmatrix} \\frac{1}{2} \\\\ \\frac{-1}{2} \\end{bmatrix}"
-            ]
+            ],
+            "initial_set": "Paper Airplane"
         }
     }
 }
