@@ -70,7 +70,6 @@ class attractor:
             fields in attractor data"
 
         self.grid = built_in_ifs[self.namestring]['grid']
-        #self.clicks = built_in_ifs[self.namestring]['clicks']
         self.xlim = built_in_ifs[self.namestring]['xlim']
         self.ylim = built_in_ifs[self.namestring]['ylim']
         self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
@@ -88,7 +87,8 @@ class attractor:
         ax.set_yticks(new_ticks)
 
     def plot(self, n = 0, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False, clicks = [[0,0], [0,1], [1,0]]):
+        showaxis = True, showgridlines = False, timeit = False,
+        clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
         ncols = 1
@@ -134,7 +134,8 @@ class attractor:
 
      # Function to show multiplots in steamlit one-by-one
     def multiplot(self, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False, saveit = False, clicks = [[0,0], [0,1], [1,0]]):
+        showaxis = True, showgridlines = False, timeit = False, saveit = False,
+        clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
@@ -198,7 +199,7 @@ class attractor:
                     ' seconds.')
 
 class IFSCatalogue:
-    # Function to create a Cantor ternary set (TODO: fix this plot)
+    # Function to create a Cantor ternary set
     def cantor():
         K = attractor(namestring = "Cantor Ternary Set")
 
