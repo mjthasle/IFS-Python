@@ -39,7 +39,7 @@ def codes(m, n):
     return np.array(codes)
 
 # Functions to fix array spacing for latex equations
-def texeq(eq, arrayspace=0.5, units="ex"):
+def texeq(eq, arrayspace = 0.5, units = "ex"):
     return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
 
 def fix_tex(oldstrings):
@@ -70,7 +70,7 @@ class attractor:
             fields in attractor data"
 
         self.grid = built_in_ifs[self.namestring]['grid']
-        self.clicks = built_in_ifs[self.namestring]['clicks']
+        #self.clicks = built_in_ifs[self.namestring]['clicks']
         self.xlim = built_in_ifs[self.namestring]['xlim']
         self.ylim = built_in_ifs[self.namestring]['ylim']
         self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
@@ -88,7 +88,7 @@ class attractor:
         ax.set_yticks(new_ticks)
 
     def plot(self, n = 0, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False):
+        showaxis = True, showgridlines = False, timeit = False, clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
         ncols = 1
@@ -115,7 +115,7 @@ class attractor:
             for i in code:
                     t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(self.clicks),
+            ax.add_patch(Polygon(t.transform(clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
@@ -134,7 +134,7 @@ class attractor:
 
      # Function to show multiplots in steamlit one-by-one
     def multiplot(self, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False, saveit = False):
+        showaxis = True, showgridlines = False, timeit = False, saveit = False, clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
@@ -186,7 +186,7 @@ class attractor:
                 for i in code:
                     t += self.ifs[i]
 
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+                ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
                     facecolor = facecolor))
 
             the_plot.pyplot(fig)
