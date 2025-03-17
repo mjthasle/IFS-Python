@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 
 st.title("IFS Python")
 
-st.write("Created by Mitch Haslehurst, PhD and Emily Korfanty")
+st.markdown("*Created by Mitch Haslehurst, PhD and Emily Korfanty*")
 
 st.write("This app uses Python to generate fractal images from two-dimensional \
 	affine iterated function systems.")
