@@ -48,7 +48,7 @@
             "funstrings": [
                 "f_{i,j}(x)=\\frac{1}{3}\\left(x+\\begin{bmatrix} i \\\\ j \\end{bmatrix}\\right)\\text{ for }(i,j) \\in \\{0,1,2\\}^2-\\{(1,1)\\}"
             ],
-            "initial_set": "Right Triangle"
+            "initial_set": "Unit Square"
         },
     "Fudgeflake":
         {
