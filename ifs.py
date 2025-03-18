@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on March 3, 2025
+Last Updated on March 17, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -16,8 +16,6 @@ import streamlit as st
 import matplotlib as mpl
 import numpy as np
 import time
-import PIL.Image
-PIL.Image.MAX_IMAGE_PIXELS = None
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -41,7 +39,7 @@ def codes(m, n):
     return np.array(codes)
 
 # Functions to fix array spacing for latex equations
-def texeq(eq, arrayspace=0.5, units="ex"):
+def texeq(eq, arrayspace = 0.5, units = "ex"):
     return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
 
 def fix_tex(oldstrings):
@@ -72,7 +70,6 @@ class attractor:
             fields in attractor data"
 
         self.grid = built_in_ifs[self.namestring]['grid']
-        self.clicks = built_in_ifs[self.namestring]['clicks']
         self.xlim = built_in_ifs[self.namestring]['xlim']
         self.ylim = built_in_ifs[self.namestring]['ylim']
         self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
@@ -90,7 +87,8 @@ class attractor:
         ax.set_yticks(new_ticks)
 
     def plot(self, n = 0, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False):
+        showaxis = True, showgridlines = False, timeit = False,
+        clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
         ncols = 1
@@ -117,7 +115,7 @@ class attractor:
             for i in code:
                     t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(self.clicks),
+            ax.add_patch(Polygon(t.transform(clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
@@ -136,7 +134,8 @@ class attractor:
 
      # Function to show multiplots in steamlit one-by-one
     def multiplot(self, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False, saveit = False):
+        showaxis = True, showgridlines = False, timeit = False, saveit = False,
+        clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
@@ -188,7 +187,7 @@ class attractor:
                 for i in code:
                     t += self.ifs[i]
 
-                ax.add_patch(mpl.patches.Polygon(t.transform(self.clicks),
+                ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
                     facecolor = facecolor))
 
             the_plot.pyplot(fig)
@@ -200,7 +199,7 @@ class attractor:
                     ' seconds.')
 
 class IFSCatalogue:
-    # Function to create a Cantor ternary set (TODO: fix this plot)
+    # Function to create a Cantor ternary set
     def cantor():
         K = attractor(namestring = "Cantor Ternary Set")
 
@@ -275,4 +274,20 @@ def get_selected_attractor(option_selected, attractors):
     matches = [a for a in attractors if a.namestring == option_selected]
     assert len(matches) == 1, "More than one attractor has this name!"
     a = matches[0]
+
     return a
+
+def get_initial_set(option_selected):
+    attractors = get_attractors()
+    a = get_selected_attractor(option_selected, attractors)
+    initial_set = config["built_in_ifs"][a.namestring]["initial_set"]
+    return initial_set
+
+def get_default_index(option_selected):
+    initial_set = get_initial_set(option_selected)
+    options = list(config['initial_sets'])
+    default_index = options.index(initial_set)
+    return default_index
+
+def reset_n():
+    st.session_state.n = 0

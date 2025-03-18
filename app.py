@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on March 3, 2025
+Last Updated on March 17, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 
 st.title("IFS Python")
 
-st.write("Created by Mitch Haslehurst, PhD and Emily Korfanty")
+st.markdown("*Created by Mitch Haslehurst, PhD and Emily Korfanty*")
 
 st.write("This app uses Python to generate fractal images from two-dimensional \
 	affine iterated function systems.")
@@ -41,16 +41,20 @@ col1, col2 = st.columns(2, gap = "large")
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
 colour_options = config['colour_options']
-
-def reset_n():
-	st.session_state.n = 0
+initial_set_options = config['initial_sets']
 
 # built-in IFS settings in the left column
 with col1:
 	option_selected = st.selectbox("Select an attractor to plot",
 		box_options, on_change = reset_n)
+
 	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
+
+	initial_set_selected = st.selectbox("Select an initial set",
+								initial_set_options.keys(),
+								on_change = reset_n,
+								index = get_default_index(option_selected))
 
 	a = get_selected_attractor(option_selected, attractors)
 	max_iterations = a.max_iterations
@@ -68,7 +72,10 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
+	clicks = initial_set_options[initial_set_selected]
 	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = colour_selected)
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
+			clicks = clicks)
 	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected)
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
+			clicks = clicks)
