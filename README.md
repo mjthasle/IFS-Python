@@ -13,7 +13,7 @@ Generally speaking, an [iterated function system (IFS)](https://en.wikipedia.org
 
 **App Details:**
 
-For each built-in IFS, the system is iteratively applied to an initial polygon.  For the included examples, this process generates a fractal images.  By default, the first several iterations are shown.  You can also get a more detailed view of any given step in the iteration process by turning off the "Multiplot" toggle. Try out different built-in initial sets to see how the figures converge to the same attractor regardless of where you start from.
+For each built-in IFS, the system is iteratively applied to an initial polygon.  For the included examples, this process generates a fractal image (or multiple).  By default, the first several iterations are shown.  You can also get a more detailed view of any given step in the iteration process by turning off the "Multiplot" toggle. Try out different built-in initial sets to see how the figures converge to the same attractor regardless of where you start from.
 
 Currently, the following built-in IFS are available:
 
