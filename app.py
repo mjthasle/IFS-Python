@@ -28,6 +28,7 @@ st.write("Use the Multiplot toggle to change between views of individual \
 
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)
+self_sim_color = st.toggle("Colour self-similarity", value = False)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -50,6 +51,12 @@ with col1:
 
 	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
+	
+	if self_sim_color:
+		colour_selected_1 = st.selectbox("Select a second colour to display self-similarity",
+								   colour_options)
+	else:
+		colour_selected_1 = colour_selected
 
 	initial_set_selected = st.selectbox("Select an initial set",
 								initial_set_options.keys(),
@@ -74,8 +81,8 @@ with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	clicks = initial_set_options[initial_set_selected]
 	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
+		a.multiplot(showgridlines = gridlines, facecolor = colour_selected, facecolor1 = colour_selected_1,
 			clicks = clicks)
 	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
+		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected, facecolor1 = colour_selected_1,
 			clicks = clicks)

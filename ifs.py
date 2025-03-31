@@ -21,8 +21,10 @@ file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
     config = json.load(json_file)
 
-# Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
+    '''
+    Creates a list of all sequences of length n of numbers between 1 and m
+    '''
     l = 0
     codes = []
     while l < m**n:
@@ -38,15 +40,19 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
-# Functions to fix array spacing for latex equations
 def texeq(eq, arrayspace = 0.5, units = "ex"):
+    '''
+    Function to fix array spacing for latex equations
+    '''
     return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
 
 def fix_tex(oldstrings):
     return [texeq(s) for s in oldstrings]
 
-# Create an IFS attractor class with a method for plotting
 class attractor:
+    '''
+    The IFS attractor class with a method for plotting
+    '''
 
     instances = []
 
@@ -86,7 +92,7 @@ class attractor:
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
-    def plot(self, n = 0, facecolor = 'k',
+    def plot(self, n = 0, facecolor = 'k', facecolor1 = 'b',
         showaxis = True, showgridlines = False, timeit = False,
         clicks = [[0,0], [0,1], [1,0]]):
 
@@ -115,8 +121,12 @@ class attractor:
             for i in code:
                     t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(clicks),
-                facecolor = facecolor))
+            if len(code) > 0 and code[-1] == 0:
+                ax.add_patch(Polygon(t.transform(clicks),
+                    facecolor = facecolor1))
+            else:
+                ax.add_patch(Polygon(t.transform(clicks),
+                    facecolor = facecolor))
 
         end = time.perf_counter()
 
@@ -133,7 +143,7 @@ class attractor:
 
 
      # Function to show multiplots in steamlit one-by-one
-    def multiplot(self, facecolor = 'k',
+    def multiplot(self, facecolor = 'k', facecolor1 = 'b',
         showaxis = True, showgridlines = False, timeit = False, saveit = False,
         clicks = [[0,0], [0,1], [1,0]]):
 
@@ -187,8 +197,12 @@ class attractor:
                 for i in code:
                     t += self.ifs[i]
 
-                ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
-                    facecolor = facecolor))
+                if len(code) > 0 and code[-1] == 0:
+                    ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
+                        facecolor = facecolor1))
+                else:
+                    ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
+                        facecolor = facecolor))
 
             the_plot.pyplot(fig)
 
