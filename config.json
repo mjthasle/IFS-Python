@@ -1,5 +1,5 @@
 {
-    "required_fields": ["max_iterations", "grid", "clicks", "xlim", "ylim", "funstrings", "initial_set"],
+    "required_fields": ["max_iterations", "grid", "clicks", "xlim", "ylim", "funstrings", "initial_set", "ifs_script"],
     "multiplot_size": [8,8],
     "multiplot_font": 4,
     "singleplot_font": 10,
@@ -26,6 +26,7 @@
             [0.5, -0.8660254037844386]
         ]
     },
+    "functions_dir": "functions",
     "built_in_ifs": {
         "Cantor Ternary Set":
         {
@@ -34,11 +35,12 @@
             "clicks": [[0,-0.5], [1,-0.5], [1,0.5], [0,0.5]],
             "xlim": [-0.25,1.25],
             "ylim": [-0.25,1.1],
+            "initial_set": "Unit Square",
             "funstrings": [
                 "f_1(x) = \\frac{1}{3}x",
                 "f_2(x) = \\frac{1}{3}x+\\begin{bmatrix} \\frac{2}{3} \\\\ 0 \\end{bmatrix}"
             ],
-            "initial_set": "Unit Square"
+            "ifs_script": "cantor"
         },
     "Sierpinski Gasket":
         {
@@ -52,7 +54,8 @@
                 "f_2(x)=\\frac{1}{2}x+\\begin{bmatrix} \\frac{1}{2} \\\\ 0 \\end{bmatrix}",
                 "f_3(x)=\\frac{1}{2}x+\\begin{bmatrix} \\frac{1}{4} \\\\ \\frac{\\sqrt{3}}{4} \\end{bmatrix}"
             ],
-            "initial_set": "Equilateral Triangle"
+            "initial_set": "Equilateral Triangle",
+            "ifs_script": "gasket"
         },
     "Sierpinski Carpet":
         {
@@ -64,7 +67,8 @@
             "funstrings": [
                 "f_{i,j}(x)=\\frac{1}{3}\\left(x+\\begin{bmatrix} i \\\\ j \\end{bmatrix}\\right)\\text{ for }(i,j) \\in \\{0,1,2\\}^2-\\{(1,1)\\}"
             ],
-            "initial_set": "Right Triangle"
+            "initial_set": "Right Triangle",
+            "ifs_script": "carpet"
         },
     "Fudgeflake":
         {
@@ -78,7 +82,8 @@
                 "f_2(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{\\sqrt{3}}{6} \\\\ \\frac{\\sqrt{3}}{6} & \\frac{1}{2} \\end{bmatrix}x+\\begin{bmatrix} \\frac{1}{2} \\\\ \\frac{\\sqrt{3}}{6} \\end{bmatrix}",
                 "f_3(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{\\sqrt{3}}{6} \\\\ \\frac{\\sqrt{3}}{6} & \\frac{1}{2} \\end{bmatrix}x+\\begin{bmatrix} \\frac{1}{2} \\\\ -\\frac{\\sqrt{3}}{6} \\end{bmatrix}"
             ],
-            "initial_set": "Paper Airplane"
+            "initial_set": "Paper Airplane",
+            "ifs_script": "fudgeflake"
         },
     "Twindragon":
         {
@@ -91,7 +96,8 @@
                 "f_1(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{1}{2} \\\\ \\frac{1}{2} & \\frac{1}{2} \\end{bmatrix}x",
                 "f_2(x)=\\begin{bmatrix} \\frac{1}{2} & -\\frac{1}{2} \\\\ \\frac{1}{2} & \\frac{1}{2} \\end{bmatrix}x + \\begin{bmatrix} \\frac{1}{2} \\\\ \\frac{-1}{2} \\end{bmatrix}"
             ],
-            "initial_set": "Paper Airplane"
+            "initial_set": "Paper Airplane",
+            "ifs_script": "twindragon"
         }
     }
 }

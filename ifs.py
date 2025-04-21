@@ -2,16 +2,15 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on March 17, 2025
+Last Updated on March 21, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
 
 import os
+from importlib import import_module
 import json
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-from matplotlib.transforms import Affine2D, IdentityTransform
 import streamlit as st
 import matplotlib as mpl
 import numpy as np
@@ -63,6 +62,7 @@ class attractor:
 
         built_in_ifs = config['built_in_ifs']
         built_in_ifs_keys = list(built_in_ifs.keys())
+        functions_dir = config['functions_dir']
 
         assert self.namestring in built_in_ifs_keys, "Attractor missing"
 
@@ -74,6 +74,13 @@ class attractor:
         self.ylim = built_in_ifs[self.namestring]['ylim']
         self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
         self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
+        self.ifs_script = functions_dir + "." + built_in_ifs[self.namestring]['ifs_script']
+
+        # Run script to retrieve affine transforms
+        ifs_script = import_module(self.ifs_script)
+        get_ifs = getattr(ifs_script, "get_ifs")
+        self.ifs = get_ifs()
+
 
     def add_fun(self, fun):
         self.ifs.append(fun)
@@ -203,9 +210,9 @@ class IFSCatalogue:
     def cantor():
         K = attractor(namestring = "Cantor Ternary Set")
 
-        K.ifs.append(Affine2D().scale(1/3))
+        # K.ifs.append(Affine2D().scale(1/3))
 
-        K.ifs.append(Affine2D().translate(2, 0) + Affine2D().scale(1/3))
+        # K.ifs.append(Affine2D().translate(2, 0) + Affine2D().scale(1/3))
 
         return K
 
@@ -213,22 +220,22 @@ class IFSCatalogue:
     def gasket():
         K = attractor(namestring = "Sierpinski Gasket")
 
-        K.ifs.append(Affine2D().scale(0.5))
+        # K.ifs.append(Affine2D().scale(0.5))
 
-        K.ifs.append(Affine2D().translate(1, 0) + Affine2D().scale(0.5))
+        # K.ifs.append(Affine2D().translate(1, 0) + Affine2D().scale(0.5))
 
-        K.ifs.append(Affine2D().translate(0.5, np.sqrt(3)/2) +
-            Affine2D().scale(0.5))
+        # K.ifs.append(Affine2D().translate(0.5, np.sqrt(3)/2) +
+        #     Affine2D().scale(0.5))
 
         return K
 
     def carpet():
         K = attractor(namestring = "Sierpinski Carpet")
 
-        for i in range(9):
-            if i != 4:
-                K.ifs.append(Affine2D().translate(i // 3, i % 3)
-                    + Affine2D().scale(1/3))
+        # for i in range(9):
+        #     if i != 4:
+        #         K.ifs.append(Affine2D().translate(i // 3, i % 3)
+        #             + Affine2D().scale(1/3))
 
         return K
 
@@ -236,17 +243,17 @@ class IFSCatalogue:
     def fudgeflake():
         K = attractor(namestring = "Fudgeflake")
 
-        K.ifs.append(Affine2D().rotate(np.pi/6) +
-            Affine2D().scale(1/np.sqrt(3)) +
-            Affine2D().translate(-1/3, 0))
+        # K.ifs.append(Affine2D().rotate(np.pi/6) +
+        #     Affine2D().scale(1/np.sqrt(3)) +
+        #     Affine2D().translate(-1/3, 0))
 
-        K.ifs.append(Affine2D().rotate(np.pi/6) +
-            Affine2D().scale(1/np.sqrt(3)) +
-            Affine2D().translate(0.5*(1/3),(np.sqrt(3)/2)*(1/3)))
+        # K.ifs.append(Affine2D().rotate(np.pi/6) +
+        #     Affine2D().scale(1/np.sqrt(3)) +
+        #     Affine2D().translate(0.5*(1/3),(np.sqrt(3)/2)*(1/3)))
 
-        K.ifs.append(Affine2D().rotate(np.pi/6) +
-            Affine2D().scale(1/np.sqrt(3)) +
-            Affine2D().translate(0.5*(1/3),-(np.sqrt(3)/2)*(1/3)))
+        # K.ifs.append(Affine2D().rotate(np.pi/6) +
+        #     Affine2D().scale(1/np.sqrt(3)) +
+        #     Affine2D().translate(0.5*(1/3),-(np.sqrt(3)/2)*(1/3)))
 
         return K
 
@@ -254,13 +261,13 @@ class IFSCatalogue:
     def twindragon():
         K = attractor(namestring = "Twindragon")
 
-        K.ifs.append(Affine2D().rotate(np.pi/4) +
-            Affine2D().translate(-0.5, 0.5) +
-            Affine2D().scale(1/np.sqrt(2)))
+        # K.ifs.append(Affine2D().rotate(np.pi/4) +
+        #     Affine2D().translate(-0.5, 0.5) +
+        #     Affine2D().scale(1/np.sqrt(2)))
 
-        K.ifs.append(Affine2D().rotate(np.pi/4) +
-            Affine2D().translate(0.5, -0.5) +
-            Affine2D().scale(1/np.sqrt(2)))
+        # K.ifs.append(Affine2D().rotate(np.pi/4) +
+        #     Affine2D().translate(0.5, -0.5) +
+        #     Affine2D().scale(1/np.sqrt(2)))
 
         return K
 
