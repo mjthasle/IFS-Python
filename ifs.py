@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on March 21, 2025
+Last Updated on April 21, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -209,66 +209,25 @@ class IFSCatalogue:
     # Function to create a Cantor ternary set
     def cantor():
         K = attractor(namestring = "Cantor Ternary Set")
-
-        # K.ifs.append(Affine2D().scale(1/3))
-
-        # K.ifs.append(Affine2D().translate(2, 0) + Affine2D().scale(1/3))
-
         return K
 
     # Function to create a Sierpinski gasket
     def gasket():
         K = attractor(namestring = "Sierpinski Gasket")
-
-        # K.ifs.append(Affine2D().scale(0.5))
-
-        # K.ifs.append(Affine2D().translate(1, 0) + Affine2D().scale(0.5))
-
-        # K.ifs.append(Affine2D().translate(0.5, np.sqrt(3)/2) +
-        #     Affine2D().scale(0.5))
-
         return K
 
     def carpet():
         K = attractor(namestring = "Sierpinski Carpet")
-
-        # for i in range(9):
-        #     if i != 4:
-        #         K.ifs.append(Affine2D().translate(i // 3, i % 3)
-        #             + Affine2D().scale(1/3))
-
         return K
 
     # Function to create a fudgeflake
     def fudgeflake():
         K = attractor(namestring = "Fudgeflake")
-
-        # K.ifs.append(Affine2D().rotate(np.pi/6) +
-        #     Affine2D().scale(1/np.sqrt(3)) +
-        #     Affine2D().translate(-1/3, 0))
-
-        # K.ifs.append(Affine2D().rotate(np.pi/6) +
-        #     Affine2D().scale(1/np.sqrt(3)) +
-        #     Affine2D().translate(0.5*(1/3),(np.sqrt(3)/2)*(1/3)))
-
-        # K.ifs.append(Affine2D().rotate(np.pi/6) +
-        #     Affine2D().scale(1/np.sqrt(3)) +
-        #     Affine2D().translate(0.5*(1/3),-(np.sqrt(3)/2)*(1/3)))
-
         return K
 
     # Function to create a twindragon
     def twindragon():
         K = attractor(namestring = "Twindragon")
-
-        # K.ifs.append(Affine2D().rotate(np.pi/4) +
-        #     Affine2D().translate(-0.5, 0.5) +
-        #     Affine2D().scale(1/np.sqrt(2)))
-
-        # K.ifs.append(Affine2D().rotate(np.pi/4) +
-        #     Affine2D().translate(0.5, -0.5) +
-        #     Affine2D().scale(1/np.sqrt(2)))
-
         return K
 
 def get_attractors():
