@@ -98,6 +98,19 @@
             ],
             "initial_set": "Paper Airplane",
             "ifs_script": "twindragon"
+        },
+    "Random IFS":
+        {
+            "max_iterations": 8,
+            "grid": [3,2],
+            "clicks": [[0,0], [1,0], [1,1], [0,1]],
+            "xlim": [0,1],
+            "ylim": [0,1],
+            "funstrings": [
+                "\\text{Not available}"
+            ],
+            "initial_set": "Unit Square",
+            "ifs_script": "random_ifs"
         }
     }
 }
