@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on April 21, 2025
+Last Updated on May 4, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -49,16 +49,11 @@ class attractor:
 
     instances = []
 
-    def __init__(self, namestring, ifs = None):
+    def __init__(self, namestring):
 
         self.instances.append(namestring)
 
         self.namestring = namestring
-
-        if ifs == None:
-            self.ifs = []
-        else:
-            self.ifs = ifs
 
         built_in_ifs = config['built_in_ifs']
         built_in_ifs_keys = list(built_in_ifs.keys())
@@ -205,42 +200,19 @@ class attractor:
                 st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
                     ' seconds.')
 
-class IFSCatalogue:
-    # Function to create a Cantor ternary set
-    def cantor():
-        K = attractor(namestring = "Cantor Ternary Set")
-        return K
-
-    # Function to create a Sierpinski gasket
-    def gasket():
-        K = attractor(namestring = "Sierpinski Gasket")
-        return K
-
-    def carpet():
-        K = attractor(namestring = "Sierpinski Carpet")
-        return K
-
-    # Function to create a fudgeflake
-    def fudgeflake():
-        K = attractor(namestring = "Fudgeflake")
-        return K
-
-    # Function to create a twindragon
-    def twindragon():
-        K = attractor(namestring = "Twindragon")
-        return K
-
 def get_attractors():
-    attractors = [getattr(IFSCatalogue, method)() for method \
-        in dir(IFSCatalogue) if callable(getattr(IFSCatalogue, method)) \
-        and not method.startswith("__")]
+    built_in_ifs = config['built_in_ifs']
+    built_in_ifs_keys = list(built_in_ifs.keys())
+    attractors = []
+    for ifs_key in built_in_ifs_keys:
+        K = attractor(namestring = ifs_key)
+        attractors.append(K)
     return attractors
 
 def get_selected_attractor(option_selected, attractors):
     matches = [a for a in attractors if a.namestring == option_selected]
     assert len(matches) == 1, "More than one attractor has this name!"
     a = matches[0]
-
     return a
 
 def get_initial_set(option_selected):
