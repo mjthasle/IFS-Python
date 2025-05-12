@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on March 17, 2025
+Last Updated on May 12, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -11,6 +11,7 @@ from ifs import *
 import pandas as pd
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
+from threading import RLock
 
 check = True
 
@@ -122,9 +123,11 @@ with col2:
 		clicks = get_coordinates(coordinates)
 	else:
 		clicks = initial_set_options[initial_set_selected]
-	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
-			clicks = clicks)
-	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
-			clicks = clicks)
+	_lock = RLock()
+	with _lock:
+		if multiplot:
+			a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
+				clicks = clicks)
+		else:
+			a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
+				clicks = clicks)
