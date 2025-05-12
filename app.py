@@ -8,6 +8,11 @@ Last Updated on March 17, 2025
 """
 
 from ifs import *
+import pandas as pd
+from PIL import Image
+from streamlit_drawable_canvas import st_canvas
+
+check = True
 
 st.set_page_config(layout="wide")
 
@@ -35,6 +40,45 @@ if multiplot:
 else:
 	plt.rcParams.update({'font.size': config['singleplot_font']})
 
+drawing_mode = st.sidebar.selectbox(
+    "Drawing tool:",
+    ("transform", "polygon", "point"),
+)
+stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
+stroke_color = st.sidebar.color_picker("Stroke color hex: ")
+bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
+realtime_update = st.sidebar.checkbox("Update in realtime", True)
+
+# Create a canvas component
+canvas_result = st_canvas(
+    fill_color = stroke_color,
+    stroke_width=stroke_width,
+    stroke_color=stroke_color,
+    background_color=bg_color,
+    background_image = None,
+    update_streamlit=realtime_update,
+    height = 600,
+	width = 600,
+    drawing_mode=drawing_mode,
+    point_display_radius = 0,
+    display_toolbar = True,
+    key="full_app",
+)
+
+# Do something interesting with the image data and paths
+#if canvas_result.image_data is not None:
+ #   st.image(canvas_result.image_data)
+if canvas_result.json_data is not None:
+    objects = pd.json_normalize(canvas_result.json_data["objects"])
+  #  objects_str = objects
+#for col in objects_str.select_dtypes(include=["object"]).columns:
+#	objects_str[col] = objects_str[col].astype("str")
+#st.dataframe(objects_str)
+
+coordinates = objects["path"][0]
+colour = objects["fill"][0]
+st.write(f"The coordinates are {coordinates} and the colour is {colour}")
+
 col1, col2 = st.columns(2, gap = "large")
 
 # built-in IFS options
@@ -50,6 +94,8 @@ with col1:
 
 	colour_selected = st.selectbox("Select a colour for the attractor",
 								colour_options)
+	if check:
+		colour_selected = colour
 
 	initial_set_selected = st.selectbox("Select an initial set",
 								initial_set_options.keys(),
@@ -72,7 +118,10 @@ with col1:
 # plot the attractor in the right column
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
-	clicks = initial_set_options[initial_set_selected]
+	if check:
+		clicks = get_coordinates(coordinates)
+	else:
+		clicks = initial_set_options[initial_set_selected]
 	if multiplot:
 		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
 			clicks = clicks)

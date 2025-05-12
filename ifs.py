@@ -37,6 +37,14 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
+def get_coordinates(raw_coords):
+    new_list = []
+    coord_dict = list(raw_coords)
+    for pair in coord_dict:
+        if len(pair) > 1:
+            new_list.append([(1/600) * float(pair[1]), (1/600) * float(pair[2])])
+    return new_list
+
 # Functions to fix array spacing for latex equations
 def texeq(eq, arrayspace = 0.5, units = "ex"):
     return eq.replace("\\\\", f"\\\\[{arrayspace}{units}]")
