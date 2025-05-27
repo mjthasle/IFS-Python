@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on March 17, 2025
+Last Updated on May 12, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -10,6 +10,7 @@ Last Updated on March 17, 2025
 from ifs import *
 import pandas as pd
 from streamlit_drawable_canvas import st_canvas
+from threading import RLock
 
 st.set_page_config(layout = "wide")
 
@@ -115,9 +116,11 @@ with col2:
 			clicks = [[0, 0]]
 	else:
 		clicks = initial_set_options[initial_set_selected]
-	if multiplot:
-		a.multiplot(showgridlines = gridlines, facecolor = stroke_color,
-			clicks = clicks, timeit = False)
-	else:
-		a.plot(n = n, showgridlines = gridlines, facecolor = stroke_color,
-			clicks = clicks, timeit = False)
+	_lock = RLock()
+	with _lock:
+		if multiplot:
+			a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
+				clicks = clicks)
+		else:
+			a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
+				clicks = clicks)
