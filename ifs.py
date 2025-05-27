@@ -42,7 +42,7 @@ def get_coordinates(raw_coords):
     coord_dict = list(raw_coords)
     for pair in coord_dict:
         if len(pair) > 1:
-            new_list.append([(1/600) * float(pair[1]), (1/600) * float(pair[2])])
+            new_list.append([(1/600) * float(pair[1]), (-1/600) * float(pair[2]) + 1])
     return new_list
 
 # Functions to fix array spacing for latex equations
@@ -116,16 +116,16 @@ class attractor:
 
         m = len(self.ifs)
         start = time.perf_counter()
-        t = IdentityTransform()
+        t = mpl.transforms.IdentityTransform()
 
         for code in codes(m, n):
 
-            t = IdentityTransform()
+            t = mpl.transforms.IdentityTransform()
 
             for i in code:
-                    t += self.ifs[i]
+                t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(clicks),
+            ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
