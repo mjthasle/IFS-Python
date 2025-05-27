@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on March 17, 2025
+Last Updated on May 27, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -73,9 +73,11 @@ with col1:
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	clicks = initial_set_options[initial_set_selected]
+	set_lim = not option_selected == "Random IFS"
+
 	if multiplot:
 		a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
-			clicks = clicks)
+			set_lim = set_lim, clicks = clicks)
 	else:
 		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
-			clicks = clicks)
+			set_lim = set_lim, clicks = clicks)

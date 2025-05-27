@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on May 4, 2025
+Last Updated on May 27, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -15,6 +15,8 @@ import streamlit as st
 import matplotlib as mpl
 import numpy as np
 import time
+from matplotlib.transforms import IdentityTransform
+from matplotlib.patches import Polygon
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -80,16 +82,17 @@ class attractor:
     def add_fun(self, fun):
         self.ifs.append(fun)
 
-    def format_ax(self, ax):
-        ax.set_xlim(self.xlim)
-        ax.set_ylim(self.ylim)
+    def format_ax(self, ax, set_lim = False):
+        if set_lim:
+            ax.set_xlim(self.xlim)
+            ax.set_ylim(self.ylim)
         ax.set_aspect("equal")
         old_ticks = ax.get_yticks()
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
     def plot(self, n = 0, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False,
+        showaxis = True, showgridlines = False, set_lim = False, timeit = False,
         clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
@@ -97,8 +100,8 @@ class attractor:
         assert n <= self.max_iterations, f"Max {self.max_iterations} \
             iterations reached"
 
-        fig, ax = plt.subplots(nrows = 1, ncols = 1)
-        self.format_ax(ax)
+        fig, ax = plt.subplots(nrows = 1, ncols = 1)  # This can be simplified
+        self.format_ax(ax, set_lim=set_lim)
 
         if showaxis == False:
             ax.set_axis_off()
@@ -131,13 +134,16 @@ class attractor:
         if timeit:
             print('The whole process took ' + str(end - start) + ' seconds.')
 
+        if not set_lim:
+            ax.autoscale()
+
         st.pyplot(fig)
 
 
      # Function to show multiplots in steamlit one-by-one
     def multiplot(self, facecolor = 'k',
-        showaxis = True, showgridlines = False, timeit = False, saveit = False,
-        clicks = [[0,0], [0,1], [1,0]]):
+        showaxis = True, showgridlines = False, set_lim = False, timeit = False,
+        saveit = False, clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
@@ -154,7 +160,7 @@ class attractor:
             axs = axs.ravel()
 
         for ax in axs:
-            self.format_ax(ax)
+            self.format_ax(ax, set_lim)
 
         if showaxis == False:
             for ax in axs:
@@ -184,13 +190,16 @@ class attractor:
 
             for code in codes(m, j):
 
-                t = mpl.transforms.IdentityTransform()
+                t = IdentityTransform()
 
                 for i in code:
                     t += self.ifs[i]
 
-                ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
+                ax.add_patch(Polygon(t.transform(clicks),
                     facecolor = facecolor))
+
+            if not set_lim:
+                ax.autoscale()
 
             the_plot.pyplot(fig)
 
