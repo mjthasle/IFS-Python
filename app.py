@@ -112,7 +112,7 @@ with col2:
 	if drawing_canvas:
 		try:
 			clicks = get_coordinates(coordinates)
-		except (KeyError, NameError):
+		except (TypeError, KeyError, NameError):
 			clicks = [[0, 0]]
 	else:
 		clicks = initial_set_options[initial_set_selected]
