@@ -3,7 +3,7 @@
     "multiplot_size": [8,8],
     "multiplot_font": 4,
     "singleplot_font": 10,
-    "colour_options": ["Purple", "Blue", "Black", "Red", "Green", "Orange", "Brown", "Pink", "Gray", "Olive", "Cyan"],
+    "colour_default": "#800080",
     "initial_sets": {
         "Equilateral Triangle": [[0,0], [1,0], [0.5,0.8660254037844386]],
         "Unit Square": [[0,0], [1,0], [1,1], [0,1]],

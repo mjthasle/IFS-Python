@@ -32,7 +32,6 @@ st.write("Use the Multiplot toggle to change between views of individual \
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
-colour_options = config['colour_options']
 initial_set_options = config['initial_sets']
 
 option_selected = st.selectbox("Select an attractor to plot",
@@ -69,7 +68,7 @@ col1, col2 = st.columns(2, gap = "medium")
 
 with col1:
 
-	stroke_color = st.color_picker("Select a colour for the attractor: ", "#001BFF")
+	stroke_color = st.color_picker("Select a colour for the attractor: ", "#800080")
 
 	if not drawing_canvas:
 		initial_set_selected = st.selectbox("Select an initial set",
@@ -94,6 +93,7 @@ with col1:
 		)
 	else:
 		canvas_result = None
+		colour_selected = stroke_color
 
 	if canvas_result is not None:
 		if canvas_result.json_data is not None:
