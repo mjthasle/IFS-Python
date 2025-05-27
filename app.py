@@ -18,6 +18,8 @@ st.markdown("*Created by Mitch Haslehurst, PhD and Emily Korfanty*")
 st.write("This app uses Python to generate fractal images from two-dimensional \
 	affine iterated function systems.")
 
+st.header("Built-In IFS")
+
 st.write("Use the drop-down menu to select a built-in iterated function system \
 	(IFS).  The plots show the result of iterating the IFS starting from a \
 	polygon. No matter what polygon you start with, the results approximate \
@@ -35,7 +37,7 @@ if multiplot:
 else:
 	plt.rcParams.update({'font.size': config['singleplot_font']})
 
-col1, col2 = st.columns(2, gap = "large")
+col1, col2 = st.columns(2, gap = "large", vertical_alignment = "bottom")
 
 # built-in IFS options
 attractors = get_attractors()
@@ -81,3 +83,22 @@ with col2:
 	else:
 		a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
 			set_lim = set_lim, clicks = clicks)
+
+
+# build-your-own settings in the left column
+with col1:
+
+	st.header("Build-Your-Own IFS")
+
+	common_transforms = st.toggle("Common Transforms", value = False)
+
+	if common_transforms:
+		st.write("Coming soon!")
+
+	if col1.button("Random IFS"):
+		st.write("Coming soon!")
+
+# plot the attractor in the right column
+with col2:
+	if common_transforms:
+		st.write("Coming soon!")
