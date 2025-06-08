@@ -11,6 +11,7 @@ import os
 from importlib import import_module
 import json
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import streamlit as st
 import matplotlib as mpl
 import numpy as np
@@ -91,6 +92,25 @@ class attractor:
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
+    def format_auto_ax(self, ax):
+        ax.autoscale()
+
+        # make the xlims and ylims the same
+        xlim = ax.get_xlim()
+        ylim = ax.get_ylim()
+        lim_min = min(xlim[0], ylim[0])
+        lim_max = max(xlim[1], ylim[1])
+        lim = [lim_min, lim_max]
+        ax.set_xlim(lim)
+        ax.set_ylim(lim)
+
+        # Change x-axis and y-axis tick spacing
+        # Ticks at multiples of base
+        nticks = 4
+        ax.xaxis.set_major_locator(plt.MaxNLocator(nticks))
+        ax.yaxis.set_major_locator(plt.MaxNLocator(nticks))
+
+
     def plot(self, n = 0, facecolor = 'k',
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
         clicks = [[0,0], [0,1], [1,0]]):
@@ -135,7 +155,7 @@ class attractor:
             print('The whole process took ' + str(end - start) + ' seconds.')
 
         if not set_lim:
-            ax.autoscale()
+            self.format_auto_ax(ax)
 
         st.pyplot(fig)
 
@@ -199,7 +219,7 @@ class attractor:
                     facecolor = facecolor))
 
             if not set_lim:
-                ax.autoscale()
+                self.format_auto_ax(ax)
 
             the_plot.pyplot(fig)
 
