@@ -68,14 +68,16 @@ col1, col2 = st.columns(2, gap = "medium")
 
 with col1:
 
-	stroke_color = st.color_picker("Select a colour for the attractor: ", "#800080")
+	stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
 
 	if not drawing_canvas:
 		initial_set_selected = st.selectbox("Select an initial set",
 									  initial_set_options.keys(),
 									  on_change = reset_n,
 									  index = get_default_index(option_selected))
-
+	if not multiplot:
+		n = st.number_input("Number of iterations: ", min_value = 0,
+			max_value = max_iterations, step = 1, key = "n")
 	if drawing_canvas:
 		canvas_result = st_canvas(
 			fill_color = stroke_color,
@@ -84,8 +86,8 @@ with col1:
 			background_color = "#eee",
 			background_image = None,
 			update_streamlit = True,
-			height = 600,
-			width = 600,
+			height = canvas_dimension,
+			width = canvas_dimension,
 			drawing_mode = drawing_mode,
 			point_display_radius = 0,
 			display_toolbar = True,
@@ -105,9 +107,6 @@ with col1:
 
 # plot the attractor in the right column
 with col2:
-	if not multiplot:
-		n = st.number_input("Number of iterations: ", min_value = 0,
-			max_value = max_iterations, step = 1, key = "n")
 	a = get_selected_attractor(option_selected, attractors)
 	if drawing_canvas:
 		try:

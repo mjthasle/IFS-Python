@@ -20,6 +20,9 @@ file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
     config = json.load(json_file)
 
+canvas_dimension = config["canvas_dimension"]
+colour_default = config["colour_default"]
+
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
     l = 0
@@ -42,7 +45,7 @@ def get_coordinates(raw_coords):
     coord_dict = list(raw_coords)
     for pair in coord_dict:
         if len(pair) > 1:
-            new_list.append([(1/600) * float(pair[1]), (-1/600) * float(pair[2]) + 1])
+            new_list.append([(1 / canvas_dimension) * float(pair[1]), (-1 / canvas_dimension) * float(pair[2]) + 1])
     return new_list
 
 # Functions to fix array spacing for latex equations
@@ -96,7 +99,7 @@ class attractor:
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
-    def plot(self, n = 0, facecolor = 'k',
+    def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, timeit = False,
         clicks = [[0,0], [0,1], [1,0]]):
 
@@ -143,7 +146,7 @@ class attractor:
 
 
      # Function to show multiplots in steamlit one-by-one
-    def multiplot(self, facecolor = 'k',
+    def multiplot(self, facecolor = colour_default,
         showaxis = True, showgridlines = False, timeit = False, saveit = False,
         clicks = [[0,0], [0,1], [1,0]]):
 
