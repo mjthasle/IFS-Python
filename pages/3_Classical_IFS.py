@@ -1,6 +1,6 @@
 from ifs import *
 
-st.header("Built-In IFS")
+st.header("Classical IFS")
 
 st.write("Use the drop-down menu to select a built-in iterated function system \
 	(IFS).  The plots show the result of iterating the IFS starting from a \
