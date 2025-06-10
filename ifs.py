@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on May 27, 2025
+Last Updated on June 10, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -23,6 +23,9 @@ file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
     config = json.load(json_file)
 
+canvas_dimension = config["canvas_dimension"]
+colour_default = config["colour_default"]
+
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
     l = 0
@@ -39,6 +42,14 @@ def codes(m, n):
         l += 1
         codes.append(expan)
     return np.array(codes)
+
+def get_coordinates(raw_coords):
+    new_list = []
+    coord_dict = list(raw_coords)
+    for pair in coord_dict:
+        if len(pair) > 1:
+            new_list.append([(1 / canvas_dimension) * float(pair[1]), (-1 / canvas_dimension) * float(pair[2]) + 1])
+    return new_list
 
 # Functions to fix array spacing for latex equations
 def texeq(eq, arrayspace = 0.5, units = "ex"):
@@ -111,8 +122,9 @@ class attractor:
         ax.yaxis.set_major_locator(plt.MaxNLocator(nticks))
 
 
-    def plot(self, n = 0, facecolor = 'k',
+    def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
+
         clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
@@ -131,16 +143,16 @@ class attractor:
 
         m = len(self.ifs)
         start = time.perf_counter()
-        t = IdentityTransform()
+        t = mpl.transforms.IdentityTransform()
 
         for code in codes(m, n):
 
-            t = IdentityTransform()
+            t = mpl.transforms.IdentityTransform()
 
             for i in code:
-                    t += self.ifs[i]
+                t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(clicks),
+            ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
@@ -161,9 +173,10 @@ class attractor:
 
 
      # Function to show multiplots in steamlit one-by-one
-    def multiplot(self, facecolor = 'k',
-        showaxis = True, showgridlines = False, set_lim = False, timeit = False,
-        saveit = False, clicks = [[0,0], [0,1], [1,0]]):
+
+    def multiplot(self, facecolor = colour_default,
+        showaxis = True, showgridlines = False, set_lim = False, timeit = False, saveit = False,
+        clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
