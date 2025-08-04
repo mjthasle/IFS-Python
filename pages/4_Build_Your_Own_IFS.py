@@ -31,7 +31,7 @@ def operation_interface(
         st.caption("A")
         A = st.data_editor(
             np.array([[0, 0, 2], [1, 3, 4], [3, 4, 4]]),
-            use_container_width=True,
+            use_container_width=True, hide_index=False,
             key=f"{key_prefix}_A",
         )
 
@@ -43,7 +43,7 @@ def operation_interface(
         st.caption("B")
         B = st.data_editor(
             np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-            use_container_width=True,
+            use_container_width=True, hide_index=False,
             key=f"{key_prefix}_B",
         )
 
