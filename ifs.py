@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on June 10, 2025
+Last Updated on Sept 2, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -18,6 +18,7 @@ import numpy as np
 import time
 from matplotlib.transforms import IdentityTransform
 from matplotlib.patches import Polygon
+import ast
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -271,3 +272,15 @@ def get_default_index(option_selected):
 
 def reset_n():
     st.session_state.n = 0
+
+
+def str_to_numpy_array(array_str):
+    """
+    Convert a string representation of a numpy array into an actual numpy array.
+    """
+    try:
+        # Safely parse string into Python list (avoids eval)
+        parsed = ast.literal_eval(array_str)
+        return np.array(parsed)
+    except (ValueError, SyntaxError) as e:
+        raise ValueError(f"Invalid array string: {array_str}") from e

@@ -1,108 +1,94 @@
 from ifs import *
-import operator
-import time
-from typing import Callable
-import numpy as np
-import pandas as pd
-import streamlit as st
-from streamlit_extras.add_vertical_space import add_vertical_space
-from streamlit_extras.colored_header import ST_COLOR_PALETTE
 
-
-BLANK_COLUMNS_CONFIG = {i: {"title": ""} for i in range(4)}
-
-
-def color_mask(x: pd.DataFrame, mask: pd.DataFrame, background_color: str) -> pd.DataFrame:
-    hue, intensity = background_color.split("-")
-    color = f"background-color: {ST_COLOR_PALETTE[hue][intensity]}; color:white;"
-    style_df = pd.DataFrame("", index=x.index, columns=x.columns)
-    style_df[mask] = color
-    return style_df
-
-def operation_interface(
-    operation_label: str,
-    operation_method: Callable,
-    background_color: str,
-    key_prefix: str,
-) -> None:
-    a, operation, b, equals, c = st.columns((10, 1, 10, 1, 10))
-
-    with a:
-        st.caption("A")
-        A = st.data_editor(
-            np.array([[0, 0, 2], [1, 3, 4], [3, 4, 4]]),
-            use_container_width=True, hide_index=False,
-            key=f"{key_prefix}_A",
-        )
-
-    with operation:
-        add_vertical_space(6)
-        st.write(f"###  {operation_label} ")
-
-    with b:
-        st.caption("B")
-        B = st.data_editor(
-            np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-            use_container_width=True, hide_index=False,
-            key=f"{key_prefix}_B",
-        )
-
-    with equals:
-        add_vertical_space(6)
-        st.write("###  = ")
-
-    with c:
-        st.caption("C")
-        C = pd.DataFrame(operation_method(A, B))
-
-        key_C = f"{key_prefix}_C"
-        avoid_coloring = False
-        if key_C not in st.session_state:
-            st.session_state[key_C] = C
-            avoid_coloring = True
-
-        result_df_container = st.empty()
-        mask = (C - st.session_state[key_C]) != 0
-        result_df_container.dataframe(
-            C.style.apply(
-                lambda x: color_mask(
-                    x,
-                    mask=mask,
-                    background_color=background_color,
-                ),
-                axis=None,
-            ),
-            use_container_width=True,
-        )
-
-        if mask.sum().sum() > 0 and not avoid_coloring:
-            time.sleep(0.5)
-            result_df_container.dataframe(C, use_container_width=True)
-
-        st.session_state[key_C] = C
-
-    add_vertical_space(2)
-
-
-
-
-operation_interface(
-    "\+",
-    operation_method=operator.__add__,
-    background_color="green-80",
-    key_prefix="sum"
-)
-
+st.set_page_config(layout = "wide")
 
 st.header("Build-Your-Own IFS")
 
-"""Add some description here..."""
+import streamlit as st
 
-k=1
+# Initialize an array to store the IFS transforms
+IFS_transforms = []
 
-def do_on_click(k):
-	st.latex(f"f_{k}(x) = ")
-	k=k+1
+# Initialize the session state 
+if "IFS_latex" not in st.session_state:
+    st.session_state.IFS_latex = []
+if "done" not in st.session_state:
+    st.session_state.done = False
+if "function_form" not in st.session_state:
+    st.session_state.function_form = False
+if "count" not in st.session_state:
+    st.session_state.count = 0 
 
-if st.button(r"\+ Add Function"):
-	do_on_click(k)
+        
+# Display the IFS latex 
+st.write("### Your IFS:")
+
+if st.session_state.IFS_latex:
+    for i, tex_string in enumerate(st.session_state.IFS_latex, start=1):
+        cols = st.columns([4, 1])
+        with cols[0]:
+            st.write(f"f_{i}(x) = {tex_string}")
+        with cols[1]:
+            if st.session_state.done == False:
+                if st.button("Remove", key=f"remove_{i}"):
+                    st.session_state.IFS_latex.pop(i-1)
+                    st.rerun()
+else:
+    st.write("*No functions defined.*")
+
+# Button to add a function
+if not st.session_state.function_form and st.session_state.done == False:
+    if st.button("\+ Add function"):
+        st.session_state.function_form = True
+        st.rerun()
+
+# Form to submit a new message
+if st.session_state.function_form:
+    with st.form(key="ifs_form"):
+        matrix_str = st.text_input("Matrix:", "[[1,0],[0,1]]")
+        shift_str = st.text_input("Shift", "[[0],[0]]")
+        matrix = str_to_numpy_array(matrix_str)
+        shift = str_to_numpy_array(shift_str)
+        transform = np.block([[matrix, shift],[np.zeros((1,2)), np.ones((1,1))]])
+        tex_string = "...latex"
+
+        st.write("Preview:")
+        st.latex(f"f_{st.session_state.count+1}(x)={tex_string}")
+
+        submit_button = st.form_submit_button("Submit")
+        if submit_button:
+            if tex_string:
+                IFS_transforms.append(transform)
+                st.session_state.IFS_latex.append(tex_string)
+                st.session_state.count += 1
+                st.session_state.function_form = False
+                st.rerun()
+
+# Button to confirm the ifs
+if st.session_state.count > 0 and not st.session_state.done :
+    if st.button("Done"):
+        st.session_state.done = True
+        st.session_state.function_form = False
+        st.rerun()
+
+# Button to edit functions
+if st.session_state.done:
+    if st.button("Edit functions"):
+        st.session_state.done = False
+        st.rerun() 
+
+# Button to reset
+if st.session_state.count > 0:
+    if st.button("Reset"):
+        st.session_state.IFS_latex = []
+        st.session_state.done = False
+        st.session_state.function_form = False
+        st.session_state.count = 0
+        st.rerun()
+
+if st.session_state.done:
+    # Display done messages
+    if st.session_state.IFS_latex:
+        st.write("IFS done.  Start plotting.")
+    else:
+        st.write("*No functions.  Hit reset to try again.*")
