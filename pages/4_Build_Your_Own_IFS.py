@@ -1,4 +1,5 @@
 from ifs import *
+import re
 
 st.set_page_config(layout = "wide")
 
@@ -19,22 +20,46 @@ if "function_form" not in st.session_state:
 if "count" not in st.session_state:
     st.session_state.count = 0 
 
+
+# Track which function is deleted
+delete_index = None
         
 # Display the IFS latex 
 st.write("### Your IFS:")
-
-if st.session_state.IFS_latex:
-    for i, tex_string in enumerate(st.session_state.IFS_latex, start=1):
-        cols = st.columns([4, 1])
-        with cols[0]:
-            st.latex(tex_string)
-        with cols[1]:
-            if st.session_state.done == False:
-                if st.button("Remove", key=f"remove_{i}"):
-                    st.session_state.IFS_latex.pop(i-1)
-                    st.rerun()
+# for i, item in enumerate(st.session_state.items):
+#     col1, col2 = st.columns([8, 1])
+#     with col1:
+#         st.write(item)
+#     with col2:
+#         if st.button("Delete", key=f"delete_{i}"):
+#             delete_index = i  # mark for deletion
+if st.session_state.count > 0:
+    for i, tex in enumerate(st.session_state.IFS_latex):
+        col1, col2 = st.columns([8, 1])
+        with col1:
+            st.latex(tex)
+        with col2:
+            if st.button("Delete", key=f"delete_{i}"):
+                # Mark the index to be deleted
+                delete_index = i  
 else:
     st.write("*No functions defined.*")
+
+# Perform function deletion 
+if delete_index is not None:
+    st.session_state.IFS_latex.pop(delete_index)
+    IFS_transforms.pop(delete_index)
+ 
+    # Renumber remaining functions
+    for j, tex in enumerate(st.session_state.IFS_latex, start = 1):
+        #st.session_state.IFS_latex[j] = f"Function {j+1}"
+        st.session_state.IFS_latex[j-1] = re.sub("^f_\d", f"f_{j}", tex)
+        print(st.session_state.IFS_latex)
+
+    # Update count
+    st.session_state.count = len(st.session_state.IFS_latex)
+
+    st.rerun()  
 
 # Button to add a function
 if not st.session_state.function_form and st.session_state.done == False:
