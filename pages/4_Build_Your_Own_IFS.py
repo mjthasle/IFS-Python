@@ -27,7 +27,7 @@ if st.session_state.IFS_latex:
     for i, tex_string in enumerate(st.session_state.IFS_latex, start=1):
         cols = st.columns([4, 1])
         with cols[0]:
-            st.write(f"f_{i}(x) = {tex_string}")
+            st.latex(tex_string)
         with cols[1]:
             if st.session_state.done == False:
                 if st.button("Remove", key=f"remove_{i}"):
@@ -42,19 +42,16 @@ if not st.session_state.function_form and st.session_state.done == False:
         st.session_state.function_form = True
         st.rerun()
 
-# Form to submit a new message
+# Form to add a new function
 if st.session_state.function_form:
     with st.form(key="ifs_form"):
         matrix_str = st.text_input("Matrix:", "[[1,0],[0,1]]")
         shift_str = st.text_input("Shift", "[[0],[0]]")
         matrix = str_to_numpy_array(matrix_str)
         shift = str_to_numpy_array(shift_str)
-        transform = np.block([[matrix, shift],[np.zeros((1,2)), np.ones((1,1))]])
-        tex_string = "...latex"
-
-        st.write("Preview:")
-        st.latex(f"f_{st.session_state.count+1}(x)={tex_string}")
-
+        transform = np.block([[matrix,shift],[np.zeros((1,2)),np.ones((1,1))]])
+        tex_string = f"f_{st.session_state.count+1}(x)=" + \
+                     f"{array_to_latex(matrix)}x + {array_to_latex(shift)}"
         submit_button = st.form_submit_button("Submit")
         if submit_button:
             if tex_string:
@@ -86,8 +83,8 @@ if st.session_state.count > 0:
         st.session_state.count = 0
         st.rerun()
 
+# Runs after the ifs is confirmed
 if st.session_state.done:
-    # Display done messages
     if st.session_state.IFS_latex:
         st.write("IFS done.  Start plotting.")
     else:

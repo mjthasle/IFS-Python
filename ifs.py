@@ -273,7 +273,6 @@ def get_default_index(option_selected):
 def reset_n():
     st.session_state.n = 0
 
-
 def str_to_numpy_array(array_str):
     """
     Convert a string representation of a numpy array into an actual numpy array.
@@ -284,3 +283,21 @@ def str_to_numpy_array(array_str):
         return np.array(parsed)
     except (ValueError, SyntaxError) as e:
         raise ValueError(f"Invalid array string: {array_str}") from e
+
+def array_to_latex(matrix):
+    """
+    Converts a 2D NumPy array into a LaTeX bmatrix string,
+    properly escaped for Python strings.
+    """
+    if matrix.ndim != 2:
+        raise ValueError("Input must be a 2D array")
+    
+    # Convert each row to a LaTeX row string
+    rows = [" & ".join(map(str, row)) for row in matrix]
+    body = " \\\\ ".join(rows)  # each LaTeX line break becomes '\\\\' in the string
+    
+    # Return LaTeX code with escaped backslashes for \begin and \end
+    return f"\\begin{{bmatrix}} {body} \\end{{bmatrix}}"
+
+
+
