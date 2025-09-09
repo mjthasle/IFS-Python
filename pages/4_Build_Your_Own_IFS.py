@@ -26,13 +26,6 @@ delete_index = None
         
 # Display the IFS latex 
 st.write("### Your IFS:")
-# for i, item in enumerate(st.session_state.items):
-#     col1, col2 = st.columns([8, 1])
-#     with col1:
-#         st.write(item)
-#     with col2:
-#         if st.button("Delete", key=f"delete_{i}"):
-#             delete_index = i  # mark for deletion
 if st.session_state.count > 0:
     for i, tex in enumerate(st.session_state.IFS_latex):
         col1, col2 = st.columns([8, 1])
