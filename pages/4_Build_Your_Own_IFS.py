@@ -102,7 +102,7 @@ if st.session_state.count > 0:
 
 # Runs after the ifs is confirmed
 if st.session_state.done:
-    if st.session_state.IFS_latex:
+    if st.session_state.count > 0:
         st.write("IFS done.  Start plotting.")
     else:
         st.write("*No functions.  Hit reset to try again.*")
