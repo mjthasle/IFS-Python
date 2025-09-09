@@ -41,7 +41,7 @@ else:
 # Perform function deletion 
 if delete_index is not None:
     st.session_state.IFS_latex.pop(delete_index)
-    IFS_transforms.pop(delete_index)
+    # IFS_transforms.pop(delete_index)
  
     # Renumber remaining functions
     for j, tex in enumerate(st.session_state.IFS_latex, start = 1):
