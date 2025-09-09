@@ -45,7 +45,6 @@ if delete_index is not None:
  
     # Renumber remaining functions
     for j, tex in enumerate(st.session_state.IFS_latex, start = 1):
-        #st.session_state.IFS_latex[j] = f"Function {j+1}"
         st.session_state.IFS_latex[j-1] = re.sub("^f_\d", f"f_{j}", tex)
         print(st.session_state.IFS_latex)
 
