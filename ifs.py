@@ -273,31 +273,88 @@ def get_default_index(option_selected):
 def reset_n():
     st.session_state.n = 0
 
-def str_to_numpy_array(array_str):
+
+import numpy as np
+from fractions import Fraction
+from typing import List
+
+def str_to_numpy_array(input_str):
     """
-    Convert a string representation of a numpy array into an actual numpy array.
+    Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy array.
+    Supports integers, floats, and fractions like "1/2".
+    Internally returns dtype=float.
     """
-    try:
-        # Safely parse string into Python list (avoids eval)
-        parsed = ast.literal_eval(array_str)
-        return np.array(parsed)
-    except (ValueError, SyntaxError) as e:
-        raise ValueError(f"Invalid array string: {array_str}") from e
+    # Strip outer spaces
+    s = input_str.strip()
+
+    # Remove outermost brackets if present
+    if s.startswith("[") and s.endswith("]"):
+        s = s[1:-1]
+
+    rows = s.split("],")
+
+    matrix: List[List[float]] = []
+    for row in rows:
+        row = row.replace("[", "").replace("]", "").strip()
+        if not row:
+            continue
+
+        entries = row.split(",")
+        parsed_row: List[float] = []
+        for entry in entries:
+            entry = entry.strip()
+            if entry == "":
+                raise ValueError("Empty matrix entry found")
+            try:
+                val = float(Fraction(entry))
+            except (ValueError, ZeroDivisionError) as e:
+                raise ValueError(f"Invalid number format: {entry}") from e
+            parsed_row.append(val)
+
+        matrix.append(parsed_row)
+
+    if not matrix:
+        return np.array(matrix, dtype=float)
+
+    row_lengths = [len(r) for r in matrix]
+    if any(length != row_lengths[0] for length in row_lengths):
+        raise ValueError("Rows have inconsistent lengths")
+
+    return np.array(matrix, dtype=float)
+
 
 def array_to_latex(matrix):
     """
-    Converts a 2D NumPy array into a LaTeX bmatrix string,
-    properly escaped for Python strings.
+    Convert a 2D numpy array into a LaTeX bmatrix string.
+    Rules:
+      - If a value is an integer, print it as an integer.
+      - Otherwise print it rounded to max 3 decimal places, 
+        trimming unnecessary trailing zeros.
     """
     if matrix.ndim != 2:
         raise ValueError("Input must be a 2D array")
-    
-    # Convert each row to a LaTeX row string
-    rows = [" & ".join(map(str, row)) for row in matrix]
-    body = " \\\\ ".join(rows)  # each LaTeX line break becomes '\\\\' in the string
-    
-    # Return LaTeX code with escaped backslashes for \begin and \end
-    return f"\\begin{{bmatrix}} {body} \\end{{bmatrix}}"
 
+    rows_str = []
+    for row in matrix:
+        entries = []
+        for val in row:
+            f = float(val)
+
+            if np.isnan(f):
+                entries.append(r"\text{NaN}")
+            elif np.isposinf(f):
+                entries.append(r"\infty")
+            elif np.isneginf(f):
+                entries.append(r"-\infty")
+            elif f.is_integer():
+                entries.append(str(int(round(f))))
+            else:
+                # round to 3 decimal places and strip trailing zeros
+                s = f"{f:.3f}".rstrip("0").rstrip(".")
+                entries.append(s)
+        rows_str.append(" & ".join(entries))
+
+    body = r" \\ ".join(rows_str)
+    return f"\\begin{{bmatrix}} {body} \\end{{bmatrix}}"
 
 
