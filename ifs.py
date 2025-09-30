@@ -19,6 +19,7 @@ import time
 from matplotlib.transforms import IdentityTransform
 from matplotlib.patches import Polygon
 import ast
+import re
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -356,5 +357,16 @@ def array_to_latex(matrix):
 
     body = r" \\ ".join(rows_str)
     return f"\\begin{{bmatrix}} {body} \\end{{bmatrix}}"
+
+
+# Regex validator for matrix bracket structure
+# Accept forms like: [[a,b],[c,d]] with optional whitespace
+def matrix_bracket_ok(s):
+    return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
+
+# Regex validator for matrix bracket structure
+# Accept forms like: [[a],[b]] with optional whitespace
+def shift_bracket_ok(s):
+    return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
 
 
