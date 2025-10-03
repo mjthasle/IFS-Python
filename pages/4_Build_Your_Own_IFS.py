@@ -203,6 +203,7 @@ if st.session_state.done:
 if st.session_state.count > 0:
     if st.button("Reset"):
         st.session_state.IFS_latex = []
+        st.session_state.IFS_transforms = []
         st.session_state.done = False
         st.session_state.function_form = False
         st.session_state.count = 0
