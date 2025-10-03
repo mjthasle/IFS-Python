@@ -1,15 +1,26 @@
 from ifs import *
-import streamlit as st
-import numpy as np
+import pandas as pd
+from matplotlib.transforms import Affine2D
+from streamlit_drawable_canvas import st_canvas
+from threading import RLock
+
 
 st.set_page_config(layout="wide")
+
 st.header("Build-Your-Own IFS")
 
-# Initialize an array to store the IFS transforms
-IFS_transforms = []
+st.write("Use the \"Add Function\" button to add functions to your IFS. \
+    When you are finished addint functions to your IFS, click the \"Done\" \
+    button.  After specifying the initial polygon, the result of iterating the \
+    IFS will be displayed. No matter what polygon you start with, the results \
+    approximate the IFS attractor as the number of iterations increases!")
+
+st.write("Use the Multiplot toggle to change between views of individual \
+    iterations and multiple iterations on the same canvas.")
 
 # Initialize the session state
 # IFS_latex: list of LaTeX strings for function display
+# IFS_tansforms: list of Affine2D transforms specifying the IFS
 # done: whether or not the user is finished editing the IFS
 # function_form: whether or not the "Add function" form is currently open
 # count: number of functions defined so far
@@ -23,6 +34,14 @@ IFS_transforms = []
 #               - keeps widgets editable without Streamlit key conflicts
 if "IFS_latex" not in st.session_state:
     st.session_state.IFS_latex = []
+if "IFS_transforms" not in st.session_state:
+    st.session_state.IFS_transforms = []
+if "grid" not in st.session_state:
+    st.session_state.grid = config['grid_default']
+if "xlim" not in st.session_state:
+    st.session_state.xlim = config['xlim_default']
+if "ylim" not in st.session_state:
+    st.session_state.ylim = config['ylim_default']
 if "done" not in st.session_state:
     st.session_state.done = False
 if "function_form" not in st.session_state:
@@ -37,6 +56,9 @@ if "form_error" not in st.session_state:
     st.session_state.form_error = ""
 if "form_version" not in st.session_state:
     st.session_state.form_version = 0
+
+# Get built-in initial set options
+initial_set_options = config['initial_sets']
 
 # Track which function is deleted
 delete_index = None
@@ -115,7 +137,7 @@ if st.session_state.function_form:
                 )
 
                 # Everything valid: record it
-                IFS_transforms.append(transform)
+                st.session_state.IFS_transforms.append(Affine2D(transform))
                 st.session_state.IFS_latex.append(tex_string)
                 st.session_state.count += 1
                 st.session_state.function_form = False
@@ -177,6 +199,87 @@ if st.session_state.count > 0:
 # Runs after the ifs is confirmed
 if st.session_state.done:
     if st.session_state.count > 0:
-        st.write("IFS done.  Start plotting.")
+        st.write("IFS confirmed.")
     else:
         st.write("*No functions.  Hit reset to try again.*")
+
+# Settings for the drawing canvas
+drawing_mode = "polygon"
+stroke_width = 3
+
+# Display toggles
+drawing_canvas = st.toggle("Draw initial polygon", value = False)
+multiplot = st.toggle("Multiplot", value = True)
+gridlines = st.toggle("Show grid", value = True)
+
+# Adjust font sizes
+if multiplot:
+    plt.rcParams.update({'font.size': config['multiplot_font']})
+    plt.rcParams['figure.figsize'] = config['multiplot_size']
+else:
+    plt.rcParams.update({'font.size': config['singleplot_font']})
+
+# Create columns
+col1, col2 = st.columns(2, gap = "medium")
+
+# IFS settings in the left column
+with col1:
+    stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
+
+    if not drawing_canvas:
+        initial_set_selected = st.selectbox("Select an initial set",
+                                      initial_set_options.keys(),
+                                      on_change = reset_n,
+                                      index = get_default_index())
+    if not multiplot:
+        n = st.number_input("Number of iterations: ", min_value = 0,
+            max_value = max_iterations, step = 1, key = "n")
+    if drawing_canvas:
+        canvas_result = st_canvas(
+            fill_color = stroke_color,
+            stroke_width = stroke_width,
+            stroke_color = stroke_color,
+            background_color = "#eee",
+            background_image = None,
+            update_streamlit = True,
+            height = canvas_dimension,
+            width = canvas_dimension,
+            drawing_mode = drawing_mode,
+            point_display_radius = 0,
+            display_toolbar = True,
+            key = "full_app",
+        )
+    else:
+        canvas_result = None
+        colour_selected = stroke_color
+
+    if canvas_result is not None:
+        if canvas_result.json_data is not None:
+            objects = pd.json_normalize(canvas_result.json_data["objects"])
+            if len(objects) > 0:
+                coordinates = objects["path"][0]
+
+        colour_selected = stroke_color
+
+# plot the attractor in the right column
+with col2:
+    a = attractor(IFS = st.session_state.IFS_transforms, 
+        grid = st.session_state.grid, xlim = st.session_state.xlim, 
+        ylim = st.session_state.ylim)
+
+    if drawing_canvas:
+        try:
+            clicks = get_coordinates(coordinates)
+        except (TypeError, KeyError, NameError):
+            clicks = [[0, 0]]
+    else:
+        clicks = initial_set_options[initial_set_selected]
+    _lock = RLock()
+    with _lock:
+        if multiplot:
+            a.multiplot(showgridlines = gridlines, facecolor = colour_selected, 
+                set_lim = True, clicks = clicks)
+        else:
+            a.plot(n = n, showgridlines = gridlines, 
+                facecolor = colour_selected, set_lim = True, clicks = clicks)
+

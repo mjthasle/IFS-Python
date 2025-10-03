@@ -61,12 +61,11 @@ else:
 # built-in IFS options
 attractors = get_attractors()
 box_options = [a.namestring for a in attractors]
-initial_set_options = config['initial_sets']
 
 col1, col2 = st.columns(2, gap = "medium")
 
 
-# built-in IFS settings in the left column
+# IFS settings in the left column
 
 with col1:
 
@@ -111,13 +110,6 @@ with col1:
 with col2:
 	a = get_selected_attractor(option_selected, attractors)
 	set_lim = not option_selected == "Random IFS"
-
-	# if multiplot:
-	# 	a.multiplot(showgridlines = gridlines, facecolor = colour_selected,
-	# 		set_lim = set_lim, clicks = clicks)
-	# else:
-	# 	a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected,
-	# 		set_lim = set_lim, clicks = clicks)
 
 	if drawing_canvas:
 		try:

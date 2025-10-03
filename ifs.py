@@ -65,36 +65,42 @@ class attractor:
 
     instances = []
 
-    def __init__(self, namestring):
+    def __init__(self, namestring=None, IFS=None, grid=None, xlim=None, 
+        ylim=None):
 
-        self.instances.append(namestring)
+        # Built-in IFS 
+        if namestring is not None and IFS is None:
+            self.instances.append(namestring)
+            self.namestring = namestring
 
-        self.namestring = namestring
+            built_in_ifs = config['built_in_ifs']
+            built_in_ifs_keys = list(built_in_ifs.keys())
+            functions_dir = config['functions_dir']
 
-        built_in_ifs = config['built_in_ifs']
-        built_in_ifs_keys = list(built_in_ifs.keys())
-        functions_dir = config['functions_dir']
+            assert self.namestring in built_in_ifs_keys, "Attractor missing"
 
-        assert self.namestring in built_in_ifs_keys, "Attractor missing"
+            assert built_in_ifs_keys != config['required_fields'], "Incorrect \
+                fields in attractor data"
 
-        assert built_in_ifs_keys != config['required_fields'], "Incorrect \
-            fields in attractor data"
+            self.grid = built_in_ifs[self.namestring]['grid']
+            self.xlim = built_in_ifs[self.namestring]['xlim']
+            self.ylim = built_in_ifs[self.namestring]['ylim']
+            self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
+            self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
+            self.ifs_script = functions_dir + "." + built_in_ifs[self.namestring]['ifs_script']
 
-        self.grid = built_in_ifs[self.namestring]['grid']
-        self.xlim = built_in_ifs[self.namestring]['xlim']
-        self.ylim = built_in_ifs[self.namestring]['ylim']
-        self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
-        self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
-        self.ifs_script = functions_dir + "." + built_in_ifs[self.namestring]['ifs_script']
+            # Run script to retrieve affine transforms
+            ifs_script = import_module(self.ifs_script)
+            get_ifs = getattr(ifs_script, "get_ifs")
+            self.ifs = get_ifs()
 
-        # Run script to retrieve affine transforms
-        ifs_script = import_module(self.ifs_script)
-        get_ifs = getattr(ifs_script, "get_ifs")
-        self.ifs = get_ifs()
-
-
-    def add_fun(self, fun):
-        self.ifs.append(fun)
+        # Build-your-own IFS
+        else:
+            self.ifs = IFS 
+            self.grid = grid
+            self.xlim = xlim
+            self.ylim = ylim
+            self.max_iterations = config['max_iterations_default']
 
     def format_ax(self, ax, set_lim = False):
         if set_lim:
@@ -126,7 +132,6 @@ class attractor:
 
     def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
-
         clicks = [[0,0], [0,1], [1,0]]):
 
         nrows = 1
@@ -177,13 +182,14 @@ class attractor:
      # Function to show multiplots in steamlit one-by-one
 
     def multiplot(self, facecolor = colour_default,
-        showaxis = True, showgridlines = False, set_lim = False, timeit = False, saveit = False,
-        clicks = [[0,0], [0,1], [1,0]]):
+        showaxis = True, showgridlines = False, set_lim = False, timeit = False, 
+        saveit = False, clicks = [[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
 
         nrows = self.grid[0]
         ncols = self.grid[1]
+
         assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} \
             iterations reached"
 
@@ -265,8 +271,13 @@ def get_initial_set(option_selected):
     initial_set = config["built_in_ifs"][a.namestring]["initial_set"]
     return initial_set
 
-def get_default_index(option_selected):
-    initial_set = get_initial_set(option_selected)
+def get_default_index(option_selected=None):
+
+    initial_set = config['initial_set_default']
+
+    if option_selected is not None:
+        initial_set = get_initial_set(option_selected)
+
     options = list(config['initial_sets'])
     default_index = options.index(initial_set)
     return default_index
