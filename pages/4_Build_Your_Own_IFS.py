@@ -233,6 +233,12 @@ else:
 # Create columns
 col1, col2 = st.columns(2, gap = "medium")
 
+# Define the attractor
+a = attractor(IFS = st.session_state.IFS_transforms, 
+            grid = st.session_state.grid, xlim = st.session_state.xlim, 
+            ylim = st.session_state.ylim)
+max_iterations = a.max_iterations
+
 # IFS settings in the left column
 with col1:
     stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
@@ -284,10 +290,6 @@ with col2:
     # Runs after the ifs is confirmed
     if st.session_state.done and st.session_state.start_plotting:
         if st.session_state.count > 0:
-            a = attractor(IFS = st.session_state.IFS_transforms, 
-            grid = st.session_state.grid, xlim = st.session_state.xlim, 
-            ylim = st.session_state.ylim)
-
             if drawing_canvas:
                 try:
                     clicks = get_coordinates(coordinates)
