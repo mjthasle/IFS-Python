@@ -211,6 +211,9 @@ if st.session_state.count > 0:
         st.session_state.form_error = ""
         st.session_state.form_version += 1
         st.session_state.start_plotting = False
+        st.session_state.xlim = config['xlim_default']
+        st.session_state.ylim = config['ylim_default']
+        st.session_state.set_lim = False
         st.rerun()
 
 # Runs after the ifs is confirmed
@@ -228,6 +231,7 @@ stroke_width = 3
 
 # Display toggles
 drawing_canvas = st.toggle("Draw initial polygon", value = False)
+set_lim = st.toggle("Set x and y limits", value = False)
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)
 
@@ -287,28 +291,30 @@ with col1:
         colour_selected = stroke_color
 
 
+    # Display xlim and ylim
+    if set_lim:
+        st.session_state.set_lim = True
+        st.write(f"x limits: {st.session_state.xlim}")
+        st.write(f"y limits: {st.session_state.ylim}")
+    else:
+        st.session_state.set_lim = False
+
     # Button to set xlim and ylim
-    if not st.session_state.set_lim_form:
+    if not st.session_state.set_lim_form and set_lim:
         if st.button("Set x and y limits"):
             st.session_state.set_lim_form = True
             st.session_state.start_plotting = False
             st.rerun()
 
-    # Button to use automatic xlim and ylim
-    if st.button("Use automatic x and y limits"):
-        st.session_state.set_lim_form = False
-        st.session_state.set_lim = False
-        st.rerun()
-
     # Form to add a new function
     if st.session_state.set_lim_form:
         with st.form("xylim"):
             st.write("Input the x limits [x1, x2]:")
-            x1 = st.number_input("x1 = ")
-            x2 = st.number_input("x2 = ")
+            x1 = st.number_input("x1 = ", value=st.session_state.xlim[0])
+            x2 = st.number_input("x2 = ", value=st.session_state.xlim[1])
             st.write("Input the y limits [y1, y2]:")
-            y1 = st.number_input("y1 = ")
-            y2 = st.number_input("y2 = ")
+            y1 = st.number_input("y1 = ", value=st.session_state.ylim[0])
+            y2 = st.number_input("y2 = ", value=st.session_state.ylim[1])
 
             submit_button = st.form_submit_button("Submit")
 
