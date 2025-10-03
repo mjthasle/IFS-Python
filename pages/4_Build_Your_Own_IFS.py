@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 st.header("Build-Your-Own IFS")
 
 st.write("Use the \"Add Function\" button to add functions to your IFS. \
-    When you are finished addint functions to your IFS, click the \"Done\" \
+    When you are finished adding functions to your IFS, click the \"Done\" \
     button.  After specifying the initial polygon, the result of iterating the \
     IFS will be displayed. No matter what polygon you start with, the results \
     approximate the IFS attractor as the number of iterations increases!")
@@ -304,7 +304,6 @@ with col1:
     if not st.session_state.set_lim_form and set_lim:
         if st.button("Set x and y limits"):
             st.session_state.set_lim_form = True
-            st.session_state.start_plotting = False
             st.rerun()
 
     # Form to add a new function
