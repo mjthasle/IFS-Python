@@ -303,10 +303,10 @@ with col2:
             _lock = RLock()
             with _lock:
                 if multiplot:
-                    a.multiplot(showgridlines = gridlines, facecolor = colour_selected, 
-                        set_lim = True, clicks = clicks)
+                    a.multiplot(showgridlines = gridlines, 
+                        facecolor = colour_selected, clicks = clicks)
                 else:
                     a.plot(n = n, showgridlines = gridlines, 
-                        facecolor = colour_selected, set_lim = True, clicks = clicks)
+                        facecolor = colour_selected, clicks = clicks)
 
 

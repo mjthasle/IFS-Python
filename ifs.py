@@ -129,7 +129,7 @@ class attractor:
         ax.xaxis.set_major_locator(plt.MaxNLocator(nticks))
         ax.yaxis.set_major_locator(plt.MaxNLocator(nticks))
 
-
+    # set_lim = False automatically chooses the xlim and ylim parameters 
     def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
         clicks = [[0,0], [0,1], [1,0]]):
