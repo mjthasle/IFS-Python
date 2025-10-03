@@ -24,6 +24,7 @@ st.write("Use the Multiplot toggle to change between views of individual \
 # grid: number of rows/columns for multiplot
 # xlim: x limits of plots
 # ylim: y limits of plots
+# set_lim: automatic xlim and ylim when false
 # done: whether or not the user is finished editing the IFS
 # function_form: whether or not the "Add function" form is currently open
 # count: number of functions defined so far
@@ -45,6 +46,10 @@ if "xlim" not in st.session_state:
     st.session_state.xlim = config['xlim_default']
 if "ylim" not in st.session_state:
     st.session_state.ylim = config['ylim_default']
+if "set_lim" not in st.session_state:
+    st.session_state.set_lim = False
+if "set_lim_form" not in st.session_state:
+    st.session_state.set_lim_form = False
 if "done" not in st.session_state:
     st.session_state.done = False
 if "function_form" not in st.session_state:
@@ -281,16 +286,57 @@ with col1:
 
         colour_selected = stroke_color
 
-if(st.button("Plot iterations")):
-    st.session_state.start_plotting = True
-    st.rerun()
 
-if(st.session_state.start_plotting and not st.session_state.done):
-    st.write("*No IFS defined - click **Done** to confirm your IFS*")
+    # Button to set xlim and ylim
+    if not st.session_state.set_lim_form:
+        if st.button("Set x and y limits"):
+            st.session_state.set_lim_form = True
+            st.session_state.start_plotting = False
+            st.rerun()
+
+    # Button to use automatic xlim and ylim
+    if st.button("Use automatic x and y limits"):
+        st.session_state.set_lim_form = False
+        st.session_state.set_lim = False
+        st.rerun()
+
+    # Form to add a new function
+    if st.session_state.set_lim_form:
+        with st.form("xylim"):
+            st.write("Input the x limits [x1, x2]:")
+            x1 = st.number_input("x1 = ")
+            x2 = st.number_input("x2 = ")
+            st.write("Input the y limits [y1, y2]:")
+            y1 = st.number_input("y1 = ")
+            y2 = st.number_input("y2 = ")
+
+            submit_button = st.form_submit_button("Submit")
+
+            if(submit_button):
+                st.session_state.xlim[0] = x1
+                st.session_state.xlim[1] = x2
+                st.session_state.ylim[0] = y1
+                st.session_state.ylim[1] = y2
+                st.session_state.set_lim = True
+                st.session_state.set_lim_form = False
+                st.rerun()
+
+    if(st.button("Plot iterations")):
+        st.session_state.start_plotting = True
+        st.rerun()
+
+    if(st.session_state.start_plotting and not st.session_state.done):
+        st.write("*No IFS defined - click **Done** to confirm your IFS*")
+
+
+# set xlim and ylim 
+if(st.session_state.set_lim == True):
+    a.xlim = st.session_state.xlim
+    a.ylim = st.session_state.ylim
 
 # plot the attractor in the right column
 with col2:
-    # Runs after the ifs is confirmed
+    # Runs after the ifs is confirmed and the start plotting button is clicked
     if st.session_state.done and st.session_state.start_plotting:
         if st.session_state.count > 0:
             if drawing_canvas:
@@ -304,9 +350,11 @@ with col2:
             with _lock:
                 if multiplot:
                     a.multiplot(showgridlines = gridlines, 
+                        set_lim = st.session_state.set_lim,
                         facecolor = colour_selected, clicks = clicks)
                 else:
                     a.plot(n = n, showgridlines = gridlines, 
+                        set_lim = st.session_state.set_lim, 
                         facecolor = colour_selected, clicks = clicks)
 
 
