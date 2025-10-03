@@ -21,6 +21,9 @@ st.write("Use the Multiplot toggle to change between views of individual \
 # Initialize the session state
 # IFS_latex: list of LaTeX strings for function display
 # IFS_tansforms: list of Affine2D transforms specifying the IFS
+# grid: number of rows/columns for multiplot
+# xlim: x limits of plots
+# ylim: y limits of plots
 # done: whether or not the user is finished editing the IFS
 # function_form: whether or not the "Add function" form is currently open
 # count: number of functions defined so far
@@ -56,6 +59,8 @@ if "form_error" not in st.session_state:
     st.session_state.form_error = ""
 if "form_version" not in st.session_state:
     st.session_state.form_version = 0
+if "start_plotting" not in st.session_state:
+    st.session_state.start_plotting = False
 
 # Get built-in initial set options
 initial_set_options = config['initial_sets']
@@ -64,7 +69,7 @@ initial_set_options = config['initial_sets']
 delete_index = None
 
 # Display the IFS latex
-st.write("### Your IFS:")
+st.write("### Define your IFS:")
 if st.session_state.count > 0:
     for i, tex in enumerate(st.session_state.IFS_latex):
         col1, col2 = st.columns([8, 1])
@@ -97,6 +102,7 @@ if not st.session_state.function_form and st.session_state.done is False:
 
 # Form to add a new function
 if st.session_state.function_form:
+    st.session_state.start_plotting = False
     fv = st.session_state.form_version
     matrix_key = f"matrix_widget_{fv}"
     shift_key = f"shift_widget_{fv}"
@@ -175,12 +181,14 @@ if st.session_state.count > 0 and not st.session_state.done:
     if st.button("Done"):
         st.session_state.done = True
         st.session_state.function_form = False
+        st.session_state.start_plotting = False
         st.rerun()
 
 # Button to edit functions
 if st.session_state.done:
     if st.button("Edit functions"):
         st.session_state.done = False
+        st.start_plotting = False
         st.rerun()
 
 # Button to reset
@@ -194,6 +202,7 @@ if st.session_state.count > 0:
         st.session_state.shift_input = "[[0],[0]]"
         st.session_state.form_error = ""
         st.session_state.form_version += 1
+        st.session_state.start_plotting = False
         st.rerun()
 
 # Runs after the ifs is confirmed
@@ -202,6 +211,8 @@ if st.session_state.done:
         st.write("IFS confirmed.")
     else:
         st.write("*No functions.  Hit reset to try again.*")
+
+st.write("### Choose your plot settings:")
 
 # Settings for the drawing canvas
 drawing_mode = "polygon"
@@ -261,25 +272,36 @@ with col1:
 
         colour_selected = stroke_color
 
+if(st.button("Plot iterations")):
+    st.session_state.start_plotting = True
+    st.rerun()
+
+if(st.session_state.start_plotting and not st.session_state.done):
+    st.write("*No IFS defined - click **Done** to confirm your IFS*")
+
 # plot the attractor in the right column
 with col2:
-    a = attractor(IFS = st.session_state.IFS_transforms, 
-        grid = st.session_state.grid, xlim = st.session_state.xlim, 
-        ylim = st.session_state.ylim)
+    # Runs after the ifs is confirmed
+    if st.session_state.done and st.session_state.start_plotting:
+        if st.session_state.count > 0:
+            a = attractor(IFS = st.session_state.IFS_transforms, 
+            grid = st.session_state.grid, xlim = st.session_state.xlim, 
+            ylim = st.session_state.ylim)
 
-    if drawing_canvas:
-        try:
-            clicks = get_coordinates(coordinates)
-        except (TypeError, KeyError, NameError):
-            clicks = [[0, 0]]
-    else:
-        clicks = initial_set_options[initial_set_selected]
-    _lock = RLock()
-    with _lock:
-        if multiplot:
-            a.multiplot(showgridlines = gridlines, facecolor = colour_selected, 
-                set_lim = True, clicks = clicks)
-        else:
-            a.plot(n = n, showgridlines = gridlines, 
-                facecolor = colour_selected, set_lim = True, clicks = clicks)
+            if drawing_canvas:
+                try:
+                    clicks = get_coordinates(coordinates)
+                except (TypeError, KeyError, NameError):
+                    clicks = [[0, 0]]
+            else:
+                clicks = initial_set_options[initial_set_selected]
+            _lock = RLock()
+            with _lock:
+                if multiplot:
+                    a.multiplot(showgridlines = gridlines, facecolor = colour_selected, 
+                        set_lim = True, clicks = clicks)
+                else:
+                    a.plot(n = n, showgridlines = gridlines, 
+                        facecolor = colour_selected, set_lim = True, clicks = clicks)
+
 
