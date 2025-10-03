@@ -68,7 +68,7 @@ initial_set_options = config['initial_sets']
 # Track which function is deleted
 delete_index = None
 
-# Display the IFS latex
+# Display the IFS LaTeX
 st.write("### Define your IFS:")
 if st.session_state.count > 0:
     for i, tex in enumerate(st.session_state.IFS_latex):
@@ -76,10 +76,12 @@ if st.session_state.count > 0:
         with col1:
             st.latex(tex)
         with col2:
-            if st.button("Delete", key=f"delete_{i}"):
-                delete_index = i
+            if not st.session_state.done:
+                if st.button("Delete", key=f"delete_{i}"):
+                    delete_index = i
 else:
     st.write("*No functions defined.*")
+
 
 # Perform function deletion
 if delete_index is not None:
