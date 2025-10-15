@@ -284,7 +284,7 @@ with col1:
             st.session_state.set_lim_form = True
 
     # Manual x and y limits form
-    if st.session_state.set_lim_form:
+    if st.session_state.set_lim_form and st.session_state.set_lim_toggle:
         with st.form("xylim"):
             st.write("Input the x limits [x1, x2]:")
             x1 = st.number_input("x1 = ", value=st.session_state.xlim[0])
@@ -300,6 +300,7 @@ with col1:
                 st.session_state.ylim = [y1, y2]
                 st.session_state.set_lim_form = False
                 st.session_state.plot_hash = None
+                st.session_state.generate_plots = True
                 st.rerun()
 
     # Plot iterations button
@@ -342,6 +343,7 @@ with col2:
         if st.session_state.plot_hash != plot_hash or st.session_state.generate_plots:
             st.session_state.plot_hash = plot_hash
 
+        if st.session_state.generate_plots:
             # Compute new figure
             if multiplot:
                 st.session_state.plot_image = a.multiplot(
@@ -350,6 +352,9 @@ with col2:
                     set_lim=st.session_state.set_lim_toggle,
                     clicks=clicks
                 )
+                st.session_state.generate_plots = False
+                st.session_state.show_plots = True
+                st.rerun()
             else:
                 st.session_state.plot_image = a.plot(
                     n=n,
@@ -357,9 +362,10 @@ with col2:
                     set_lim=st.session_state.set_lim_toggle,
                     clicks=clicks
                 )
+
         # Reset generate_plots AFTER generation
-        if st.session_state.generate_plots:
-            st.session_state.generate_plots = False
+        # if st.session_state.generate_plots:
+        #     st.session_state.generate_plots = False
 
         # Display cached plot
         if st.session_state.show_plots and st.session_state.plot_image is not None:

@@ -211,8 +211,13 @@ class attractor:
                 ax.grid(alpha=0.5)
 
         end = time.perf_counter()
+
         if timeit:
             st.write("Initial set up time: " + str(end - start) + " seconds")
+
+        start = time.perf_counter()
+        the_plot = st.pyplot(fig)
+        end = time.perf_counter()
 
         m = len(self.ifs)
 
@@ -229,11 +234,14 @@ class attractor:
             if not set_lim:
                 self.format_auto_ax(ax)
 
+            # Plot the iteration
+            the_plot.pyplot(fig)
+
             end = time.perf_counter()
             if timeit:
                 st.write('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.')
 
-        # RETURN the figure instead of displaying it
+        # Return the final figure to be saved in session state
         return fig
 
 def get_attractors():
