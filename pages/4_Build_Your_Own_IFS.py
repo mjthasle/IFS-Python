@@ -150,21 +150,8 @@ if st.session_state.function_form and st.session_state.form_error:
         st.session_state.form_error = ""
         st.rerun()
 
-# Done button
-if st.session_state.count > 0 and not st.session_state.done:
-    if st.button("Done"):
-        st.session_state.done = True
-        st.session_state.function_form = False
-        st.session_state.show_plots = False
-        st.session_state.generate_plots = False
-        st.rerun()
-
 # Edit button
 if st.session_state.done:
-    if st.session_state.count > 0:
-        st.write("IFS confirmed.")
-    else:
-        st.write("*No functions. Hit reset to try again.*")
     if st.button("Edit functions"):
         st.session_state.done = False
         st.session_state.show_plots = False
@@ -193,6 +180,22 @@ if st.session_state.count > 0:
         st.rerun()
 
 
+# Done button
+if st.session_state.count > 0 and not st.session_state.done:
+    if st.button("Done"):
+        st.session_state.done = True
+        st.session_state.function_form = False
+        st.session_state.show_plots = False
+        st.session_state.generate_plots = False
+        st.rerun()
+
+# IFS confirmed message
+if st.session_state.done:        
+    if st.session_state.count > 0:
+        st.write("IFS confirmed.")
+    else:
+        st.write("*No functions. Hit reset to try again.*")
+
 # === Plot settings ===
 
 # Built-in initial sets
@@ -217,10 +220,10 @@ with col1:
     st.write("### Choose your plot settings:")
 
     # Toggles
-    drawing_canvas = st.toggle("Draw initial polygon", value=False)
-    set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
     multiplot = st.toggle("Multiplot", value=True)
     gridlines = st.toggle("Show grid", value=True)
+    drawing_canvas = st.toggle("Draw initial polygon", value=False)
+    set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
     # Sync derived state variable and trigger plot update if autoscaling is toggled on
     if st.session_state.set_lim != st.session_state.set_lim_toggle:
