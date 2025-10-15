@@ -4,6 +4,12 @@ from matplotlib.transforms import Affine2D
 from streamlit_drawable_canvas import st_canvas
 from threading import RLock
 
+# Temporary debug tool
+if st.button("Clear session state"):
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.rerun()
+
 st.set_page_config(layout="wide")
 
 st.header("Build-Your-Own IFS")
@@ -192,38 +198,12 @@ if st.session_state.count > 0:
 # Built-in initial sets
 initial_set_options = config['initial_sets']
 
-st.write("### Choose your plot settings:")
-
 # Settings for the drawing canvas
 drawing_mode = "polygon"
 stroke_width = 3
 
-# Toggles
-drawing_canvas = st.toggle("Draw initial polygon", value=False)
-set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
-multiplot = st.toggle("Multiplot", value=True)
-gridlines = st.toggle("Show grid", value=True)
-
-# Sync derived state variable and trigger plot update if autoscaling is toggled on
-if st.session_state.set_lim != st.session_state.set_lim_toggle:
-    st.session_state.set_lim = st.session_state.set_lim_toggle
-
-    # If user turns OFF manual limits, trigger automatic rescaling
-    if not st.session_state.set_lim_toggle:
-        st.session_state.generate_plots = True  
-        st.session_state.show_plots = True      
-        st.session_state.plot_hash = None       
-        st.rerun()
-
-# Adjust font sizes
-if multiplot:
-    plt.rcParams.update({'font.size': config['multiplot_font']})
-    plt.rcParams['figure.figsize'] = config['multiplot_size']
-else:
-    plt.rcParams.update({'font.size': config['singleplot_font']})
-
 # Create columns
-col1, col2 = st.columns(2, gap="medium")
+col1, col2 = st.columns(2, gap = "medium")
 
 # Define the attractor
 a = attractor(IFS=st.session_state.IFS_transforms,
@@ -234,6 +214,31 @@ max_iterations = a.max_iterations
 
 # Left column: controls 
 with col1:
+    st.write("### Choose your plot settings:")
+
+    # Toggles
+    drawing_canvas = st.toggle("Draw initial polygon", value=False)
+    set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
+    multiplot = st.toggle("Multiplot", value=True)
+    gridlines = st.toggle("Show grid", value=True)
+
+    # Sync derived state variable and trigger plot update if autoscaling is toggled on
+    if st.session_state.set_lim != st.session_state.set_lim_toggle:
+        st.session_state.set_lim = st.session_state.set_lim_toggle
+
+        # If user turns OFF manual limits, trigger automatic rescaling
+        if not st.session_state.set_lim_toggle:
+            st.session_state.generate_plots = True  
+            st.session_state.show_plots = True      
+            st.session_state.plot_hash = None       
+            st.rerun()
+
+    # Adjust font sizes
+    if multiplot:
+        plt.rcParams.update({'font.size': config['multiplot_font']})
+        plt.rcParams['figure.figsize'] = config['multiplot_size']
+    else:
+        plt.rcParams.update({'font.size': config['singleplot_font']})
     stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
 
     if not drawing_canvas:
@@ -270,11 +275,12 @@ with col1:
                 coordinates = objects["path"][0]
         colour_selected = stroke_color
 
-    # Manual x and y limits form 
+    # Manual x and y limits toggle
     if st.session_state.set_lim_toggle and not st.session_state.set_lim_form:
         if st.button("Change x and y limits"):
             st.session_state.set_lim_form = True
 
+    # Manual x and y limits form
     if st.session_state.set_lim_form:
         with st.form("xylim"):
             st.write("Input the x limits [x1, x2]:")
@@ -290,7 +296,6 @@ with col1:
                 st.session_state.xlim = [x1, x2]
                 st.session_state.ylim = [y1, y2]
                 st.session_state.set_lim_form = False
-                # MODIFICATION: update plot hash so plot refreshes only when necessary
                 st.session_state.plot_hash = None
                 st.rerun()
 
@@ -314,7 +319,7 @@ if st.session_state.set_lim:
 
 # === Plot iterations ===
 
-# === Right column: attractor plot ===
+# Right column: attractor plots
 with col2:
     if st.session_state.count > 0 and st.session_state.done:
         # Determine initial points
