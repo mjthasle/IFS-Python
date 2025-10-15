@@ -176,26 +176,25 @@ class attractor:
         if not set_lim:
             self.format_auto_ax(ax)
 
-        st.pyplot(fig)
+        return fig
 
 
      # Function to show multiplots in steamlit one-by-one
 
-    def multiplot(self, facecolor = colour_default,
-        showaxis = True, showgridlines = False, set_lim = False, timeit = False, 
-        saveit = False, clicks = [[0,0], [0,1], [1,0]]):
+    def multiplot(self, facecolor=colour_default,
+              showaxis=True, showgridlines=False, set_lim=False, timeit=False, 
+              saveit=False, clicks=[[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
-
         nrows = self.grid[0]
         ncols = self.grid[1]
 
-        assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} \
-            iterations reached"
+        assert nrows * ncols <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
 
-        fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
+        fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
 
-        if nrows == 1 & ncols == 1:
+        # Ensure axs is always a flat array
+        if nrows == 1 and ncols == 1:
             axs = np.array([axs])
         else:
             axs = axs.ravel()
@@ -203,52 +202,39 @@ class attractor:
         for ax in axs:
             self.format_ax(ax, set_lim)
 
-        if showaxis == False:
+        if not showaxis:
             for ax in axs:
                 ax.set_axis_off()
 
         if showgridlines:
             for ax in axs:
-                ax.grid(alpha = 0.5)
+                ax.grid(alpha=0.5)
 
         end = time.perf_counter()
-
         if timeit:
             st.write("Initial set up time: " + str(end - start) + " seconds")
-
-        start = time.perf_counter()
-        the_plot = st.pyplot(fig)
-        end = time.perf_counter()
-
-        if timeit:
-            st.write("Initial plot axes took " + str(end - start) + " seconds")
 
         m = len(self.ifs)
 
         for j, ax in enumerate(axs):
-
             start = time.perf_counter()
 
             for code in codes(m, j):
-
                 t = IdentityTransform()
-
                 for i in code:
                     t += self.ifs[i]
+                ax.add_patch(Polygon(t.transform(clicks), facecolor=facecolor))
 
-                ax.add_patch(Polygon(t.transform(clicks),
-                    facecolor = facecolor))
-
+            # Autoscale axes if manual limits are not set
             if not set_lim:
                 self.format_auto_ax(ax)
 
-            the_plot.pyplot(fig)
-
             end = time.perf_counter()
-
             if timeit:
-                st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
-                    ' seconds.')
+                st.write('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.')
+
+        # RETURN the figure instead of displaying it
+        return fig
 
 def get_attractors():
     built_in_ifs = config['built_in_ifs']
@@ -380,4 +366,27 @@ def matrix_bracket_ok(s):
 def shift_bracket_ok(s):
     return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
 
-
+def get_plot_inputs_from_state(state):
+    """
+    Return a hashable tuple of all inputs in st.session_state relevant for plotting.
+    """
+    # Convert Affine2D transforms to tuples
+    transforms_flat = tuple(tuple(t.get_matrix().ravel()) for t in state.IFS_transforms)
+    
+    # Use clicks if available, else empty
+    clicks = state.get("clicks", None)
+    clicks_tuple = tuple(map(tuple, clicks)) if clicks is not None else ()
+    
+    # Pick relevant variables
+    plot_inputs = (
+        transforms_flat,
+        clicks_tuple,
+        tuple(state.xlim),
+        tuple(state.ylim),
+        state.get("multiplot", True),
+        state.get("gridlines", True),
+        state.get("colour_selected", None),
+        state.get("n", None)
+    )
+    
+    return plot_inputs
