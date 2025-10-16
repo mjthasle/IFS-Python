@@ -4,12 +4,6 @@ from matplotlib.transforms import Affine2D
 from streamlit_drawable_canvas import st_canvas
 from threading import RLock
 
-#Temporary debug tool
-# if st.button("Clear session state"):
-#     for key in list(st.session_state.keys()):
-#         del st.session_state[key]
-#     st.rerun()
-
 st.set_page_config(layout="wide")
 
 st.header("Build-Your-Own IFS")
