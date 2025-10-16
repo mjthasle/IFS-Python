@@ -379,3 +379,9 @@ def matrix_bracket_ok(s):
 # Accept forms like: [[a],[b]] with optional whitespace
 def shift_bracket_ok(s):
     return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
+
+def affine_to_strings(transform):
+    a, b, c, d, e, f = transform.to_values()
+    matrix_str = f"[[{a},{b}],[{c},{d}]]"
+    shift_str = f"[[{e}],[{f}]]"
+    return [matrix_str, shift_str]

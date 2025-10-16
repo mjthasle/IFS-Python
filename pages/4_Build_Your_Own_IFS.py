@@ -4,11 +4,11 @@ from matplotlib.transforms import Affine2D
 from streamlit_drawable_canvas import st_canvas
 from threading import RLock
 
-# Temporary debug tool
-# if st.button("Clear session state"):
-#     for key in list(st.session_state.keys()):
-#         del st.session_state[key]
-#     st.rerun()
+#Temporary debug tool
+if st.button("Clear session state"):
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.rerun()
 
 st.set_page_config(layout="wide")
 
@@ -65,27 +65,52 @@ if "show_plots" not in st.session_state:
 
 # === Add/delete IFS functions ===
 
-# Track which function is deleted/duplicated
-delete_index = None
+# Index of function to be edited/duplicated/delted
+edit_index = None
 duplicate_index = None
+delete_index = None
 
 # Display IFS LaTeX
 st.write("### Define your IFS:")
 if st.session_state.count > 0:
     for i, tex in enumerate(st.session_state.IFS_latex):
-        col1, col2, col3 = st.columns([8, 1, 1])
+        col1, col2, col3, col4 = st.columns([8, 1, 1.5, 1])
         with col1:
             st.latex(tex)
         if not st.session_state.done:
             with col2:
+                if st.button("Edit", key=f"edit_{i}"):
+                    edit_index = i
+            with col3:
                 if st.button("Duplicate", key=f"duplicate_{i}"):
                     duplicate_index = i
-            with col3:
+            with col4:
                 if st.button("Delete", key=f"delete_{i}"):
                     delete_index = i
-                
 else:
     st.write("*No functions defined.*")
+
+# Open form to edit function
+if edit_index is not None:
+    form_strings = affine_to_strings(
+        st.session_state.IFS_transforms[edit_index])
+    st.session_state.matrix_input = form_strings[0]
+    st.session_state.shift_input = form_strings[1]
+    st.session_state.function_form = True
+
+# Perform function duplication
+if duplicate_index is not None:
+    st.session_state.IFS_latex.insert(duplicate_index+1,
+        st.session_state.IFS_latex[duplicate_index])
+    st.session_state.IFS_transforms.insert(duplicate_index+1,
+        st.session_state.IFS_transforms[duplicate_index])
+    for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
+        start=duplicate_index+1):
+        print(duplicate_index)
+        print(j)
+        st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
+    st.session_state.count = len(st.session_state.IFS_latex)
+    st.rerun()
 
 # Perform function deletion
 if delete_index is not None:
@@ -94,26 +119,6 @@ if delete_index is not None:
     # Renumber remaining functions
     for j, tex in enumerate(st.session_state.IFS_latex, start=1):
         st.session_state.IFS_latex[j - 1] = re.sub(r"^f_\d", f"f_{j}", tex)
-    st.session_state.count = len(st.session_state.IFS_latex)
-    st.rerun()
-
-# Perform function duplication
-if duplicate_index is not None:
-    st.session_state.IFS_latex.insert(duplicate_index+1,
-        st.session_state.IFS_latex[duplicate_index])
-    st.session_state.IFS_transforms.insert(duplicate_index+1,
-        st.session_state.IFS_transforms[duplicate_index])
-    #st.session_state.count = len(st.session_state.IFS_latex)
-    # Fix the number of the duplicated latex
-    # m = st.session_state.count
-    # tex = st.session_state.IFS_latex[m-1]
-    # st.session_state.IFS_latex[m-1] = re.sub(r"^f_\d", f"f_{m}", tex)
-    # Renumber remaining functions
-    for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
-        start=duplicate_index+1):
-        print(duplicate_index)
-        print(j)
-        st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
     st.session_state.count = len(st.session_state.IFS_latex)
     st.rerun()
 
@@ -155,11 +160,18 @@ if st.session_state.function_form:
                     raise ValueError("Shift must be 2x1.")
                 transform = np.block([[matrix, shift], 
                     [np.zeros((1,2)), np.ones((1,1))]])
-                tex_string = f"f_{st.session_state.count+1}(x)= \
-                    {array_to_latex(matrix)}x + {array_to_latex(shift)}"
-                st.session_state.IFS_transforms.append(Affine2D(transform))
-                st.session_state.IFS_latex.append(tex_string)
-                st.session_state.count += 1
+                if edit_index is None:
+                    tex_string = f"f_{st.session_state.count+1}(x)= \
+                        {array_to_latex(matrix)}x + {array_to_latex(shift)}"
+                    st.session_state.IFS_transforms.append(Affine2D(transform))
+                    st.session_state.IFS_latex.append(tex_string)
+                    st.session_state.count += 1
+                else:
+                    tex_string = f"f_{edit_index+1}(x)= \
+                        {array_to_latex(matrix)}x + {array_to_latex(shift)}"
+                    st.session_state.IFS_transforms[edit_index] = \
+                        Affine2D(transform)
+                    st.session_state.IFS_latex[edit_index] = tex_string
                 st.session_state.function_form = False
                 st.session_state.matrix_input = "[[1,0],[0,1]]"
                 st.session_state.shift_input = "[[0],[0]]"
