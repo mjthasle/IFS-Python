@@ -310,6 +310,11 @@ with col1:
                 st.session_state.generate_plots = True
                 st.rerun()
 
+        # Button to close the x and y limit form
+        if st.button("Close form"):
+                    st.session_state.set_lim_form = False
+                    st.rerun()
+
     # Plot iterations button
     # Only show if IFS functions are done and user has not plotted yet
     if st.session_state.done and not st.session_state.show_plots:
