@@ -391,6 +391,6 @@ def affine_to_strings(transform, tol=1e-12):
         return str(x)
     
     a, b, c, d, e, f = transform.to_values()
-    matrix_str = f"[[{fmt(a)},{fmt(b)}],[{fmt(c)},{fmt(d)}]]"
+    matrix_str = f"[[{fmt(a)},{fmt(c)}],[{fmt(b)},{fmt(d)}]]"
     shift_str = f"[[{fmt(e)}],[{fmt(f)}]]"
     return [matrix_str, shift_str]
