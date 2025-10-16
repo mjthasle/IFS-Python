@@ -380,8 +380,18 @@ def matrix_bracket_ok(s):
 def shift_bracket_ok(s):
     return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
 
-def affine_to_strings(transform):
+# Convert affine transform back to string inputs
+def affine_to_strings(transform, tol=1e-12):
+    def fmt(x):
+        # Ensure it's a Python float (avoids np.float64(...) in output)
+        x = float(x)
+        # If x is effectively an integer, format as int
+        if abs(x - round(x)) < tol:
+            return str(int(round(x)))
+        # Otherwise, print full precision float
+        return str(x)
+    
     a, b, c, d, e, f = transform.to_values()
-    matrix_str = f"[[{a},{b}],[{c},{d}]]"
-    shift_str = f"[[{e}],[{f}]]"
+    matrix_str = f"[[{fmt(a)},{fmt(b)}],[{fmt(c)},{fmt(d)}]]"
+    shift_str = f"[[{fmt(e)}],[{fmt(f)}]]"
     return [matrix_str, shift_str]

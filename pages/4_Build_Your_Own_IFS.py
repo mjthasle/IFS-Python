@@ -5,10 +5,10 @@ from streamlit_drawable_canvas import st_canvas
 from threading import RLock
 
 #Temporary debug tool
-if st.button("Clear session state"):
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-    st.rerun()
+# if st.button("Clear session state"):
+#     for key in list(st.session_state.keys()):
+#         del st.session_state[key]
+#     st.rerun()
 
 st.set_page_config(layout="wide")
 
@@ -61,12 +61,13 @@ if "generate_plots" not in st.session_state:
     st.session_state.generate_plots = False  
 if "show_plots" not in st.session_state:
     st.session_state.show_plots = False  
+if "edit_index" not in st.session_state:
+    st.session_state.edit_index = None
 # === End preamble ===
 
 # === Add/delete IFS functions ===
 
-# Index of function to be edited/duplicated/delted
-edit_index = None
+# Index of function to be duplicated/delted
 duplicate_index = None
 delete_index = None
 
@@ -80,7 +81,7 @@ if st.session_state.count > 0:
         if not st.session_state.done:
             with col2:
                 if st.button("Edit", key=f"edit_{i}"):
-                    edit_index = i
+                    st.session_state.edit_index = i
             with col3:
                 if st.button("Duplicate", key=f"duplicate_{i}"):
                     duplicate_index = i
@@ -91,9 +92,9 @@ else:
     st.write("*No functions defined.*")
 
 # Open form to edit function
-if edit_index is not None:
+if st.session_state.edit_index is not None:
     form_strings = affine_to_strings(
-        st.session_state.IFS_transforms[edit_index])
+        st.session_state.IFS_transforms[st.session_state.edit_index])
     st.session_state.matrix_input = form_strings[0]
     st.session_state.shift_input = form_strings[1]
     st.session_state.function_form = True
@@ -160,18 +161,20 @@ if st.session_state.function_form:
                     raise ValueError("Shift must be 2x1.")
                 transform = np.block([[matrix, shift], 
                     [np.zeros((1,2)), np.ones((1,1))]])
-                if edit_index is None:
+                if st.session_state.edit_index is None:
                     tex_string = f"f_{st.session_state.count+1}(x)= \
                         {array_to_latex(matrix)}x + {array_to_latex(shift)}"
                     st.session_state.IFS_transforms.append(Affine2D(transform))
                     st.session_state.IFS_latex.append(tex_string)
                     st.session_state.count += 1
                 else:
-                    tex_string = f"f_{edit_index+1}(x)= \
+                    tex_string = f"f_{st.session_state.edit_index+1}(x)= \
                         {array_to_latex(matrix)}x + {array_to_latex(shift)}"
-                    st.session_state.IFS_transforms[edit_index] = \
-                        Affine2D(transform)
-                    st.session_state.IFS_latex[edit_index] = tex_string
+                    st.session_state.IFS_transforms[st.session_state.edit_index]\
+                        = Affine2D(transform)
+                    st.session_state.IFS_latex[st.session_state.edit_index] = \
+                    tex_string
+                    st.session_state.edit_index = None
                 st.session_state.function_form = False
                 st.session_state.matrix_input = "[[1,0],[0,1]]"
                 st.session_state.shift_input = "[[0],[0]]"
@@ -187,6 +190,7 @@ if st.session_state.function_form:
     # Button to close the x and y limit form
     if st.button("Close form"):
         st.session_state.function_form = False
+        st.session_state.edit_index = None
         st.rerun()
 
 # Try again button in case of error
