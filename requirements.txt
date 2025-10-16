@@ -1,2 +1,4 @@
 matplotlib
 streamlit_drawable_canvas
+imghdr
+streamlit-nightly
