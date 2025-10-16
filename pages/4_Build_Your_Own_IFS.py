@@ -14,7 +14,7 @@ st.set_page_config(layout="wide")
 
 st.header("Build-Your-Own IFS")
 
-st.write("Use the \"Add Function\" button to add functions to your IFS. \
+st.write("Use the \"Add function\" button to add functions to your IFS. \
          When you are finished adding functions to your IFS, click the \
          Done button. After specifying the initial polygon, the result of \
          iterating the IFS will be displayed. No matter what polygon you start \
@@ -147,6 +147,10 @@ if st.session_state.function_form:
                 st.error(f"Error parsing form inputs: \
                     {st.session_state.form_error}")
                 st.session_state.function_form = True
+    # Button to close the x and y limit form
+    if st.button("Close form"):
+        st.session_state.function_form = False
+        st.rerun()
 
 # Try again button in case of error
 if st.session_state.function_form and st.session_state.form_error:
