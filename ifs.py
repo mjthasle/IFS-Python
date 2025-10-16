@@ -13,7 +13,6 @@ import json
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import streamlit as st
-import matplotlib as mpl
 import numpy as np
 import time
 from matplotlib.transforms import IdentityTransform
@@ -150,16 +149,16 @@ class attractor:
 
         m = len(self.ifs)
         start = time.perf_counter()
-        t = mpl.transforms.IdentityTransform()
+        t = IdentityTransform()
 
         for code in codes(m, n):
 
-            t = mpl.transforms.IdentityTransform()
+            t = IdentityTransform()
 
             for i in code:
                 t += self.ifs[i]
 
-            ax.add_patch(mpl.patches.Polygon(t.transform(clicks),
+            ax.add_patch(Polygon(t.transform(clicks),
                 facecolor = facecolor))
 
         end = time.perf_counter()
