@@ -1,30 +1,37 @@
 # IFS-Python
 
-A streamlit app for generating fractal images using two-dimensional affine iterated function systems.
+An interactive Streamlit app for generating fractal images using two-dimensional affine iterated function systems.
 
-**App URL**:
+**App URL:**  
 [https://ifs-python.streamlit.app/](https://ifs-python.streamlit.app/)
 
+---
 
-**What is an affine IFS?**
+## App Overview
 
-Generally speaking, an [iterated function system (IFS)](https://en.wikipedia.org/wiki/Iterated_function_system) is a collection of *contractive* functions.  An **affine IFS** in $\mathbb R^n$ is a collection of functions of the form $f(x) = Ax + b$, where $A$ is a n-by-n matrix, and $b$ is a constant vector in $\mathbb R^n$.  In this case, *contractive* means that the length of the vector $f(x)$ is always less than the length of $x$.
+Explore classical and user-defined 2D affine IFS through interactive visualizations. Experiment with different initial sets, watch iterations converge to fractal attractors, and learn the underlying theory via informational pages.
 
+### Pages
 
-**App Details:**
+- **Home:** Start here to navigate the app.  
+- **2D Affine IFS:** Explore classical IFS with background theory.  
+- **Hutchinson’s Theorem:** Coming soon — learn why iterations converge to attractors.  
+- **Classical IFS:** Visualize built-in IFS examples with interactive controls.  
+- **Build Your Own IFS:** Input your own IFS functions and visualize the resulting iterations.  
 
-For each built-in IFS, the system is iteratively applied to an initial polygon.  For the included examples, this process generates a fractal image (or multiple).  By default, the first several iterations are shown.  You can also get a more detailed view of any given step in the iteration process by turning off the "Multiplot" toggle. Try out different built-in initial sets to see how the figures converge to the same attractor regardless of where you start from.
+### Key Features
 
-Currently, the following built-in IFS are available:
+- **Drawing Canvas:** Draw your own polygons as initial sets.  
+- **Multiplot Toggle:** Switch between multiple iterations at once and step-by-step views.  
 
-- Cantor Ternary Set
-- Fudgeflake
-- Sierpinski Carpet
-- Sierpinski Gasket
-- Twindragon.
+### Built-in Examples
 
-**Coming soon:**
+- Cantor Ternary Set  
+- Sierpinski Gasket  
+- Sierpinski Carpet  
+- Fudgeflake  
+- Twindragon  
 
-- Use colours to show fractal self-similarity
-- Generate a random IFS
-- Build your own IFS
+### Coming Soon
+
+- Visualize fractal self-similarity with different colours.
