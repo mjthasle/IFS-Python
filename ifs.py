@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Sept 2, 2025
+Last Updated on Oct 15, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -49,7 +49,8 @@ def get_coordinates(raw_coords):
     coord_dict = list(raw_coords)
     for pair in coord_dict:
         if len(pair) > 1:
-            new_list.append([(1 / canvas_dimension) * float(pair[1]), (-1 / canvas_dimension) * float(pair[2]) + 1])
+            new_list.append([(1 / canvas_dimension) * float(pair[1]), 
+                (-1 / canvas_dimension) * float(pair[2]) + 1])
     return new_list
 
 # Functions to fix array spacing for latex equations
@@ -85,8 +86,10 @@ class attractor:
             self.xlim = built_in_ifs[self.namestring]['xlim']
             self.ylim = built_in_ifs[self.namestring]['ylim']
             self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
-            self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
-            self.ifs_script = functions_dir + "." + built_in_ifs[self.namestring]['ifs_script']
+            self.funstrings = fix_tex(
+                built_in_ifs[self.namestring]['funstrings'])
+            self.ifs_script = functions_dir + "." + \
+                built_in_ifs[self.namestring]['ifs_script']
 
             # Run script to retrieve affine transforms
             ifs_script = import_module(self.ifs_script)
@@ -175,26 +178,26 @@ class attractor:
         if not set_lim:
             self.format_auto_ax(ax)
 
-        st.pyplot(fig)
+        return fig
 
 
      # Function to show multiplots in steamlit one-by-one
 
-    def multiplot(self, facecolor = colour_default,
-        showaxis = True, showgridlines = False, set_lim = False, timeit = False, 
-        saveit = False, clicks = [[0,0], [0,1], [1,0]]):
+    def multiplot(self, facecolor=colour_default,
+              showaxis=True, showgridlines=False, set_lim=False, timeit=False, 
+              saveit=False, clicks=[[0,0], [0,1], [1,0]]):
 
         start = time.perf_counter()
-
         nrows = self.grid[0]
         ncols = self.grid[1]
 
-        assert nrows*ncols <= self.max_iterations, f"Max {self.max_iterations} \
-            iterations reached"
+        assert nrows * ncols <= self.max_iterations, \
+            f"Max {self.max_iterations} iterations reached"
 
-        fig, axs = plt.subplots(nrows = nrows, ncols = ncols)
+        fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
 
-        if nrows == 1 & ncols == 1:
+        # Ensure axs is always a flat array
+        if nrows == 1 and ncols == 1:
             axs = np.array([axs])
         else:
             axs = axs.ravel()
@@ -202,13 +205,13 @@ class attractor:
         for ax in axs:
             self.format_ax(ax, set_lim)
 
-        if showaxis == False:
+        if not showaxis:
             for ax in axs:
                 ax.set_axis_off()
 
         if showgridlines:
             for ax in axs:
-                ax.grid(alpha = 0.5)
+                ax.grid(alpha=0.5)
 
         end = time.perf_counter()
 
@@ -219,35 +222,31 @@ class attractor:
         the_plot = st.pyplot(fig)
         end = time.perf_counter()
 
-        if timeit:
-            st.write("Initial plot axes took " + str(end - start) + " seconds")
-
         m = len(self.ifs)
 
         for j, ax in enumerate(axs):
-
             start = time.perf_counter()
 
             for code in codes(m, j):
-
                 t = IdentityTransform()
-
                 for i in code:
                     t += self.ifs[i]
+                ax.add_patch(Polygon(t.transform(clicks), facecolor=facecolor))
 
-                ax.add_patch(Polygon(t.transform(clicks),
-                    facecolor = facecolor))
-
+            # Autoscale axes if manual limits are not set
             if not set_lim:
                 self.format_auto_ax(ax)
 
+            # Plot the iteration
             the_plot.pyplot(fig)
 
             end = time.perf_counter()
-
             if timeit:
                 st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
-                    ' seconds.')
+                 ' seconds.')
+
+        # Return the final figure to be saved in session state
+        return fig
 
 def get_attractors():
     built_in_ifs = config['built_in_ifs']
@@ -291,7 +290,8 @@ from typing import List
 
 def str_to_numpy_array(input_str):
     """
-    Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy array.
+    Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy 
+    array.
     Supports integers, floats, and fractions like "1/2".
     Internally returns dtype=float.
     """
@@ -378,5 +378,3 @@ def matrix_bracket_ok(s):
 # Accept forms like: [[a],[b]] with optional whitespace
 def shift_bracket_ok(s):
     return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
-
-
