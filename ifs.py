@@ -2,7 +2,7 @@
 """
 Created on Wed Dec  7 14:23:40 2022
 
-Last Updated on Sept 2, 2025
+Last Updated on Oct 15, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -50,7 +50,8 @@ def get_coordinates(raw_coords):
     coord_dict = list(raw_coords)
     for pair in coord_dict:
         if len(pair) > 1:
-            new_list.append([(1 / canvas_dimension) * float(pair[1]), (-1 / canvas_dimension) * float(pair[2]) + 1])
+            new_list.append([(1 / canvas_dimension) * float(pair[1]), 
+                (-1 / canvas_dimension) * float(pair[2]) + 1])
     return new_list
 
 # Functions to fix array spacing for latex equations
@@ -86,8 +87,10 @@ class attractor:
             self.xlim = built_in_ifs[self.namestring]['xlim']
             self.ylim = built_in_ifs[self.namestring]['ylim']
             self.max_iterations = built_in_ifs[self.namestring]['max_iterations']
-            self.funstrings = fix_tex(built_in_ifs[self.namestring]['funstrings'])
-            self.ifs_script = functions_dir + "." + built_in_ifs[self.namestring]['ifs_script']
+            self.funstrings = fix_tex(
+                built_in_ifs[self.namestring]['funstrings'])
+            self.ifs_script = functions_dir + "." + \
+                built_in_ifs[self.namestring]['ifs_script']
 
             # Run script to retrieve affine transforms
             ifs_script = import_module(self.ifs_script)
@@ -189,7 +192,8 @@ class attractor:
         nrows = self.grid[0]
         ncols = self.grid[1]
 
-        assert nrows * ncols <= self.max_iterations, f"Max {self.max_iterations} iterations reached"
+        assert nrows * ncols <= self.max_iterations, \
+            f"Max {self.max_iterations} iterations reached"
 
         fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
 
@@ -239,7 +243,8 @@ class attractor:
 
             end = time.perf_counter()
             if timeit:
-                st.write('Iteration ' + str(j) + ' took ' + str(end - start) + ' seconds.')
+                st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
+                 ' seconds.')
 
         # Return the final figure to be saved in session state
         return fig
@@ -286,7 +291,8 @@ from typing import List
 
 def str_to_numpy_array(input_str):
     """
-    Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy array.
+    Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy 
+    array.
     Supports integers, floats, and fractions like "1/2".
     Internally returns dtype=float.
     """
@@ -373,28 +379,3 @@ def matrix_bracket_ok(s):
 # Accept forms like: [[a],[b]] with optional whitespace
 def shift_bracket_ok(s):
     return bool(re.match(r'^\s*\[\s*\[[^\]]*\]\s*,\s*\[[^\]]*\]\s*\]\s*$', s))
-
-def get_plot_inputs_from_state(state):
-    """
-    Return a hashable tuple of all inputs in st.session_state relevant for plotting.
-    """
-    # Convert Affine2D transforms to tuples
-    transforms_flat = tuple(tuple(t.get_matrix().ravel()) for t in state.IFS_transforms)
-    
-    # Use clicks if available, else empty
-    clicks = state.get("clicks", None)
-    clicks_tuple = tuple(map(tuple, clicks)) if clicks is not None else ()
-    
-    # Pick relevant variables
-    plot_inputs = (
-        transforms_flat,
-        clicks_tuple,
-        tuple(state.xlim),
-        tuple(state.ylim),
-        state.get("multiplot", True),
-        state.get("gridlines", True),
-        state.get("colour_selected", None),
-        state.get("n", None)
-    )
-    
-    return plot_inputs

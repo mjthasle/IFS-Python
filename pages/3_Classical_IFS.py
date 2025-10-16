@@ -2,7 +2,7 @@
 """
 Created on Mon Sep 18 18:49:59 2023
 
-Last Updated on June 10, 2025
+Last Updated on Oct 15, 2025
 
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
@@ -69,13 +69,14 @@ col1, col2 = st.columns(2, gap = "medium")
 
 with col1:
 
-	stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
+	stroke_color = st.color_picker("Select a colour for the attractor: ", 
+		colour_default)
 
 	if not drawing_canvas:
 		initial_set_selected = st.selectbox("Select an initial set",
-									  initial_set_options.keys(),
-									  on_change = reset_n,
-									  index = get_default_index(option_selected))
+									initial_set_options.keys(),
+									on_change = reset_n,
+									index = get_default_index(option_selected))
 	if not multiplot:
 		n = st.number_input("Number of iterations: ", min_value = 0,
 			max_value = max_iterations, step = 1, key = "n")
@@ -121,8 +122,8 @@ with col2:
 	_lock = RLock()
 	with _lock:
 		if multiplot:
-			a.multiplot(showgridlines = gridlines, facecolor = colour_selected, set_lim = set_lim,
-				clicks = clicks)
+			fig = a.multiplot(showgridlines = gridlines, 
+				facecolor = colour_selected, set_lim = set_lim,clicks = clicks)
 		else:
-			a.plot(n = n, showgridlines = gridlines, facecolor = colour_selected, set_lim = set_lim,
-				clicks = clicks)
+			a.plot(n = n, showgridlines = gridlines, 
+				facecolor = colour_selected, set_lim = set_lim, clicks = clicks)

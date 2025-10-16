@@ -14,11 +14,12 @@ st.set_page_config(layout="wide")
 
 st.header("Build-Your-Own IFS")
 
-st.write("Use the \"Add Function\" button to add functions to your IFS. "
-         "When you are finished adding functions to your IFS, click the \"Done\" "
-         "button. After specifying the initial polygon, the result of iterating the "
-         "IFS will be displayed. No matter what polygon you start with, the results "
-         "approximate the IFS attractor as the number of iterations increases!")
+st.write("Use the \"Add Function\" button to add functions to your IFS. \
+         When you are finished adding functions to your IFS, click the \
+         Done button. After specifying the initial polygon, the result of \
+         iterating the IFS will be displayed. No matter what polygon you start \
+         with, the results approximate the IFS attractor as the number of \
+         iterations increases!")
 
 st.write("Use the Multiplot toggle to change between views of individual "
          "iterations and multiple iterations on the same canvas.")
@@ -52,16 +53,14 @@ if "form_error" not in st.session_state:
     st.session_state.form_error = ""
 if "form_version" not in st.session_state:
     st.session_state.form_version = 0
-if "plot_hash" not in st.session_state:
-    st.session_state.plot_hash = None
 if "plot_image" not in st.session_state:
     st.session_state.plot_image = None
 if "set_lim_toggle" not in st.session_state:
     st.session_state.set_lim_toggle = st.session_state.set_lim
 if "generate_plots" not in st.session_state:
-    st.session_state.generate_plots = False  # indicates a new plot should be generated
+    st.session_state.generate_plots = False  
 if "show_plots" not in st.session_state:
-    st.session_state.show_plots = False  # indicates cached plot should be displayed
+    st.session_state.show_plots = False  
 # === End preamble ===
 
 # === Add/delete IFS functions ===
@@ -118,17 +117,21 @@ if st.session_state.function_form:
             st.session_state.form_error = ""
             try:
                 if not matrix_bracket_ok(matrix_str):
-                    raise ValueError("Matrix must include outer square brackets.")
+                    raise ValueError("Matrix must include outer square \
+                        brackets.")
                 if not shift_bracket_ok(shift_str):
-                    raise ValueError("Shift must include outer square brackets.")
+                    raise ValueError("Shift must include outer square \
+                        brackets.")
                 matrix = str_to_numpy_array(matrix_str)
                 shift = str_to_numpy_array(shift_str)
                 if matrix.shape != (2,2):
                     raise ValueError("Matrix must be 2x2.")
                 if shift.shape != (2,1):
                     raise ValueError("Shift must be 2x1.")
-                transform = np.block([[matrix, shift], [np.zeros((1,2)), np.ones((1,1))]])
-                tex_string = f"f_{st.session_state.count+1}(x)={array_to_latex(matrix)}x + {array_to_latex(shift)}"
+                transform = np.block([[matrix, shift], 
+                    [np.zeros((1,2)), np.ones((1,1))]])
+                tex_string = f"f_{st.session_state.count+1}(x)= \
+                    {array_to_latex(matrix)}x + {array_to_latex(shift)}"
                 st.session_state.IFS_transforms.append(Affine2D(transform))
                 st.session_state.IFS_latex.append(tex_string)
                 st.session_state.count += 1
@@ -141,7 +144,8 @@ if st.session_state.function_form:
                 st.session_state.matrix_input = matrix_str
                 st.session_state.shift_input = shift_str
                 st.session_state.form_error = str(e)
-                st.error(f"Error parsing form inputs: {st.session_state.form_error}")
+                st.error(f"Error parsing form inputs: \
+                    {st.session_state.form_error}")
                 st.session_state.function_form = True
 
 # Try again button in case of error
@@ -225,15 +229,15 @@ with col1:
     drawing_canvas = st.toggle("Draw initial polygon", value=False)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
-    # Sync derived state variable and trigger plot update if autoscaling is toggled on
+    # Sync derived state variable and trigger plot update if autoscaling is 
+    # toggled on
     if st.session_state.set_lim != st.session_state.set_lim_toggle:
         st.session_state.set_lim = st.session_state.set_lim_toggle
 
-        # If user turns OFF manual limits, trigger automatic rescaling
+        # If user turns off manual limits, trigger automatic rescaling
         if not st.session_state.set_lim_toggle:
             st.session_state.generate_plots = True  
-            st.session_state.show_plots = True      
-            st.session_state.plot_hash = None       
+            st.session_state.show_plots = True            
             st.rerun()
 
     # Adjust font sizes
@@ -242,7 +246,8 @@ with col1:
         plt.rcParams['figure.figsize'] = config['multiplot_size']
     else:
         plt.rcParams.update({'font.size': config['singleplot_font']})
-    stroke_color = st.color_picker("Select a colour for the attractor: ", colour_default)
+    stroke_color = st.color_picker("Select a colour for the attractor: ", 
+                            colour_default)
 
     if not drawing_canvas:
         initial_set_selected = st.selectbox("Select an initial set",
@@ -279,12 +284,15 @@ with col1:
         colour_selected = stroke_color
 
     # Manual x and y limits toggle
-    if st.session_state.set_lim_toggle and not st.session_state.set_lim_form:
-        if st.button("Change x and y limits"):
-            st.session_state.set_lim_form = True
+    if st.session_state.set_lim_toggle:
+        if not st.session_state.set_lim_form:
+            if st.button("Set x and y limits"):
+                st.session_state.set_lim_form = True
+    else:
+        st.session_state.set_lim_form = False
 
     # Manual x and y limits form
-    if st.session_state.set_lim_form and st.session_state.set_lim_toggle:
+    if st.session_state.set_lim_toggle and st.session_state.set_lim_form: 
         with st.form("xylim"):
             st.write("Input the x limits [x1, x2]:")
             x1 = st.number_input("x1 = ", value=st.session_state.xlim[0])
@@ -299,7 +307,6 @@ with col1:
                 st.session_state.xlim = [x1, x2]
                 st.session_state.ylim = [y1, y2]
                 st.session_state.set_lim_form = False
-                st.session_state.plot_hash = None
                 st.session_state.generate_plots = True
                 st.rerun()
 
@@ -309,8 +316,6 @@ with col1:
         if st.button("Plot iterations"):
             st.session_state.generate_plots = True
             st.session_state.show_plots = True
-            # Reset cached plot to force redraw
-            st.session_state.plot_hash = None
             st.rerun()
 
     if st.session_state.show_plots and not st.session_state.done:
@@ -334,17 +339,8 @@ with col2:
                 clicks = [[0, 0]]
         else:
             clicks = initial_set_options[initial_set_selected]
-
-        # Compute plot inputs hash
-        plot_inputs = get_plot_inputs_from_state(st.session_state)
-        plot_hash = hash(plot_inputs)
-
-        # Only redraw if inputs changed or first plot
-        if st.session_state.plot_hash != plot_hash or st.session_state.generate_plots:
-            st.session_state.plot_hash = plot_hash
-
+        # Generate multiplot/plot
         if st.session_state.generate_plots:
-            # Compute new figure
             if multiplot:
                 st.session_state.plot_image = a.multiplot(
                     facecolor=colour_selected,
@@ -363,10 +359,7 @@ with col2:
                     clicks=clicks
                 )
 
-        # Reset generate_plots AFTER generation
-        # if st.session_state.generate_plots:
-        #     st.session_state.generate_plots = False
-
-        # Display cached plot
-        if st.session_state.show_plots and st.session_state.plot_image is not None:
+        # Keep final plot displayed plot
+        if st.session_state.show_plots and \
+            st.session_state.plot_image is not None:
             st.pyplot(st.session_state.plot_image)
