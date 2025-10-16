@@ -65,30 +65,55 @@ if "show_plots" not in st.session_state:
 
 # === Add/delete IFS functions ===
 
-# Track which function is deleted
+# Track which function is deleted/duplicated
 delete_index = None
+duplicate_index = None
 
 # Display IFS LaTeX
 st.write("### Define your IFS:")
 if st.session_state.count > 0:
     for i, tex in enumerate(st.session_state.IFS_latex):
-        col1, col2 = st.columns([8, 1])
+        col1, col2, col3 = st.columns([8, 1, 1])
         with col1:
             st.latex(tex)
-        with col2:
-            if not st.session_state.done:
+        if not st.session_state.done:
+            with col2:
+                if st.button("Duplicate", key=f"duplicate_{i}"):
+                    duplicate_index = i
+            with col3:
                 if st.button("Delete", key=f"delete_{i}"):
                     delete_index = i
+                
 else:
     st.write("*No functions defined.*")
 
-# Perform deletion
+# Perform function deletion
 if delete_index is not None:
     st.session_state.IFS_latex.pop(delete_index)
     st.session_state.IFS_transforms.pop(delete_index)
     # Renumber remaining functions
     for j, tex in enumerate(st.session_state.IFS_latex, start=1):
         st.session_state.IFS_latex[j - 1] = re.sub(r"^f_\d", f"f_{j}", tex)
+    st.session_state.count = len(st.session_state.IFS_latex)
+    st.rerun()
+
+# Perform function duplication
+if duplicate_index is not None:
+    st.session_state.IFS_latex.insert(duplicate_index+1,
+        st.session_state.IFS_latex[duplicate_index])
+    st.session_state.IFS_transforms.insert(duplicate_index+1,
+        st.session_state.IFS_transforms[duplicate_index])
+    #st.session_state.count = len(st.session_state.IFS_latex)
+    # Fix the number of the duplicated latex
+    # m = st.session_state.count
+    # tex = st.session_state.IFS_latex[m-1]
+    # st.session_state.IFS_latex[m-1] = re.sub(r"^f_\d", f"f_{m}", tex)
+    # Renumber remaining functions
+    for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
+        start=duplicate_index+1):
+        print(duplicate_index)
+        print(j)
+        st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
     st.session_state.count = len(st.session_state.IFS_latex)
     st.rerun()
 
