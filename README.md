@@ -3,7 +3,7 @@
 An interactive Streamlit app for generating fractal images using two-dimensional affine iterated function systems.
 
 **App URL:**  
-[https://ifs-python.streamlit.app/](https://ifs-python.streamlit.app/)
+[https://ifs-python-v2.streamlit.app/](https://ifs-python.streamlit.app/)
 
 ---
 
