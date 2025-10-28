@@ -125,5 +125,6 @@ with col2:
 			fig = a.multiplot(showgridlines = gridlines, 
 				facecolor = colour_selected, set_lim = set_lim,clicks = clicks)
 		else:
-			a.plot(n = n, showgridlines = gridlines, 
+			fig = a.plot(n = n, showgridlines = gridlines, 
 				facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
+			st.pyplot(fig)

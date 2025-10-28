@@ -57,6 +57,10 @@ if "show_plots" not in st.session_state:
     st.session_state.show_plots = False  
 if "edit_index" not in st.session_state:
     st.session_state.edit_index = None
+if "n" not in st.session_state:
+    st.session_state.n = 0
+if "auto_lim" not in st.session_state:
+    st.session_state.auto_lim = None
 # === End preamble ===
 
 # === Add/delete IFS functions ===
@@ -101,8 +105,7 @@ if duplicate_index is not None:
         st.session_state.IFS_transforms[duplicate_index])
     for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
         start=duplicate_index+1):
-        print(duplicate_index)
-        print(j)
+        (duplicate_index)
         st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
     st.session_state.count = len(st.session_state.IFS_latex)
     st.rerun()
@@ -262,11 +265,21 @@ max_iterations = a.max_iterations
 with col1:
     st.write("### Choose your plot settings:")
 
+    # Function to trigger plot generation 
+    def trigger_plots():
+        st.session_state.generate_plots = True
+        st.session_state.show_plots = True
+
     # Toggles
-    multiplot = st.toggle("Multiplot", value=True)
+    multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
     gridlines = st.toggle("Show grid", value=True)
     drawing_canvas = st.toggle("Draw initial polygon", value=False)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
+
+    # Set manual x/y lim defaults to most recent auto x/y lim
+    if st.session_state.auto_lim is not None:
+        st.session_state.xlim = st.session_state.auto_lim
+        st.session_state.ylim = st.session_state.auto_lim
 
     # Sync derived state variable and trigger plot update if autoscaling is 
     # toggled on
@@ -277,7 +290,6 @@ with col1:
         if not st.session_state.set_lim_toggle:
             st.session_state.generate_plots = True  
             st.session_state.show_plots = True            
-            st.rerun()
 
     # Adjust font sizes
     if multiplot:
@@ -293,9 +305,20 @@ with col1:
                                       initial_set_options.keys(),
                                       on_change=reset_n,
                                       index=get_default_index())
+
     if not multiplot:
-        n = st.number_input("Number of iterations: ", min_value=0,
-            max_value=max_iterations, step=1, key="n")
+        def update_n():
+            st.session_state.generate_plots = True
+
+        n = st.number_input(
+            "Number of iterations:",
+            min_value=0,
+            max_value=max_iterations,
+            step=1,
+            key="n",
+            on_change=update_n
+        )
+        
     if drawing_canvas:
         canvas_result = st_canvas(
             fill_color=stroke_color,
@@ -329,6 +352,11 @@ with col1:
                 st.session_state.set_lim_form = True
     else:
         st.session_state.set_lim_form = False
+
+    # In single view, if the user turns on manual limits, do not regenerate the 
+    # plot yet
+    # if not multiplot and st.session_state.set_lim:
+    #     st.session_state.generate_plots = False
 
     # Manual x and y limits form
     if st.session_state.set_lim_toggle and st.session_state.set_lim_form: 
@@ -396,14 +424,18 @@ with col2:
                 st.session_state.show_plots = True
                 st.rerun()
             else:
-                st.session_state.plot_image = a.plot(
-                    n=n,
+                plot_data = a.plot(
+                    n=st.session_state.n,
                     facecolor=colour_selected,
                     set_lim=st.session_state.set_lim_toggle,
-                    clicks=clicks
+                    clicks=clicks, get_lim=True
                 )
+                st.session_state.plot_image = plot_data[0]
+                st.session_state.auto_lim = plot_data[1]
+                st.session_state.generate_plots = False
+                st.session_state.show_plots = True
 
-        # Keep final plot displayed plot
+        # Keep final plot displayed plot 
         if st.session_state.show_plots and \
             st.session_state.plot_image is not None:
             st.pyplot(st.session_state.plot_image)

@@ -113,7 +113,7 @@ class attractor:
         new_ticks = old_ticks[1:]
         ax.set_yticks(new_ticks)
 
-    def format_auto_ax(self, ax):
+    def format_auto_ax(self, ax, get_lim = False):
         ax.autoscale()
 
         # make the xlims and ylims the same
@@ -131,10 +131,14 @@ class attractor:
         ax.xaxis.set_major_locator(plt.MaxNLocator(nticks))
         ax.yaxis.set_major_locator(plt.MaxNLocator(nticks))
 
+        # Return the limits if desired
+        if get_lim:
+            return lim
+
     # set_lim = False automatically chooses the xlim and ylim parameters 
     def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
-        clicks = [[0,0], [0,1], [1,0]]):
+        clicks = [[0,0], [0,1], [1,0]], get_lim = False):
 
         nrows = 1
         ncols = 1
@@ -175,10 +179,14 @@ class attractor:
         if timeit:
             print('The whole process took ' + str(end - start) + ' seconds.')
 
+        lim = None
         if not set_lim:
-            self.format_auto_ax(ax)
+            lim = self.format_auto_ax(ax, get_lim=True)
 
-        return fig
+        if get_lim:
+            return [fig, lim]
+        else:
+            return fig
 
 
      # Function to show multiplots in steamlit one-by-one
