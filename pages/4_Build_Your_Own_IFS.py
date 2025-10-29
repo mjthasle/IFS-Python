@@ -273,8 +273,11 @@ with col1:
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
     gridlines = st.toggle("Show grid", value=True)
-    drawing_canvas = st.toggle("Draw initial polygon", value=False)
+    drawing_canvas = st.toggle("Draw initial polygon", value=False, 
+        key="drawing_canvas_toggle")
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
+    print(drawing_canvas)
+    print(st.session_state.drawing_canvas_toggle)
 
     # Set manual x/y lim defaults to most recent auto x/y lim
     if st.session_state.auto_lim is not None:
@@ -318,8 +321,9 @@ with col1:
             key="n",
             on_change=update_n
         )
-        
-    if drawing_canvas:
+    
+    print(drawing_canvas)
+    if st.session_state.drawing_canvas_toggle:
         canvas_result = st_canvas(
             fill_color=stroke_color,
             stroke_width=stroke_width,
@@ -334,6 +338,7 @@ with col1:
             display_toolbar=True,
             key="full_app",
         )
+
     else:
         canvas_result = None
         colour_selected = stroke_color
@@ -344,6 +349,7 @@ with col1:
             if len(objects) > 0:
                 coordinates = objects["path"][0]
         colour_selected = stroke_color
+        st.session_state.generate_plots = True
 
     # Manual x and y limits toggle
     if st.session_state.set_lim_toggle:
