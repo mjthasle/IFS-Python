@@ -9,7 +9,7 @@
     "grid_default": [3,3],
     "xlim_default": [-1,1],
     "ylim_default": [-1,1],
-    "canvas_dimension": 600,
+    "canvas_dimension": 400,
     "initial_sets": {
         "Equilateral Triangle": [[0,0], [1,0], [0.5,0.8660254037844386]],
         "Unit Square": [[0,0], [1,0], [1,1], [0,1]],

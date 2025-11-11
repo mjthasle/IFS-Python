@@ -84,7 +84,7 @@ with col1:
 			max_value = max_iterations, step = 1, key = "n")
 	if drawing_canvas:
 		fig, ax = plt.subplots()
-		ax.grid(alpha = 0.5)
+		ax.grid(alpha = 0.75)
 		fig.tight_layout(pad = 0.1)
 
 		# 2. Create an in-memory buffer
