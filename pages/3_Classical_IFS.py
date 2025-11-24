@@ -7,6 +7,8 @@ Last Updated on Oct 15, 2025
 @author: Mitch Haslehurst, Emily Rose Korfanty
 """
 
+import io
+from PIL import Image
 from ifs import *
 import pandas as pd
 from streamlit_drawable_canvas import st_canvas
@@ -81,12 +83,27 @@ with col1:
 		n = st.number_input("Number of iterations: ", min_value = 0,
 			max_value = max_iterations, step = 1, key = "n")
 	if drawing_canvas:
+		fig, ax = plt.subplots()
+		ax.grid(alpha = 0.75)
+		fig.tight_layout(pad = 0.1)
+
+		# 2. Create an in-memory buffer
+		img_buf = io.BytesIO()
+
+		# 3. Save the figure to the buffer
+		fig.savefig(img_buf, format = 'png')
+
+		# 4. Seek to the beginning of the buffer
+		img_buf.seek(0)
+
+		# 5. Open the image from the buffer with PIL
+		pil_img = Image.open(img_buf)
 		canvas_result = st_canvas(
 			fill_color = stroke_color,
 			stroke_width = stroke_width,
 			stroke_color = stroke_color,
 			background_color = "#eee",
-			background_image = None,
+			background_image = pil_img,
 			update_streamlit = True,
 			height = canvas_dimension,
 			width = canvas_dimension,
@@ -95,6 +112,7 @@ with col1:
 			display_toolbar = True,
 			key = "full_app",
 		)
+		img_buf.close()
 	else:
 		canvas_result = None
 		colour_selected = stroke_color

@@ -49,8 +49,8 @@ def get_coordinates(raw_coords):
     coord_dict = list(raw_coords)
     for pair in coord_dict:
         if len(pair) > 1:
-            new_list.append([(1 / canvas_dimension) * float(pair[1]), 
-                (-1 / canvas_dimension) * float(pair[2]) + 1])
+            new_list.append([(1 / canvas_dimension) * float(pair[1]),
+                             (-1 / canvas_dimension) * float(pair[2]) + 1])
     return new_list
 
 # Functions to fix array spacing for latex equations
