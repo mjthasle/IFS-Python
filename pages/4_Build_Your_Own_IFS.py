@@ -33,6 +33,8 @@ if "set_lim" not in st.session_state:
     st.session_state.set_lim = False
 if "set_lim_form" not in st.session_state:
     st.session_state.set_lim_form = False
+if "set_lim_toggle" not in st.session_state:
+    st.session_state.set_lim_toggle = st.session_state.set_lim
 if "done" not in st.session_state:
     st.session_state.done = False
 if "function_form" not in st.session_state:
@@ -49,8 +51,6 @@ if "form_version" not in st.session_state:
     st.session_state.form_version = 0
 if "plot_image" not in st.session_state:
     st.session_state.plot_image = None
-if "set_lim_toggle" not in st.session_state:
-    st.session_state.set_lim_toggle = st.session_state.set_lim
 if "generate_plots" not in st.session_state:
     st.session_state.generate_plots = False  
 if "show_plots" not in st.session_state:
@@ -61,6 +61,15 @@ if "n" not in st.session_state:
     st.session_state.n = 0
 if "auto_lim" not in st.session_state:
     st.session_state.auto_lim = None
+if "draw_polygon" not in st.session_state:
+    st.session_state.draw_polygon = False
+if "draw_polygon_form" not in st.session_state:
+    st.session_state.draw_polygon_form = False
+if "draw_polygon_toggle" not in st.session_state:
+    st.session_state.draw_polygon_toggle = st.session_state.draw_polygon
+if "canvas_result" not in st.session_state:
+    st.session_state.canvas_result = None
+
 # === End preamble ===
 
 # === Add/delete IFS functions ===
@@ -242,7 +251,7 @@ if st.session_state.done:
     else:
         st.write("*No functions. Hit reset to try again.*")
 
-# === Plot settings ===
+# === Left column plot settings ================================================
 
 # Built-in initial sets
 initial_set_options = config['initial_sets']
@@ -273,26 +282,26 @@ with col1:
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
     gridlines = st.toggle("Show grid", value=True)
-    drawing_canvas = st.toggle("Draw initial polygon", value=False, 
+    draw_polygon_toggle = st.toggle("Draw initial polygon", 
         key="drawing_canvas_toggle")
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
-    print(drawing_canvas)
-    print(st.session_state.drawing_canvas_toggle)
 
     # Set manual x/y lim defaults to most recent auto x/y lim
     if st.session_state.auto_lim is not None:
         st.session_state.xlim = st.session_state.auto_lim
         st.session_state.ylim = st.session_state.auto_lim
 
-    # Sync derived state variable and trigger plot update if autoscaling is 
-    # toggled on
+    # Sync derived x and y lim state variables 
     if st.session_state.set_lim != st.session_state.set_lim_toggle:
         st.session_state.set_lim = st.session_state.set_lim_toggle
 
         # If user turns off manual limits, trigger automatic rescaling
         if not st.session_state.set_lim_toggle:
             st.session_state.generate_plots = True  
-            st.session_state.show_plots = True            
+            st.session_state.show_plots = True 
+
+    # Sync derived drawing canvas boolean variables
+    st.session_state.draw_polygon = draw_polygon_toggle    
 
     # Adjust font sizes
     if multiplot:
@@ -303,12 +312,14 @@ with col1:
     stroke_color = st.color_picker("Select a colour for the attractor: ", 
                             colour_default)
 
-    if not drawing_canvas:
+    # Use a select box if not using the drawing canvas
+    if not st.session_state.draw_polygon:
         initial_set_selected = st.selectbox("Select an initial set",
                                       initial_set_options.keys(),
                                       on_change=reset_n,
                                       index=get_default_index())
 
+    # Use an input box for number of iterations when not multiplot
     if not multiplot:
         def update_n():
             st.session_state.generate_plots = True
@@ -321,48 +332,71 @@ with col1:
             key="n",
             on_change=update_n
         )
-    
-    print(drawing_canvas)
-    if st.session_state.drawing_canvas_toggle:
-        canvas_result = st_canvas(
-            fill_color=stroke_color,
-            stroke_width=stroke_width,
-            stroke_color=stroke_color,
-            background_color="#eee",
-            background_image=None,
-            update_streamlit=True,
-            height=canvas_dimension,
-            width=canvas_dimension,
-            drawing_mode=drawing_mode,
-            point_display_radius=0,
-            display_toolbar=True,
-            key="full_app",
-        )
 
+    # Draw polygon button
+    if st.session_state.draw_polygon:
+        if not st.session_state.draw_polygon_form:
+            if st.button("Draw initial polygon"):
+                st.session_state.draw_polygon_form = True
     else:
-        canvas_result = None
-        colour_selected = stroke_color
+        st.session_state.draw_polygon_form = False
 
-    if canvas_result is not None:
-        if canvas_result.json_data is not None:
-            objects = pd.json_normalize(canvas_result.json_data["objects"])
+    # Draw polygon form
+    if st.session_state.draw_polygon and st.session_state.draw_polygon_form: 
+        with st.form("drawing_canvas"):
+            st.write("Draw the initial polygon here (only the first polygon\
+                drawn on the canvas will be used:")
+            form_canvas_result = st_canvas(
+                fill_color=stroke_color,
+                stroke_width=stroke_width,
+                stroke_color=stroke_color,
+                background_color="#eee",
+                background_image=None,
+                update_streamlit=True,
+                height=canvas_dimension,
+                width=canvas_dimension,
+                drawing_mode=drawing_mode,
+                point_display_radius=0,
+                display_toolbar=True,
+                key="full_app"
+            )
+
+            submit_button = st.form_submit_button("Submit")
+
+            if submit_button:
+                st.session_state.canvas_result = form_canvas_result
+                st.session_state.draw_polygon_form = False
+                st.session_state.generate_plots = True
+                st.rerun()
+
+        # Button to close the form
+        if st.button("Close form"):
+            st.session_state.draw_polygon_form = False
+            st.rerun()
+
+
+    # If not drawing initial polygon, use selected stroke colour and ensure 
+    # that any prior stored drawing canvas result is removed
+    if not st.session_state.draw_polygon:
+        colour_selected = stroke_color
+        st.session_state.canvas_result = None
+
+    # Extract drawing canvas polygon coordinates
+    if st.session_state.draw_polygon and st.session_state.canvas_result is not None:
+        initial_polygon = st.session_state.canvas_result
+        if initial_polygon.json_data is not None:
+            objects = pd.json_normalize(initial_polygon.json_data["objects"])
             if len(objects) > 0:
                 coordinates = objects["path"][0]
         colour_selected = stroke_color
-        st.session_state.generate_plots = True
-
-    # Manual x and y limits toggle
+        
+    # Set x and y limits button
     if st.session_state.set_lim_toggle:
         if not st.session_state.set_lim_form:
             if st.button("Set x and y limits"):
                 st.session_state.set_lim_form = True
     else:
         st.session_state.set_lim_form = False
-
-    # In single view, if the user turns on manual limits, do not regenerate the 
-    # plot yet
-    # if not multiplot and st.session_state.set_lim:
-    #     st.session_state.generate_plots = False
 
     # Manual x and y limits form
     if st.session_state.set_lim_toggle and st.session_state.set_lim_form: 
@@ -385,8 +419,8 @@ with col1:
 
         # Button to close the x and y limit form
         if st.button("Close form"):
-                    st.session_state.set_lim_form = False
-                    st.rerun()
+            st.session_state.set_lim_form = False
+            st.rerun()
 
     # Plot iterations button
     # Only show if IFS functions are done and user has not plotted yet
@@ -410,7 +444,7 @@ if st.session_state.set_lim:
 with col2:
     if st.session_state.count > 0 and st.session_state.done:
         # Determine initial points
-        if drawing_canvas:
+        if st.session_state.draw_polygon:
             try:
                 clicks = get_coordinates(coordinates)
             except (TypeError, KeyError, NameError):
