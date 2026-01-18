@@ -226,6 +226,7 @@ def ifs_function_area():
             st.session_state.draw_polygon = False
             st.session_state.draw_polygon_form = False 
             st.session_state.drawing_canvas_toggle = False
+            st.session_state.canvas_result = None
             st.rerun() # Needed to make the reset button disappear when clicked
 
 
@@ -273,7 +274,7 @@ with col1:
     # Function to trigger plot generation 
     def trigger_plots():
         st.session_state.generate_plots = True
-        st.session_state.show_plots = True
+        #st.session_state.show_plots = True
 
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
@@ -366,6 +367,12 @@ with col1:
             st.session_state.draw_polygon_form = False
             st.rerun() # Needed to make canvas form disappear 
 
+    # Prevent plotting when no canvas result exists
+    if st.session_state.draw_polygon:
+        if st.session_state.canvas_result is None:
+            st.session_state.show_plots = False 
+
+
     # Use selected stroke colour
     colour_selected = stroke_color
 
@@ -427,7 +434,7 @@ with col2:
                 st.session_state.generate_plots = True
                 st.session_state.show_plots = True
     else:
-        st.write("*No IFS defined - click **Done** to confirm your IFS*")
+        st.write("*IFS definition required - click **Done** to confirm your IFS*")
 
     if st.session_state.count > 0 and st.session_state.done and st.session_state.show_plots:
         # Determine initial points
