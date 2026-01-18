@@ -3,22 +3,13 @@ import pandas as pd
 from matplotlib.transforms import Affine2D
 from streamlit_drawable_canvas import st_canvas
 from threading import RLock
+import time
 
 st.set_page_config(layout="wide")
 
 st.header("Build-Your-Own IFS")
 
-st.write("Use the \"Add function\" button to add functions to your IFS. \
-         When you are finished adding functions to your IFS, click the \
-         Done button. After specifying the initial polygon, the result of \
-         iterating the IFS will be displayed. No matter what polygon you start \
-         with, the results approximate the IFS attractor as the number of \
-         iterations increases!")
-
-st.write("Use the Multiplot toggle to change between views of individual "
-         "iterations and multiple iterations on the same canvas.")
-
-# === Session State Preamble ===
+# === Session State Preamble ===================================================
 if "IFS_latex" not in st.session_state:
     st.session_state.IFS_latex = []
 if "IFS_transforms" not in st.session_state:
@@ -65,191 +56,196 @@ if "draw_polygon" not in st.session_state:
     st.session_state.draw_polygon = False
 if "draw_polygon_form" not in st.session_state:
     st.session_state.draw_polygon_form = False
-if "draw_polygon_toggle" not in st.session_state:
-    st.session_state.draw_polygon_toggle = st.session_state.draw_polygon
 if "canvas_result" not in st.session_state:
     st.session_state.canvas_result = None
 
-# === End preamble ===
-
-# === Add/delete IFS functions ===
-
-# Index of function to be duplicated/delted
-duplicate_index = None
-delete_index = None
+# === Add/delete IFS functions =================================================
 
 # Display IFS LaTeX
 st.write("### Define your IFS:")
-if st.session_state.count > 0:
-    for i, tex in enumerate(st.session_state.IFS_latex):
-        col1, col2, col3, col4 = st.columns([8, 1, 1.5, 1])
-        with col1:
-            st.latex(tex)
-        if not st.session_state.done:
-            with col2:
-                if st.button("Edit", key=f"edit_{i}"):
-                    st.session_state.edit_index = i
-            with col3:
-                if st.button("Duplicate", key=f"duplicate_{i}"):
-                    duplicate_index = i
-            with col4:
-                if st.button("Delete", key=f"delete_{i}"):
-                    delete_index = i
-else:
-    st.write("*No functions defined.*")
-
-# Open form to edit function
-if st.session_state.edit_index is not None:
-    form_strings = affine_to_strings(
-        st.session_state.IFS_transforms[st.session_state.edit_index])
-    st.session_state.matrix_input = form_strings[0]
-    st.session_state.shift_input = form_strings[1]
-    st.session_state.function_form = True
-
-# Perform function duplication
-if duplicate_index is not None:
-    st.session_state.IFS_latex.insert(duplicate_index+1,
-        st.session_state.IFS_latex[duplicate_index])
-    st.session_state.IFS_transforms.insert(duplicate_index+1,
-        st.session_state.IFS_transforms[duplicate_index])
-    for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
-        start=duplicate_index+1):
-        (duplicate_index)
-        st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
-    st.session_state.count = len(st.session_state.IFS_latex)
-    st.rerun()
-
-# Perform function deletion
-if delete_index is not None:
-    st.session_state.IFS_latex.pop(delete_index)
-    st.session_state.IFS_transforms.pop(delete_index)
-    # Renumber remaining functions
-    for j, tex in enumerate(st.session_state.IFS_latex, start=1):
-        st.session_state.IFS_latex[j - 1] = re.sub(r"^f_\d", f"f_{j}", tex)
-    st.session_state.count = len(st.session_state.IFS_latex)
-    st.rerun()
-
-# Add function button
-if not st.session_state.function_form and not st.session_state.done:
-    if st.button("+ Add function"):
-        st.session_state.function_form = True
-        st.session_state.form_version += 1
-        st.rerun()
-
-# Function form
-if st.session_state.function_form:
-    st.session_state.generate_plots = False
-    fv = st.session_state.form_version
-    matrix_key = f"matrix_widget_{fv}"
-    shift_key = f"shift_widget_{fv}"
-    with st.form(key=f"ifs_form_{fv}"):
-        matrix_str = st.text_input("Matrix (format: [[a,b],[c,d]]):",
-                                   value=st.session_state.matrix_input,
-                                   key=matrix_key)
-        shift_str = st.text_input("Shift (format: [[a],[b]]):",
-                                  value=st.session_state.shift_input,
-                                  key=shift_key)
-        submit_button = st.form_submit_button("Submit")
-        if submit_button:
-            st.session_state.form_error = ""
-            try:
-                if not matrix_bracket_ok(matrix_str):
-                    raise ValueError("Matrix must include outer square \
-                        brackets.")
-                if not shift_bracket_ok(shift_str):
-                    raise ValueError("Shift must include outer square \
-                        brackets.")
-                matrix = str_to_numpy_array(matrix_str)
-                shift = str_to_numpy_array(shift_str)
-                if matrix.shape != (2,2):
-                    raise ValueError("Matrix must be 2x2.")
-                if shift.shape != (2,1):
-                    raise ValueError("Shift must be 2x1.")
-                transform = np.block([[matrix, shift], 
-                    [np.zeros((1,2)), np.ones((1,1))]])
-                if st.session_state.edit_index is None:
-                    tex_string = f"f_{st.session_state.count+1}(x)= \
-                        {array_to_latex(matrix)}x + {array_to_latex(shift)}"
-                    st.session_state.IFS_transforms.append(Affine2D(transform))
-                    st.session_state.IFS_latex.append(tex_string)
-                    st.session_state.count += 1
-                else:
-                    tex_string = f"f_{st.session_state.edit_index+1}(x)= \
-                        {array_to_latex(matrix)}x + {array_to_latex(shift)}"
-                    st.session_state.IFS_transforms[st.session_state.edit_index]\
-                        = Affine2D(transform)
-                    st.session_state.IFS_latex[st.session_state.edit_index] = \
-                    tex_string
-                    st.session_state.edit_index = None
-                st.session_state.function_form = False
-                st.session_state.matrix_input = "[[1,0],[0,1]]"
-                st.session_state.shift_input = "[[0],[0]]"
-                st.session_state.form_version += 1
-                st.rerun()
-            except (ValueError, TypeError, IndexError) as e:
-                st.session_state.matrix_input = matrix_str
-                st.session_state.shift_input = shift_str
-                st.session_state.form_error = str(e)
-                st.error(f"Error parsing form inputs: \
-                    {st.session_state.form_error}")
-                st.session_state.function_form = True
-    # Button to close the x and y limit form
-    if st.button("Close form"):
-        st.session_state.function_form = False
-        st.session_state.edit_index = None
-        st.rerun()
-
-# Try again button in case of error
-if st.session_state.function_form and st.session_state.form_error:
-    if st.button("Try again"):
-        st.session_state.form_error = ""
-        st.rerun()
-
-# Edit button
-if st.session_state.done:
-    if st.button("Edit functions"):
-        st.session_state.done = False
-        st.session_state.show_plots = False
-        st.session_state.generate_plots = False
-        st.rerun()
-
-# Reset button
-if st.session_state.count > 0:
-    if st.button("Reset"):
-        st.session_state.IFS_latex = []
-        st.session_state.IFS_transforms = []
-        st.session_state.done = False
-        st.session_state.function_form = False
-        st.session_state.count = 0
-        st.session_state.matrix_input = "[[1,0],[0,1]]"
-        st.session_state.shift_input = "[[0],[0]]"
-        st.session_state.form_error = ""
-        st.session_state.form_version += 1
-        st.session_state.generate_plots = False
-        st.session_state.show_plots = False
-        st.session_state.xlim = config['xlim_default']
-        st.session_state.ylim = config['ylim_default']
-        st.session_state.set_lim = False
-        st.session_state.set_lim_form = False
-        st.session_state.set_lim_toggle = False
-        st.rerun()
 
 
-# Done button
-if st.session_state.count > 0 and not st.session_state.done:
-    if st.button("Done"):
-        st.session_state.done = True
-        st.session_state.function_form = False
-        st.session_state.show_plots = False
-        st.session_state.generate_plots = False
-        st.rerun()
+# Fragment containing buttons for adding IFS:
+@st.fragment
+def ifs_function_area():
 
-# IFS confirmed message
-if st.session_state.done:        
+    # Index of function to be duplicated/delted
+    duplicate_index = None
+    delete_index = None
+
     if st.session_state.count > 0:
-        st.write("IFS confirmed.")
+        for i, tex in enumerate(st.session_state.IFS_latex):
+            col1, col2, col3, col4 = st.columns([8, 1, 1.5, 1])
+            with col1:
+                st.latex(tex)
+            if not st.session_state.done:
+                with col2:
+                    if st.button("Edit", key=f"edit_{i}"):
+                        st.session_state.edit_index = i
+                with col3:
+                    if st.button("Duplicate", key=f"duplicate_{i}"):
+                        duplicate_index = i
+                with col4:
+                    if st.button("Delete", key=f"delete_{i}"):
+                        delete_index = i
     else:
-        st.write("*No functions. Hit reset to try again.*")
+        st.write("*No functions defined.*")
+
+    # Open form to edit function
+    if st.session_state.edit_index is not None:
+        form_strings = affine_to_strings(
+            st.session_state.IFS_transforms[st.session_state.edit_index])
+        st.session_state.matrix_input = form_strings[0]
+        st.session_state.shift_input = form_strings[1]
+        st.session_state.function_form = True
+
+    # Perform function duplication
+    if duplicate_index is not None:
+        st.session_state.IFS_latex.insert(duplicate_index+1,
+            st.session_state.IFS_latex[duplicate_index])
+        st.session_state.IFS_transforms.insert(duplicate_index+1,
+            st.session_state.IFS_transforms[duplicate_index])
+        for j, tex in enumerate(st.session_state.IFS_latex[duplicate_index+1: ], 
+            start=duplicate_index+1):
+            (duplicate_index)
+            st.session_state.IFS_latex[j] = re.sub(r"^f_\d", f"f_{j+1}", tex)
+        st.session_state.count = len(st.session_state.IFS_latex)
+        st.rerun() # Needed to refresh the IFS list
+
+    # Perform function deletion
+    if delete_index is not None:
+        st.session_state.IFS_latex.pop(delete_index)
+        st.session_state.IFS_transforms.pop(delete_index)
+        # Renumber remaining functions
+        for j, tex in enumerate(st.session_state.IFS_latex, start=1):
+            st.session_state.IFS_latex[j - 1] = re.sub(r"^f_\d", f"f_{j}", tex)
+        st.session_state.count = len(st.session_state.IFS_latex)
+        st.rerun() # Needed to refresh the IFS list
+
+    # Add function button
+    if not st.session_state.function_form and not st.session_state.done:
+        if st.button("+ Add function"):
+            st.session_state.function_form = True
+            st.session_state.form_version += 1
+
+    # Function form
+    if st.session_state.function_form:
+        st.session_state.generate_plots = False
+        fv = st.session_state.form_version
+        matrix_key = f"matrix_widget_{fv}"
+        shift_key = f"shift_widget_{fv}"
+        with st.form(key=f"ifs_form_{fv}"):
+            matrix_str = st.text_input("Matrix (format: [[a,b],[c,d]]):",
+                                       value=st.session_state.matrix_input,
+                                       key=matrix_key)
+            shift_str = st.text_input("Shift (format: [[a],[b]]):",
+                                      value=st.session_state.shift_input,
+                                      key=shift_key)
+            if st.form_submit_button("Submit"):
+                st.session_state.form_error = ""
+                try:
+                    if not matrix_bracket_ok(matrix_str):
+                        raise ValueError("Matrix must include outer square \
+                            brackets.")
+                    if not shift_bracket_ok(shift_str):
+                        raise ValueError("Shift must include outer square \
+                            brackets.")
+                    matrix = str_to_numpy_array(matrix_str)
+                    shift = str_to_numpy_array(shift_str)
+                    if matrix.shape != (2,2):
+                        raise ValueError("Matrix must be 2x2.")
+                    if shift.shape != (2,1):
+                        raise ValueError("Shift must be 2x1.")
+                    transform = np.block([[matrix, shift], 
+                        [np.zeros((1,2)), np.ones((1,1))]])
+                    if st.session_state.edit_index is None:
+                        tex_string = f"f_{st.session_state.count+1}(x)= \
+                            {array_to_latex(matrix)}x + {array_to_latex(shift)}"
+                        st.session_state.IFS_transforms.append(Affine2D(transform))
+                        st.session_state.IFS_latex.append(tex_string)
+                        st.session_state.count += 1
+                    else:
+                        tex_string = f"f_{st.session_state.edit_index+1}(x)= \
+                            {array_to_latex(matrix)}x + {array_to_latex(shift)}"
+                        st.session_state.IFS_transforms[st.session_state.edit_index]\
+                            = Affine2D(transform)
+                        st.session_state.IFS_latex[st.session_state.edit_index] = \
+                        tex_string
+                        st.session_state.edit_index = None
+                    st.session_state.function_form = False
+                    st.session_state.matrix_input = "[[1,0],[0,1]]"
+                    st.session_state.shift_input = "[[0],[0]]"
+                    st.session_state.form_version += 1
+                    st.rerun() # Needed to have the function form close on submit
+                except (ValueError, TypeError, IndexError) as e:
+                    st.session_state.matrix_input = matrix_str
+                    st.session_state.shift_input = shift_str
+                    st.session_state.form_error = str(e)
+                    st.error(f"Error parsing form inputs: \
+                        {st.session_state.form_error}")
+                    st.session_state.function_form = True
+        # Button to close the x and y limit form
+        if st.button("Close form"):
+            st.session_state.function_form = False
+            st.session_state.edit_index = None
+            st.rerun() # Needed to make form close when clicked
+
+    # Try again button in case of error
+    if st.session_state.function_form and st.session_state.form_error:
+        if st.button("Try again"):
+            st.session_state.form_error = ""
+            st.rerun()  # Needed to make the try again button disappear when clicked
+
+    # Edit button
+    if st.session_state.done:
+        if st.button("Edit functions"):
+            st.session_state.done = False
+            st.session_state.show_plots = False
+            st.session_state.generate_plots = False 
+            st.rerun() # Needed to re-enter edit mode 
+
+    # Reset button
+    if st.session_state.count > 0:
+        if st.button("Reset"):
+            st.session_state.IFS_latex = []
+            st.session_state.IFS_transforms = []
+            st.session_state.done = False
+            st.session_state.function_form = False
+            st.session_state.count = 0
+            st.session_state.matrix_input = "[[1,0],[0,1]]"
+            st.session_state.shift_input = "[[0],[0]]"
+            st.session_state.form_error = ""
+            st.session_state.form_version += 1
+            st.session_state.generate_plots = False
+            st.session_state.show_plots = False
+            st.session_state.xlim = config['xlim_default']
+            st.session_state.ylim = config['ylim_default']
+            st.session_state.set_lim = False
+            st.session_state.set_lim_form = False
+            st.session_state.set_lim_toggle = False
+            st.session_state.draw_polygon = False
+            st.session_state.draw_polygon_form = False 
+            st.session_state.drawing_canvas_toggle = False
+            st.rerun() # Needed to make the reset button disappear when clicked
+
+
+    # Done button
+    if st.session_state.count > 0 and not st.session_state.done:
+        if st.button("Done"):
+            st.session_state.done = True
+            st.session_state.function_form = False
+            st.session_state.show_plots = False
+            st.session_state.generate_plots = False
+            st.rerun() # Required to make the done botton disappear when clicked
+
+    # IFS confirmed message
+    if st.session_state.done:        
+        if st.session_state.count > 0:
+            st.write("IFS confirmed.")
+        else:
+            st.write("*No functions. Hit reset to try again.*")
+
+ifs_function_area()
 
 # === Left column plot settings ================================================
 
@@ -272,7 +268,7 @@ max_iterations = a.max_iterations
 
 # Left column: controls 
 with col1:
-    st.write("### Choose your plot settings:")
+    st.write("### Plot Settings:")
 
     # Function to trigger plot generation 
     def trigger_plots():
@@ -282,8 +278,7 @@ with col1:
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
     gridlines = st.toggle("Show grid", value=True)
-    draw_polygon_toggle = st.toggle("Draw initial polygon", 
-        key="drawing_canvas_toggle")
+    st.toggle("Draw initial polygon", key="draw_polygon", on_change=trigger_plots)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
     # Set manual x/y lim defaults to most recent auto x/y lim
@@ -298,10 +293,7 @@ with col1:
         # If user turns off manual limits, trigger automatic rescaling
         if not st.session_state.set_lim_toggle:
             st.session_state.generate_plots = True  
-            st.session_state.show_plots = True 
-
-    # Sync derived drawing canvas boolean variables
-    st.session_state.draw_polygon = draw_polygon_toggle    
+            st.session_state.show_plots = True    
 
     # Adjust font sizes
     if multiplot:
@@ -336,7 +328,7 @@ with col1:
     # Draw polygon button
     if st.session_state.draw_polygon:
         if not st.session_state.draw_polygon_form:
-            if st.button("Draw initial polygon"):
+            if st.button("Open inital polygon drawing canvas"):
                 st.session_state.draw_polygon_form = True
     else:
         st.session_state.draw_polygon_form = False
@@ -367,19 +359,18 @@ with col1:
                 st.session_state.canvas_result = form_canvas_result
                 st.session_state.draw_polygon_form = False
                 st.session_state.generate_plots = True
-                st.rerun()
+                st.rerun() # Needed to make canvas form disappear when submitted
 
         # Button to close the form
         if st.button("Close form"):
             st.session_state.draw_polygon_form = False
-            st.rerun()
+            st.rerun() # Needed to make canvas form disappear 
 
 
     # If not drawing initial polygon, use selected stroke colour and ensure 
     # that any prior stored drawing canvas result is removed
     if not st.session_state.draw_polygon:
         colour_selected = stroke_color
-        st.session_state.canvas_result = None
 
     # Extract drawing canvas polygon coordinates
     if st.session_state.draw_polygon and st.session_state.canvas_result is not None:
@@ -389,6 +380,7 @@ with col1:
             if len(objects) > 0:
                 coordinates = objects["path"][0]
         colour_selected = stroke_color
+
         
     # Set x and y limits button
     if st.session_state.set_lim_toggle:
@@ -415,34 +407,34 @@ with col1:
                 st.session_state.ylim = [y1, y2]
                 st.session_state.set_lim_form = False
                 st.session_state.generate_plots = True
-                st.rerun()
+                st.rerun() # Needed to make limits form close when submitted
 
         # Button to close the x and y limit form
         if st.button("Close form"):
             st.session_state.set_lim_form = False
-            st.rerun()
-
-    # Plot iterations button
-    # Only show if IFS functions are done and user has not plotted yet
-    if st.session_state.done and not st.session_state.show_plots:
-        if st.button("Plot iterations"):
-            st.session_state.generate_plots = True
-            st.session_state.show_plots = True
-            st.rerun()
-
-    if st.session_state.show_plots and not st.session_state.done:
-        st.write("*No IFS defined - click **Done** to confirm your IFS*")
+            st.rerun() # Needed to make form close when clicked
 
 # Set xlim and ylim 
 if st.session_state.set_lim:
     a.xlim = st.session_state.xlim
     a.ylim = st.session_state.ylim
 
-# === Plot iterations ===
+# === Plot iterations ============================================
 
 # Right column: attractor plots
 with col2:
-    if st.session_state.count > 0 and st.session_state.done:
+    # Plot iterations button
+    # Only show if IFS functions are done and user has not plotted yet
+    st.write("### Iteration Plots:")
+    if st.session_state.done:
+        if not st.session_state.show_plots:
+            if st.button("Plot iterations"):
+                st.session_state.generate_plots = True
+                st.session_state.show_plots = True
+    else:
+        st.write("*No IFS defined - click **Done** to confirm your IFS*")
+
+    if st.session_state.count > 0 and st.session_state.done and st.session_state.show_plots:
         # Determine initial points
         if st.session_state.draw_polygon:
             try:
@@ -462,7 +454,7 @@ with col2:
                 )
                 st.session_state.generate_plots = False
                 st.session_state.show_plots = True
-                st.rerun()
+                st.rerun() # Needed to refresh the plots
             else:
                 plot_data = a.plot(
                     n=st.session_state.n,
