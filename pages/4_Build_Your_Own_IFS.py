@@ -366,11 +366,8 @@ with col1:
             st.session_state.draw_polygon_form = False
             st.rerun() # Needed to make canvas form disappear 
 
-
-    # If not drawing initial polygon, use selected stroke colour and ensure 
-    # that any prior stored drawing canvas result is removed
-    if not st.session_state.draw_polygon:
-        colour_selected = stroke_color
+    # Use selected stroke colour
+    colour_selected = stroke_color
 
     # Extract drawing canvas polygon coordinates
     if st.session_state.draw_polygon and st.session_state.canvas_result is not None:
@@ -379,8 +376,6 @@ with col1:
             objects = pd.json_normalize(initial_polygon.json_data["objects"])
             if len(objects) > 0:
                 coordinates = objects["path"][0]
-        colour_selected = stroke_color
-
         
     # Set x and y limits button
     if st.session_state.set_lim_toggle:
