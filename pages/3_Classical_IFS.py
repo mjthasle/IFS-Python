@@ -121,7 +121,7 @@ with col1:
 		if canvas_result.json_data is not None:
 			objects = pd.json_normalize(canvas_result.json_data["objects"])
 			if len(objects) > 0:
-				coordinates = objects["path"][0]
+				coordinates = objects["path"]
 
 		colour_selected = stroke_color
 
@@ -134,15 +134,15 @@ with col2:
 		try:
 			clicks = get_coordinates(coordinates)
 		except (TypeError, KeyError, NameError):
-			clicks = [[0, 0]]
+			clicks = [[[0, 0]]]
 	else:
 		clicks = initial_set_options[initial_set_selected]
 	_lock = RLock()
 	with _lock:
 		if multiplot:
-			fig = a.multiplot(showgridlines = gridlines, 
-				facecolor = colour_selected, set_lim = set_lim,clicks = clicks)
+			fig = a.multiplot(showgridlines = gridlines,					 
+					facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
 		else:
 			fig = a.plot(n = n, showgridlines = gridlines, 
-				facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
+					facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
 			st.pyplot(fig)
