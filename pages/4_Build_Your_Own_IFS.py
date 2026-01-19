@@ -58,6 +58,8 @@ if "draw_polygon_form" not in st.session_state:
     st.session_state.draw_polygon_form = False
 if "canvas_result" not in st.session_state:
     st.session_state.canvas_result = None
+if "gridlines" not in st.session_state:
+    st.session_state.gridlines = True
 
 # === Add/delete IFS functions =================================================
 
@@ -278,7 +280,7 @@ with col1:
 
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
-    gridlines = st.toggle("Show grid", value=True)
+    st.toggle("Show grid", value=True, key="gridlines", on_change=trigger_plots)
     st.toggle("Draw initial polygon", key="draw_polygon", on_change=trigger_plots)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
@@ -450,7 +452,7 @@ with col2:
             if multiplot:
                 st.session_state.plot_image = a.multiplot(
                     facecolor=colour_selected,
-                    showgridlines=gridlines,
+                    showgridlines=st.session_state.gridlines,
                     set_lim=st.session_state.set_lim_toggle,
                     clicks=clicks
                 )
@@ -462,7 +464,8 @@ with col2:
                     n=st.session_state.n,
                     facecolor=colour_selected,
                     set_lim=st.session_state.set_lim_toggle,
-                    clicks=clicks, get_lim=True
+                    clicks=clicks, get_lim=True, 
+                    showgridlines=st.session_state.gridlines
                 )
                 st.session_state.plot_image = plot_data[0]
                 st.session_state.auto_lim = plot_data[1]
