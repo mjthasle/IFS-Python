@@ -193,7 +193,7 @@ class attractor:
 
     def multiplot(self, facecolor=colour_default,
               showaxis=True, showgridlines=False, set_lim=False, timeit=False, 
-              saveit=False, clicks=[[0,0], [0,1], [1,0]]):
+              saveit=False, clicks=[[0,0], [0,1], [1,0]], get_lim=False):
 
         start = time.perf_counter()
         nrows = self.grid[0]
@@ -241,9 +241,11 @@ class attractor:
                     t += self.ifs[i]
                 ax.add_patch(Polygon(t.transform(clicks), facecolor=facecolor))
 
+            lim = None
+
             # Autoscale axes if manual limits are not set
             if not set_lim:
-                self.format_auto_ax(ax)
+                lim = self.format_auto_ax(ax, get_lim=True)
 
             # Plot the iteration
             the_plot.pyplot(fig)
@@ -253,8 +255,10 @@ class attractor:
                 st.write('Iteration ' + str(j) + ' took ' + str(end - start) +
                  ' seconds.')
 
-        # Return the final figure to be saved in session state
-        return fig
+        if get_lim:
+            return [fig, lim]
+        else:
+            return fig
 
 def get_attractors():
     built_in_ifs = config['built_in_ifs']

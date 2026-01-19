@@ -276,11 +276,10 @@ with col1:
     # Function to trigger plot generation 
     def trigger_plots():
         st.session_state.generate_plots = True
-        #st.session_state.show_plots = True
 
     # Toggles
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
-    st.toggle("Show grid", value=True, key="gridlines", on_change=trigger_plots)
+    st.toggle("Show grid", key="gridlines", on_change=trigger_plots)
     st.toggle("Draw initial polygon", key="draw_polygon", on_change=trigger_plots)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
@@ -436,7 +435,7 @@ with col2:
                 st.session_state.generate_plots = True
                 st.session_state.show_plots = True
     else:
-        st.write("*IFS definition required - click **Done** to confirm your IFS*")
+        st.write("*IFS definition required*.")
 
     if st.session_state.count > 0 and st.session_state.done and st.session_state.show_plots:
         # Determine initial points
@@ -450,14 +449,15 @@ with col2:
         # Generate multiplot/plot
         if st.session_state.generate_plots:
             if multiplot:
-                st.session_state.plot_image = a.multiplot(
+                plot_data = a.multiplot(
                     facecolor=colour_selected,
                     showgridlines=st.session_state.gridlines,
                     set_lim=st.session_state.set_lim_toggle,
-                    clicks=clicks
+                    clicks=clicks, get_lim=True
                 )
-                st.session_state.generate_plots = False
-                st.session_state.show_plots = True
+                st.session_state.plot_image = plot_data[0]
+                st.session_state.auto_lim = plot_data[1]
+                st.session_state.generate_plots = False # Needs to happen before rerun
                 st.rerun() # Needed to refresh the plots
             else:
                 plot_data = a.plot(
@@ -470,7 +470,7 @@ with col2:
                 st.session_state.plot_image = plot_data[0]
                 st.session_state.auto_lim = plot_data[1]
                 st.session_state.generate_plots = False
-                st.session_state.show_plots = True
+  
 
         # Keep final plot displayed plot 
         if st.session_state.show_plots and \
