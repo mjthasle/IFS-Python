@@ -45,13 +45,17 @@ def codes(m, n):
     return np.array(codes)
 
 def get_coordinates(raw_coords):
+    full_list = []
     new_list = []
     coord_dict = list(raw_coords)
-    for pair in coord_dict:
-        if len(pair) > 1:
-            new_list.append([(1 / canvas_dimension) * float(pair[1]),
-                             (-1 / canvas_dimension) * float(pair[2]) + 1])
-    return new_list
+    for list_item in coord_dict:
+        for pair in list_item:
+            if len(pair) > 1:
+                new_list.append([(1 / canvas_dimension) * float(pair[1]),
+                                (-1 / canvas_dimension) * float(pair[2]) + 1])
+        full_list.append(new_list)
+        new_list = []
+    return full_list
 
 # Functions to fix array spacing for latex equations
 def texeq(eq, arrayspace = 0.5, units = "ex"):
@@ -138,7 +142,7 @@ class attractor:
     # set_lim = False automatically chooses the xlim and ylim parameters 
     def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
-        clicks = [[0,0], [0,1], [1,0]], get_lim = False):
+        clicks = [[[0,0], [0,1], [1,0]]], get_lim = False):
 
         nrows = 1
         ncols = 1
@@ -165,8 +169,9 @@ class attractor:
             for i in code:
                 t += self.ifs[i]
 
-            ax.add_patch(Polygon(t.transform(clicks),
-                facecolor = facecolor))
+            for list_item in clicks:
+                ax.add_patch(Polygon(t.transform(list_item),
+                    facecolor = facecolor))
 
         end = time.perf_counter()
 
@@ -194,7 +199,6 @@ class attractor:
     def multiplot(self, facecolor=colour_default,
               showaxis=True, showgridlines=False, set_lim=False, timeit=False, 
               saveit=False, clicks=[[0,0], [0,1], [1,0]], get_lim=False):
-
         start = time.perf_counter()
         nrows = self.grid[0]
         ncols = self.grid[1]
@@ -239,7 +243,8 @@ class attractor:
                 t = IdentityTransform()
                 for i in code:
                     t += self.ifs[i]
-                ax.add_patch(Polygon(t.transform(clicks), facecolor=facecolor))
+                for list_item in clicks:
+                    ax.add_patch(Polygon(t.transform(list_item), facecolor=facecolor))
 
             lim = None
 

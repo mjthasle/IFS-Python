@@ -42,6 +42,8 @@ st.session_state.setdefault("canvas_key", 0)
 st.session_state.setdefault("origin_canvas_coords", None)
 st.session_state.setdefault("canvas_size", (canvas_dimension, canvas_dimension))
 st.session_state.setdefault("axes_bounds_img", None)
+st.session_state.setdefault("polygon_stroke", None)
+st.session_state.setdefault("polygon_fill", None)
 
 # ---------------------------------------------------------------------
 # HELPER FUNCTIONS
@@ -93,6 +95,51 @@ def canvas_to_world(x_c, y_c, axes_bounds, dx, dy):
     y_w = y_max - t_y * dy
 
     return x_w, y_w
+
+
+def _parse_canvas_color(color_str):
+    """
+    Parse a color string coming from the canvas/fabric objects.
+
+    Accepts hex (`#rrggbb`), `rgb(r,g,b)` or `rgba(r,g,b,a)` and returns
+    a value acceptable to Matplotlib: either a hex string or an (r,g,b,a)
+    tuple with components in the 0..1 range. Returns `None` for
+    transparent/null-like values.
+    """
+    if not color_str:
+        return None
+    color_str = str(color_str)
+    color_str = color_str.strip()
+    # direct hex (pass through)
+    if color_str.startswith("#"):
+        return color_str
+
+    # handle rgba(...) and rgb(...)
+    if color_str.startswith("rgba") or color_str.startswith("rgb"):
+        try:
+            inside = color_str[color_str.find("(") + 1 : color_str.rfind(")")]
+            parts = [p.strip() for p in inside.split(",")]
+            if len(parts) >= 3:
+                r = float(parts[0]) / 255.0
+                g = float(parts[1]) / 255.0
+                b = float(parts[2]) / 255.0
+                a = 1.0
+                if len(parts) == 4:
+                    a = float(parts[3])
+                # If fully transparent, treat as None
+                if a == 0:
+                    return None
+                return (r, g, b, a)
+        except Exception:
+            return None
+
+    # common transparent names
+    lowered = color_str.lower()
+    if lowered in ("transparent", "none", "null"):
+        return None
+
+    # fallback: return None so Matplotlib uses defaults
+    return None
 
 
 # ---------------------------------------------------------------------
@@ -151,13 +198,17 @@ with col1:
     # -----------------------------------------------------------------
     img_buf = io.BytesIO()
     with plot_lock:
-        fig.savefig(img_buf, format="png", dpi=80, pad_inches=0)
+        # Save the figure to an in-memory PNG. Use the figure's DPI for
+        # good quality then resize the resulting image to the fixed canvas
+        # dimensions so the background fits exactly.
+        fig.savefig(img_buf, format="png", dpi=fig.dpi, pad_inches=0)
     img_buf.seek(0)
     pil_img = Image.open(img_buf)
 
-    # This (width, height) is the coordinate system used by st_canvas.
+    # Force the background image to the fixed canvas size defined above.
+    canvas_width = canvas_height = canvas_dimension
+    pil_img = pil_img.resize((canvas_width, canvas_height), Image.LANCZOS)
     img_w_px, img_h_px = pil_img.size
-    canvas_width, canvas_height = img_w_px, img_h_px
     st.session_state["canvas_size"] = (canvas_width, canvas_height)
 
     # -----------------------------------------------------------------
@@ -214,6 +265,26 @@ with col1:
             coords = extract_polygon_coords(path)
             if coords:
                 st.session_state["polygon_coords"] = coords
+                # Try to capture stroke and fill colors from the Fabric object
+                # If columns aren't present, fall back to the currently-selected color
+                try:
+                    stroke_val = (
+                        objects.loc[0, "stroke"]
+                        if "stroke" in objects.columns
+                        else stroke_color
+                    )
+                except Exception:
+                    stroke_val = stroke_color
+
+                try:
+                    fill_val = (
+                        objects.loc[0, "fill"] if "fill" in objects.columns else stroke_color
+                    )
+                except Exception:
+                    fill_val = stroke_color
+
+                st.session_state["polygon_stroke"] = stroke_val
+                st.session_state["polygon_fill"] = fill_val
 
 
 # =====================================================================
@@ -270,13 +341,27 @@ with col2:
             xs_world.append(x_w)
             ys_world.append(y_w)
 
-        # Draw polygon in world coordinates, matching background placement
-        ax2.plot(xs_world, ys_world, marker="o", color="blue")
-        ax2.plot(
-            [xs_world[-1], xs_world[0]],
-            [ys_world[-1], ys_world[0]],
-            color="blue",
-        )
+        # Determine colors (fall back to sensible defaults)
+        stroke_col = st.session_state.get("polygon_stroke") or "#000000"
+        fill_col = st.session_state.get("polygon_fill")
+
+        stroke_parsed = _parse_canvas_color(stroke_col)
+        fill_parsed = _parse_canvas_color(fill_col)
+
+        # Draw filled polygon in world coordinates, matching background placement
+        try:
+            if fill_parsed is not None:
+                ax2.fill(xs_world, ys_world, facecolor=fill_parsed, edgecolor=stroke_parsed or "black")
+            else:
+                # no fill, just draw edges
+                ax2.plot(xs_world, ys_world, marker="o", color=stroke_parsed or "black")
+
+            # Ensure polygon closed (edge) uses stroke color
+            ax2.plot([xs_world[-1], xs_world[0]], [ys_world[-1], ys_world[0]], color=stroke_parsed or "black")
+        except Exception:
+            # Fallback to simple blue if parsing/plotting fails
+            ax2.plot(xs_world, ys_world, marker="o", color="blue")
+            ax2.plot([xs_world[-1], xs_world[0]], [ys_world[-1], ys_world[0]], color="blue")
 
     # Render the right-hand plot
     with plot_lock:
