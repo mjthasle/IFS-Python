@@ -133,7 +133,8 @@ with col2:
 
 	if drawing_canvas:
 		try:
-			clicks = get_coordinates2(coordinates)
+			#clicks = get_coordinates(coordinates)
+			clicks = get_coordinates2(coordinates, fig, ax)
 		except (TypeError, KeyError, NameError):
 			clicks = [[[0, 0]]]
 	else:
