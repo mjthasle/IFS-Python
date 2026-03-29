@@ -19,6 +19,9 @@ from matplotlib.transforms import IdentityTransform
 from matplotlib.patches import Polygon
 import ast
 import re
+import numpy as np
+from fractions import Fraction
+from typing import List
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -44,6 +47,59 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
+def canvas_to_world(x_c, y_c, axes_bounds, dx, dy):
+    """
+    Map canvas/image pixel coordinates (origin top-left) to world coordinates
+    (x_min..x_max, y_min..y_max), using the true axes rectangle inside the PNG.
+
+    axes_bounds = (axes_left_img, axes_right_img, axes_top_img, axes_bottom_img),
+    all expressed in image/canvas pixel coordinates.
+    """
+    if axes_bounds is None:
+        return None, None
+
+    axes_left_img, axes_right_img, axes_top_img, axes_bottom_img = axes_bounds
+
+    # Horizontal mapping: left -> right
+    # x_c == axes_left_img  -> x_w == x_min
+    # x_c == axes_right_img -> x_w == x_max
+    t_x = (x_c - axes_left_img) / (axes_right_img - axes_left_img)
+    x_w = x_min + t_x * dx
+
+    # Vertical mapping: top -> bottom in image vs bottom -> top in world
+    # y_c == axes_top_img    -> y_w == y_max
+    # y_c == axes_bottom_img -> y_w == y_min
+    t_y = (y_c - axes_top_img) / (axes_bottom_img - axes_top_img)
+    y_w = y_max - t_y * dy
+
+    return x_w, y_w
+
+def get_axes_bounds(fig, ax):
+    # (0,0) in world coords -> (x_fig_px, y_fig_px) in figure pixels
+    x_fig_px, y_fig_px = ax.transData.transform((0, 0))
+    fig_w_px, fig_h_px = fig.canvas.get_width_height()
+
+    # Axes rectangle (in figure-relative 0..1 coords) -> figure pixels
+    pos = ax.get_position()   # Bbox in figure coordinates (0..1)
+    axes_left_fig   = pos.x0 * fig_w_px
+    axes_right_fig  = pos.x1 * fig_w_px
+    axes_bottom_fig = pos.y0 * fig_h_px
+    axes_top_fig    = pos.y1 * fig_h_px
+
+    axes_bounds = [axes_left_fig, axes_right_fig, axes_bottom_fig, axes_top_fig]
+
+    return axes_bounds
+
+def get_dx_dy(fig, ax):
+    xlimits = ax.get_xlim()
+    ylimits = ax.get_ylim()
+
+    # Length of the x and y axes in world coordinates
+    dx = xlimits[1] - xlimits[0]
+    dy = ylimits[1] - ylimits[0]
+
+    return dx, dy
+
 def get_coordinates(raw_coords):
     full_list = []
     new_list = []
@@ -53,6 +109,18 @@ def get_coordinates(raw_coords):
             if len(pair) > 1:
                 new_list.append([(1 / canvas_dimension) * float(pair[1]),
                                 (-1 / canvas_dimension) * float(pair[2]) + 1])
+        full_list.append(new_list)
+        new_list = []
+    return full_list
+
+def get_coordinates2(raw_coords, axes_bounds, dx, dy):
+    full_list = []
+    new_list = []
+    coord_dict = list(raw_coords)
+    for list_item in coord_dict:
+        for pair in list_item:
+            if len(pair) > 1:
+                new_list.append(canvas_to_world(pair[1], pair[2], axes_bounds, dx, dy))
         full_list.append(new_list)
         new_list = []
     return full_list
@@ -308,11 +376,6 @@ def on_initial_set_change():
     if st.session_state.plot_image is not None:
         st.session_state.generate_plots = True
 
-
-import numpy as np
-from fractions import Fraction
-from typing import List
-
 def str_to_numpy_array(input_str):
     """
     Parse a string of the form "[[a,b,...],[c,d,...],...]" into an n×m numpy 
@@ -419,3 +482,5 @@ def affine_to_strings(transform, tol=1e-12):
     matrix_str = f"[[{fmt(a)},{fmt(c)}],[{fmt(b)},{fmt(d)}]]"
     shift_str = f"[[{fmt(e)}],[{fmt(f)}]]"
     return [matrix_str, shift_str]
+
+

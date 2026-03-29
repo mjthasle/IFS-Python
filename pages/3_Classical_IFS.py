@@ -113,6 +113,7 @@ with col1:
 			key = "full_app",
 		)
 		img_buf.close()
+
 	else:
 		canvas_result = None
 		colour_selected = stroke_color
