@@ -47,7 +47,7 @@ def codes(m, n):
         codes.append(expan)
     return np.array(codes)
 
-def canvas_to_world(x_c, y_c, axes_bounds, dx, dy):
+def canvas_to_world(x_c, y_c, fig, ax):
     """
     Map canvas/image pixel coordinates (origin top-left) to world coordinates
     (x_min..x_max, y_min..y_max), using the true axes rectangle inside the PNG.
@@ -55,10 +55,26 @@ def canvas_to_world(x_c, y_c, axes_bounds, dx, dy):
     axes_bounds = (axes_left_img, axes_right_img, axes_top_img, axes_bottom_img),
     all expressed in image/canvas pixel coordinates.
     """
-    if axes_bounds is None:
-        return None, None
 
-    axes_left_img, axes_right_img, axes_top_img, axes_bottom_img = axes_bounds
+    # x and y limits in world coordinates
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    xmin = xlim[0]
+    ymax = ylim[1]
+
+    # Length of the x and y axes in world coordinates
+    dx = xlim[1] - xlim[0]
+    dy = ylim[1] - ylim[0]
+
+    # Width and height of the canvas in canvas coordinates
+    fig_w_px, fig_h_px = fig.canvas.get_width_height()
+
+    # Axes rectangle (in figure-relative 0..1 coords) -> figure pixels
+    pos = ax.get_position()   # Bbox in figure coordinates (0..1)
+    axes_left_fig   = pos.x0 * fig_w_px
+    axes_right_fig  = pos.x1 * fig_w_px
+    axes_bottom_fig = pos.y0 * fig_h_px
+    axes_top_fig    = pos.y1 * fig_h_px
 
     # Horizontal mapping: left -> right
     # x_c == axes_left_img  -> x_w == x_min
@@ -74,32 +90,6 @@ def canvas_to_world(x_c, y_c, axes_bounds, dx, dy):
 
     return x_w, y_w
 
-def get_axes_bounds(fig, ax):
-    # (0,0) in world coords -> (x_fig_px, y_fig_px) in figure pixels
-    x_fig_px, y_fig_px = ax.transData.transform((0, 0))
-    fig_w_px, fig_h_px = fig.canvas.get_width_height()
-
-    # Axes rectangle (in figure-relative 0..1 coords) -> figure pixels
-    pos = ax.get_position()   # Bbox in figure coordinates (0..1)
-    axes_left_fig   = pos.x0 * fig_w_px
-    axes_right_fig  = pos.x1 * fig_w_px
-    axes_bottom_fig = pos.y0 * fig_h_px
-    axes_top_fig    = pos.y1 * fig_h_px
-
-    axes_bounds = [axes_left_fig, axes_right_fig, axes_bottom_fig, axes_top_fig]
-
-    return axes_bounds
-
-def get_dx_dy(fig, ax):
-    xlimits = ax.get_xlim()
-    ylimits = ax.get_ylim()
-
-    # Length of the x and y axes in world coordinates
-    dx = xlimits[1] - xlimits[0]
-    dy = ylimits[1] - ylimits[0]
-
-    return dx, dy
-
 def get_coordinates(raw_coords):
     full_list = []
     new_list = []
@@ -113,14 +103,14 @@ def get_coordinates(raw_coords):
         new_list = []
     return full_list
 
-def get_coordinates2(raw_coords, axes_bounds, dx, dy):
+def get_coordinates2(raw_coords, fig, ax):
     full_list = []
     new_list = []
     coord_dict = list(raw_coords)
     for list_item in coord_dict:
         for pair in list_item:
             if len(pair) > 1:
-                new_list.append(canvas_to_world(pair[1], pair[2], axes_bounds, dx, dy))
+                new_list.append(canvas_to_world(pair[1], pair[2], fig, ax))
         full_list.append(new_list)
         new_list = []
     return full_list
