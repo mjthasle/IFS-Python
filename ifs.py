@@ -59,8 +59,8 @@ def canvas_to_world(x_c, y_c, fig, ax):
     # x and y limits in world coordinates
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
-    xmin = xlim[0]
-    ymax = ylim[1]
+    x_min = xlim[0]
+    y_max = ylim[1]
 
     # Length of the x and y axes in world coordinates
     dx = xlim[1] - xlim[0]
@@ -77,15 +77,15 @@ def canvas_to_world(x_c, y_c, fig, ax):
     axes_top_fig    = pos.y1 * fig_h_px
 
     # Horizontal mapping: left -> right
-    # x_c == axes_left_img  -> x_w == x_min
-    # x_c == axes_right_img -> x_w == x_max
-    t_x = (x_c - axes_left_img) / (axes_right_img - axes_left_img)
+    # x_c == axes_left_fig  -> x_w == x_min
+    # x_c == axes_right_fig -> x_w == x_max
+    t_x = (x_c - axes_left_fig) / (axes_right_fig - axes_left_fig)
     x_w = x_min + t_x * dx
 
     # Vertical mapping: top -> bottom in image vs bottom -> top in world
-    # y_c == axes_top_img    -> y_w == y_max
-    # y_c == axes_bottom_img -> y_w == y_min
-    t_y = (y_c - axes_top_img) / (axes_bottom_img - axes_top_img)
+    # y_c == axes_top_fig    -> y_w == y_max
+    # y_c == axes_bottom_fig -> y_w == y_min
+    t_y = (y_c - axes_top_fig) / (axes_bottom_fig - axes_top_fig)
     y_w = y_max - t_y * dy
 
     return x_w, y_w
