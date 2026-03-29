@@ -310,7 +310,7 @@ with col1:
     if not st.session_state.draw_polygon:
         initial_set_selected = st.selectbox("Select an initial set",
                                       initial_set_options.keys(),
-                                      on_change=reset_n,
+                                      on_change=on_initial_set_change,
                                       index=get_default_index())
 
     # Use an input box for number of iterations when not multiplot
@@ -383,7 +383,7 @@ with col1:
         if initial_polygon.json_data is not None:
             objects = pd.json_normalize(initial_polygon.json_data["objects"])
             if len(objects) > 0:
-                coordinates = objects["path"][0]
+                coordinates = objects["path"]
         
     # Set x and y limits button
     if st.session_state.set_lim_toggle:

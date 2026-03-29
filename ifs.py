@@ -300,6 +300,14 @@ def get_default_index(option_selected=None):
 def reset_n():
     st.session_state.n = 0
 
+def on_initial_set_change():
+    # Reset number of iterations to zero
+    reset_n()
+
+    # Regenerate plots when initial set is changed
+    if st.session_state.plot_image is not None:
+        st.session_state.generate_plots = True
+
 
 import numpy as np
 from fractions import Fraction
