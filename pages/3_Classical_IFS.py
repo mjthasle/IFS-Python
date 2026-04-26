@@ -83,8 +83,11 @@ with col1:
 		n = st.number_input("Number of iterations: ", min_value = 0,
 			max_value = max_iterations, step = 1, key = "n")
 	if drawing_canvas:
-		fig, ax = plt.subplots()
+		canvas_dpi = config['canvas_dpi']
+		figsize_inch = config['canvas_dimension'] / canvas_dpi
+		fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)
 		ax.grid(alpha = 0.75)
+		ax.tick_params(labelsize=12)
 		fig.tight_layout(pad = 0.1)
 
 		# 2. Create an in-memory buffer

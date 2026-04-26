@@ -110,7 +110,8 @@ def get_coordinates2(raw_coords, fig, ax):
     for list_item in coord_dict:
         for pair in list_item:
             if len(pair) > 1:
-                new_list.append(canvas_to_world(pair[1], pair[2], fig, ax))
+                world_coords = canvas_to_world(float(pair[1]), canvas_dimension - float(pair[2]), fig, ax)
+                new_list.append(world_coords)
         full_list.append(new_list)
         new_list = []
     return full_list
