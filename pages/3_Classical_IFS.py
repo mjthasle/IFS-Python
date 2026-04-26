@@ -53,6 +53,7 @@ stroke_width = 3
 
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)
+color_code_self_sim = st.toggle("Colour code self-similarity", value = False)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -66,7 +67,6 @@ box_options = [a.namestring for a in attractors]
 
 col1, col2 = st.columns(2, gap = "medium")
 
-
 # IFS settings in the left column
 
 with col1:
@@ -79,6 +79,17 @@ with col1:
 									initial_set_options.keys(),
 									on_change = reset_n,
 									index = get_default_index(option_selected))
+	if color_code_self_sim:
+		a = get_selected_attractor(option_selected, attractors)
+		colours = []
+		n = len(a.ifs)
+		for i in range(n):
+			func_colour = st.color_picker(f"Select a colour for function {i+1}: ",
+				   colour_default)
+			colours.append(func_colour)
+	else:
+		colours = stroke_color
+
 	if not multiplot:
 		n = st.number_input("Number of iterations: ", min_value = 0,
 			max_value = max_iterations, step = 1, key = "n")
@@ -143,8 +154,8 @@ with col2:
 	with _lock:
 		if multiplot:
 			fig = a.multiplot(showgridlines = gridlines,					 
-					facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
+					facecolor = colours, set_lim = set_lim, clicks = clicks)
 		else:
 			fig = a.plot(n = n, showgridlines = gridlines, 
-					facecolor = colour_selected, set_lim = set_lim, clicks = clicks)
+					facecolor = colours, set_lim = set_lim, clicks = clicks)
 			st.pyplot(fig)

@@ -198,7 +198,7 @@ class attractor:
             return lim
 
     # set_lim = False automatically chooses the xlim and ylim parameters 
-    def plot(self, n = 0, facecolor = colour_default,
+    def plot(self, n = 0, facecolor: str | list = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
         clicks = [[[0,0], [0,1], [1,0]]], get_lim = False):
 
@@ -228,8 +228,17 @@ class attractor:
                 t += self.ifs[i]
 
             for list_item in clicks:
-                ax.add_patch(Polygon(t.transform(list_item),
+                if isinstance(facecolor, str):
+                    ax.add_patch(Polygon(t.transform(list_item),
                     facecolor = facecolor))
+                if isinstance(facecolor, list):
+                    if len(code) > 0:
+                        func_index = code[len(code) - 1]
+                        ax.add_patch(Polygon(t.transform(list_item),
+                        facecolor = facecolor[func_index]))
+                    else:
+                        ax.add_patch(Polygon(t.transform(list_item),
+                        facecolor = colour_default)) 
 
         end = time.perf_counter()
 
@@ -302,7 +311,18 @@ class attractor:
                 for i in code:
                     t += self.ifs[i]
                 for list_item in clicks:
-                    ax.add_patch(Polygon(t.transform(list_item), facecolor=facecolor))
+                    if isinstance(facecolor, str):
+                        ax.add_patch(Polygon(t.transform(list_item),
+                        facecolor = facecolor))
+                    if isinstance(facecolor, list):
+                        if len(code) > 0:
+                            func_index = code[len(code) - 1]
+                            ax.add_patch(Polygon(t.transform(list_item),
+                            facecolor = facecolor[func_index]))
+                        else:
+                            ax.add_patch(Polygon(t.transform(list_item),
+                            facecolor = colour_default)) 
+                    #ax.add_patch(Polygon(t.transform(list_item), facecolor=facecolor))
 
             lim = None
 
