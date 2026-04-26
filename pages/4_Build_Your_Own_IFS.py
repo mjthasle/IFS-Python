@@ -303,7 +303,7 @@ with col1:
         plt.rcParams['figure.figsize'] = config['multiplot_size']
     else:
         plt.rcParams.update({'font.size': config['singleplot_font']})
-    stroke_color = st.color_picker("Select a colour for the attractor: ", 
+    stroke_colour = st.color_picker("Select a colour for the attractor: ", 
                             colour_default)
 
     # Use a select box if not using the drawing canvas
@@ -341,9 +341,9 @@ with col1:
             st.write("Draw the initial polygon here (only the first polygon\
                 drawn on the canvas will be used:")
             form_canvas_result = st_canvas(
-                fill_color=stroke_color,
+                fill_color=stroke_colour,
                 stroke_width=stroke_width,
-                stroke_color=stroke_color,
+                stroke_color=stroke_colour,
                 background_color="#eee",
                 background_image=None,
                 update_streamlit=True,
@@ -375,7 +375,7 @@ with col1:
 
 
     # Use selected stroke colour
-    colour_selected = stroke_color
+    colour_selected = stroke_colour
 
     # Extract drawing canvas polygon coordinates
     if st.session_state.draw_polygon and st.session_state.canvas_result is not None:

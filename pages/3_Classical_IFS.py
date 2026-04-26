@@ -53,7 +53,7 @@ stroke_width = 3
 
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)
-color_code_self_sim = st.toggle("Colour code self-similarity", value = False)
+colour_code_self_sim = st.toggle("Colour code self-similarity", value = False)
 
 if multiplot:
 	plt.rcParams.update({'font.size': config['multiplot_font']})
@@ -71,15 +71,7 @@ col1, col2 = st.columns(2, gap = "medium")
 
 with col1:
 
-	stroke_color = st.color_picker("Select a colour for the attractor: ", 
-		colour_default)
-
-	if not drawing_canvas:
-		initial_set_selected = st.selectbox("Select an initial set",
-									initial_set_options.keys(),
-									on_change = reset_n,
-									index = get_default_index(option_selected))
-	if color_code_self_sim:
+	if colour_code_self_sim:
 		a = get_selected_attractor(option_selected, attractors)
 		colours = []
 		n = len(a.ifs)
@@ -88,12 +80,18 @@ with col1:
 				   colour_default)
 			colours.append(func_colour)
 	else:
-		colours = stroke_color
+		stroke_colour = st.color_picker("Select a colour for the attractor: ", 
+		colour_default)
+		a = get_selected_attractor(option_selected, attractors)
+		colours = [stroke_colour] * len(a.ifs)  # Repeat colour for each function
 
-	if not multiplot:
-		n = st.number_input("Number of iterations: ", min_value = 0,
-			max_value = max_iterations, step = 1, key = "n")
-	if drawing_canvas:
+	if not drawing_canvas:
+		initial_set_selected = st.selectbox("Select an initial set",
+									initial_set_options.keys(),
+									on_change = reset_n,
+									index = get_default_index(option_selected))
+		canvas_result = None
+	else:
 		canvas_dpi = config['canvas_dpi']
 		figsize_inch = config['canvas_dimension'] / canvas_dpi
 		fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)
@@ -113,9 +111,9 @@ with col1:
 		# 5. Open the image from the buffer with PIL
 		pil_img = Image.open(img_buf)
 		canvas_result = st_canvas(
-			fill_color = stroke_color,
+			fill_color = colours[0],
 			stroke_width = stroke_width,
-			stroke_color = stroke_color,
+			stroke_color = colours[0],
 			background_color = "#eee",
 			background_image = pil_img,
 			update_streamlit = True,
@@ -128,17 +126,11 @@ with col1:
 		)
 		img_buf.close()
 
-	else:
-		canvas_result = None
-		colour_selected = stroke_color
-
 	if canvas_result is not None:
 		if canvas_result.json_data is not None:
 			objects = pd.json_normalize(canvas_result.json_data["objects"])
 			if len(objects) > 0:
 				coordinates = objects["path"]
-
-		colour_selected = stroke_color
 
 # plot the attractor in the right column
 with col2:

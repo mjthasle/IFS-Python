@@ -199,7 +199,7 @@ class attractor:
             return lim
 
     # set_lim = False automatically chooses the xlim and ylim parameters 
-    def plot(self, n = 0, facecolor: str | list = colour_default,
+    def plot(self, n = 0, facecolor = colour_default,
         showaxis = True, showgridlines = False, set_lim = False, timeit = False,
         clicks = [[[0,0], [0,1], [1,0]]], get_lim = False):
 
