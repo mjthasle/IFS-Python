@@ -96,7 +96,7 @@ with col1:
 		figsize_inch = config['canvas_dimension'] / canvas_dpi
 		fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)
 		ax.grid(alpha = 0.75)
-		ax.tick_params(labelsize=12)
+		ax.tick_params(labelsize=config['canvas_labelsize'])
 		fig.tight_layout(pad = 0.1)
 
 		# 2. Create an in-memory buffer
