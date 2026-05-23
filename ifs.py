@@ -502,7 +502,7 @@ def affine_to_strings(transform, tol=1e-12):
 def get_drawing_canvas_result(colours):
     # 1. Create an in-memory buffer
     img_buf = io.BytesIO()
-    
+
     canvas_dpi = config['canvas_dpi']
     figsize_inch = config['canvas_dimension'] / canvas_dpi
     fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)

@@ -60,6 +60,10 @@ if "canvas_result" not in st.session_state:
     st.session_state.canvas_result = None
 if "gridlines" not in st.session_state:
     st.session_state.gridlines = True
+if "fig" not in st.session_state:
+    st.session_state.fig = None
+if "ax" not in st.session_state:
+    st.session_state.ax = None
 
 # === Add/delete IFS functions =================================================
 
@@ -348,6 +352,8 @@ with col1:
 
             if submit_button:
                 st.session_state.canvas_result = form_canvas_result
+                st.session_state.fig = fig
+                st.session_state.ax = ax
                 st.session_state.draw_polygon_form = False
                 st.session_state.generate_plots = True
                 st.rerun() # Needed to make canvas form disappear when submitted
@@ -430,7 +436,7 @@ with col2:
         # Determine initial points
         if st.session_state.draw_polygon:
             try:
-                clicks = get_coordinates(coordinates)
+                clicks = get_coordinates2(coordinates, st.session_state.fig, st.session_state.ax)
             except (TypeError, KeyError, NameError):
                 clicks = [[0, 0]]
         else:
