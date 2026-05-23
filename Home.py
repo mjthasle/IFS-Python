@@ -38,5 +38,5 @@ with col1:
 with col2:
 	st.subheader("Emily Korfanty")
 	st.image("emily_headshot.jpg", width = 200)
-	st.write("Emily is a mathematician and educator with a background in fractal geometry and computational mathematics. She has a passion for making mathematical concepts accessible and engaging through interactive visualizations. Emily has experience in both academia and industry, where she has worked on projects involving data analysis, algorithm development, and educational content creation.")
+	st.write("Emily is a PhD candidate in mathematics at the University of Alberta and is currently working as an Economics and Investment Research Intern at AIMCo (Alberta Investment Management Corporation). Her academic research focuses on mathematical diffraction theory, while her industry work explores applications of time series analysis and convex optimization in finance. Emily is dedicated to making mathematics more approachable through thoughtfully designed visualizations.")
 	st.link_button("LinkedIn Profile", "https://www.linkedin.com/in/emilykorfanty/")
