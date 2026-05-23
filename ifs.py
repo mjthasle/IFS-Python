@@ -22,6 +22,9 @@ import re
 import numpy as np
 from fractions import Fraction
 from typing import List
+import io
+from PIL import Image
+from streamlit_drawable_canvas import st_canvas
 
 file_path = os.path.join(os.getcwd(), "config.json")
 with open(file_path, 'r', encoding = 'utf8') as json_file:
@@ -29,6 +32,8 @@ with open(file_path, 'r', encoding = 'utf8') as json_file:
 
 canvas_dimension = config["canvas_dimension"]
 colour_default = config["colour_default"]
+drawing_mode = config['canvas_drawing_mode']
+stroke_width = config['canvas_stroke_width']
 
 # Creates a list of all sequences of length n of numbers between 1 and m
 def codes(m, n):
@@ -494,4 +499,43 @@ def affine_to_strings(transform, tol=1e-12):
     shift_str = f"[[{fmt(e)}],[{fmt(f)}]]"
     return [matrix_str, shift_str]
 
+def get_drawing_canvas_result(colours):
+    # 1. Create an in-memory buffer
+    img_buf = io.BytesIO()
+    
+    canvas_dpi = config['canvas_dpi']
+    figsize_inch = config['canvas_dimension'] / canvas_dpi
+    fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)
+    ax.grid(alpha = 0.75)
+    ax.tick_params(labelsize=config['canvas_labelsize'])
+    fig.tight_layout(pad = 0.1)
 
+    # 2. Save the figure to the buffer
+    fig.savefig(img_buf, format = 'png')
+
+    # 3. Seek to the beginning of the buffer
+    img_buf.seek(0)
+
+    # 4. Open the image from the buffer with PIL
+    pil_img = Image.open(img_buf)
+    pil_img.load()  # Ensure the image is fully loaded before closing the buffer
+
+    canvas_result = st_canvas(
+        fill_color = colours[0],
+        stroke_width = stroke_width,
+        stroke_color = colours[0],
+        background_color = "#eee",
+        background_image = pil_img,
+        update_streamlit = True,
+        height = canvas_dimension,
+        width = canvas_dimension,
+        drawing_mode = drawing_mode,
+        point_display_radius = 0,
+        display_toolbar = True,
+        key = "full_app",
+    )
+
+    # 5. Close the buffer
+    img_buf.close()
+
+    return [canvas_result, fig, ax]

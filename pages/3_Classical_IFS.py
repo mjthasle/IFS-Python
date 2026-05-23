@@ -47,10 +47,6 @@ with st.expander("Show functions"):
 
 drawing_canvas = st.toggle("Draw initial polygon", value = False)
 
-drawing_mode = "polygon"
-
-stroke_width = 3
-
 multiplot = st.toggle("Multiplot", value = True)
 gridlines = st.toggle("Show grid", value = True)
 colour_code_self_sim = st.toggle("Colour code self-similarity", value = False)
@@ -92,39 +88,11 @@ with col1:
 									index = get_default_index(option_selected))
 		canvas_result = None
 	else:
-		canvas_dpi = config['canvas_dpi']
-		figsize_inch = config['canvas_dimension'] / canvas_dpi
-		fig, ax = plt.subplots(figsize=(4, 4), dpi=canvas_dpi)
-		ax.grid(alpha = 0.75)
-		ax.tick_params(labelsize=config['canvas_labelsize'])
-		fig.tight_layout(pad = 0.1)
-
-		# 2. Create an in-memory buffer
-		img_buf = io.BytesIO()
-
-		# 3. Save the figure to the buffer
-		fig.savefig(img_buf, format = 'png')
-
-		# 4. Seek to the beginning of the buffer
-		img_buf.seek(0)
-
-		# 5. Open the image from the buffer with PIL
-		pil_img = Image.open(img_buf)
-		canvas_result = st_canvas(
-			fill_color = colours[0],
-			stroke_width = stroke_width,
-			stroke_color = colours[0],
-			background_color = "#eee",
-			background_image = pil_img,
-			update_streamlit = True,
-			height = canvas_dimension,
-			width = canvas_dimension,
-			drawing_mode = drawing_mode,
-			point_display_radius = 0,
-			display_toolbar = True,
-			key = "full_app",
-		)
-		img_buf.close()
+		# Get the drawing canvas result and the background fig/axes
+		canvas_result_and_grid = get_drawing_canvas_result(colours)
+		canvas_result = canvas_result_and_grid[0]
+		fig = canvas_result_and_grid[1]
+		ax = canvas_result_and_grid[2]
 
 	if canvas_result is not None:
 		if canvas_result.json_data is not None:

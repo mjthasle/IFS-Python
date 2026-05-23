@@ -338,22 +338,11 @@ with col1:
     # Draw polygon form
     if st.session_state.draw_polygon and st.session_state.draw_polygon_form: 
         with st.form("drawing_canvas"):
-            st.write("Draw the initial polygon here (only the first polygon\
-                drawn on the canvas will be used:")
-            form_canvas_result = st_canvas(
-                fill_color=stroke_colour,
-                stroke_width=stroke_width,
-                stroke_color=stroke_colour,
-                background_color="#eee",
-                background_image=None,
-                update_streamlit=True,
-                height=canvas_dimension,
-                width=canvas_dimension,
-                drawing_mode=drawing_mode,
-                point_display_radius=0,
-                display_toolbar=True,
-                key="full_app"
-            )
+            # Get the drawing canvas result and the background fig/axes
+            form_canvas_result_and_grid = get_drawing_canvas_result([stroke_colour])
+            form_canvas_result = form_canvas_result_and_grid[0]
+            fig = form_canvas_result_and_grid[1]
+            ax = form_canvas_result_and_grid[2]
 
             submit_button = st.form_submit_button("Submit")
 
