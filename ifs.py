@@ -244,7 +244,7 @@ class attractor:
                         facecolor = facecolor[func_index]))
                     else:
                         ax.add_patch(Polygon(t.transform(list_item),
-                        facecolor = colour_default)) 
+                        facecolor = facecolor[0])) 
 
         end = time.perf_counter()
 
@@ -327,7 +327,7 @@ class attractor:
                             facecolor = facecolor[func_index]))
                         else:
                             ax.add_patch(Polygon(t.transform(list_item),
-                            facecolor = colour_default)) 
+                            facecolor = facecolor[0])) 
                     #ax.add_patch(Polygon(t.transform(list_item), facecolor=facecolor))
 
             lim = None
@@ -521,9 +521,9 @@ def get_drawing_canvas_result(colours):
     pil_img.load()  # Ensure the image is fully loaded before closing the buffer
 
     canvas_result = st_canvas(
-        fill_color = colours[0],
+        fill_color = colour_default,
         stroke_width = stroke_width,
-        stroke_color = colours[0],
+        stroke_color = colour_default,
         background_color = "#eee",
         background_image = pil_img,
         update_streamlit = True,

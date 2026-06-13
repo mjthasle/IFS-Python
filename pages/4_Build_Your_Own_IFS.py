@@ -64,6 +64,8 @@ if "fig" not in st.session_state:
     st.session_state.fig = None
 if "ax" not in st.session_state:
     st.session_state.ax = None
+if "colour_code_self_sim" not in st.session_state:
+    st.session_state.colour_code_self_sim = False
 
 # === Add/delete IFS functions =================================================
 
@@ -285,6 +287,7 @@ with col1:
     multiplot = st.toggle("Multiplot", value=True, on_change=trigger_plots)
     st.toggle("Show grid", key="gridlines", on_change=trigger_plots)
     st.toggle("Draw initial polygon", key="draw_polygon", on_change=trigger_plots)
+    st.toggle("Colour code self-similarity", value = False, key="colour_code_self_sim", on_change=trigger_plots)
     set_lim_toggle = st.toggle("Manual x and y limits", key="set_lim_toggle")
 
     # Set manual x/y lim defaults to most recent auto x/y lim
@@ -307,8 +310,21 @@ with col1:
         plt.rcParams['figure.figsize'] = config['multiplot_size']
     else:
         plt.rcParams.update({'font.size': config['singleplot_font']})
-    stroke_colour = st.color_picker("Select a colour for the attractor: ", 
-                            colour_default)
+
+    if st.session_state.colour_code_self_sim:
+        colours = []
+        n = len(a.ifs)
+        for i in range(n):
+            func_colour = st.color_picker(f"Select a colour for function {i+1}: ",
+                   colour_default, on_change=trigger_plots)
+            colours.append(func_colour)
+    else:
+        stroke_colour = st.color_picker("Select a colour for the attractor: ", 
+        colour_default, on_change=trigger_plots)
+        colours = [stroke_colour] * len(a.ifs)  # Repeat colour for each function
+
+    # stroke_colour = st.color_picker("Select a colour for the attractor: ", 
+    #                         colour_default)
 
     # Use a select box if not using the drawing canvas
     if not st.session_state.draw_polygon:
@@ -343,7 +359,7 @@ with col1:
     if st.session_state.draw_polygon and st.session_state.draw_polygon_form: 
         with st.form("drawing_canvas"):
             # Get the drawing canvas result and the background fig/axes
-            form_canvas_result_and_grid = get_drawing_canvas_result([stroke_colour])
+            form_canvas_result_and_grid = get_drawing_canvas_result(colours)
             form_canvas_result = form_canvas_result_and_grid[0]
             fig = form_canvas_result_and_grid[1]
             ax = form_canvas_result_and_grid[2]
@@ -370,7 +386,7 @@ with col1:
 
 
     # Use selected stroke colour
-    colour_selected = stroke_colour
+    # colour_selected = stroke_colour
 
     # Extract drawing canvas polygon coordinates
     if st.session_state.draw_polygon and st.session_state.canvas_result is not None:
@@ -438,14 +454,14 @@ with col2:
             try:
                 clicks = get_coordinates2(coordinates, st.session_state.fig, st.session_state.ax)
             except (TypeError, KeyError, NameError):
-                clicks = [[0, 0]]
+                clicks = [[[0, 0]]]
         else:
             clicks = initial_set_options[initial_set_selected]
         # Generate multiplot/plot
         if st.session_state.generate_plots:
             if multiplot:
                 plot_data = a.multiplot(
-                    facecolor=colour_selected,
+                    facecolor=colours,
                     showgridlines=st.session_state.gridlines,
                     set_lim=st.session_state.set_lim_toggle,
                     clicks=clicks, get_lim=True
@@ -457,7 +473,7 @@ with col2:
             else:
                 plot_data = a.plot(
                     n=st.session_state.n,
-                    facecolor=colour_selected,
+                    facecolor=colours,
                     set_lim=st.session_state.set_lim_toggle,
                     clicks=clicks, get_lim=True, 
                     showgridlines=st.session_state.gridlines

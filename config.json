@@ -3,7 +3,7 @@
     "multiplot_size": [8,8],
     "multiplot_font": 4,
     "singleplot_font": 10,
-    "colour_default": "#800080",
+    "colour_default": "#000000",
     "max_iterations_default": 15,
     "initial_set_default": "Right Triangle",
     "grid_default": [3,3],

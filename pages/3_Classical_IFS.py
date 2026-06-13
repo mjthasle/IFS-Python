@@ -115,8 +115,12 @@ with col2:
 	_lock = RLock()
 	with _lock:
 		if multiplot:
-			fig = a.multiplot(showgridlines = gridlines,					 
-					facecolor = colours, set_lim = set_lim, clicks = clicks)
+			if colour_code_self_sim:
+				fig = a.multiplot(showgridlines = gridlines,					 
+						facecolor = colours, set_lim = set_lim, clicks = clicks)
+			else:
+				fig = a.multiplot(showgridlines = gridlines,					 
+						facecolor = colours[0], set_lim = set_lim, clicks = clicks)
 		else:
 			fig = a.plot(n = n, showgridlines = gridlines, 
 					facecolor = colours, set_lim = set_lim, clicks = clicks)
